@@ -2,7 +2,7 @@
 # http://lincolnmullen.com 
 
 PDFS := $(patsubst src/%.md,%.md.pdf,$(wildcard src/*.md))
-PARAMS := --include-in-header=header.tex
+PARAMS := --include-in-header=src/header.tex
 all : $(PDFS)
 
 %.md.pdf : src/%.md
