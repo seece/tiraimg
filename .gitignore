@@ -6,3 +6,6 @@
 # Binaries
 *.o
 tiraimg
+test
+!test/
+!tiraimg/
