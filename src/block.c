@@ -98,7 +98,7 @@ void byte_print_callback(void* valuep, int32_t x, int32_t y)
 
 void float_print_callback(void* valuep, int32_t x, int32_t y) 
 {
-	printf("%6.2f ", ((struct FloatBlock*)valuep)->data[y][x]);
+	printf("%7.2f ", ((struct FloatBlock*)valuep)->data[y][x]);
 
 	if (x==TIMG_BLOCK_SIZE-1) {
 		printf("\n");

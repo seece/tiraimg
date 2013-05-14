@@ -29,7 +29,7 @@ static float single_dct(
 	// of the sample block on this frequency.
 	for (int32_t y=0;y<size;y++) {
 		for (int32_t x=0;x<size;x++) {
-			float sample = input->data[x][y];
+			float sample = input->data[y][x];
 			float result;
 			result =  cos(phasemult*(x+0.5)*du);	
 			result *= cos(phasemult*(y+0.5)*dv);
@@ -52,7 +52,7 @@ void dct_calculate(struct ByteBlock const* input,
 	for (int32_t y=0;y<size;y++) {
 		for (int32_t x=0;x<size;x++) {
 			float val = single_dct(x, y, &biased_input);
-			output->data[x][y] = val;
+			output->data[y][x] = val;
 		}
 	}
 }
