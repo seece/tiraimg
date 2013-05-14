@@ -30,16 +30,18 @@ void del_byteblock(struct ByteBlock* blockp)
 }
 
 static void block_map(
-		struct ByteBlock* blockp,
+		void* blockp,
 		void (*func)(void* valuep, int32_t x, int32_t y)) 
 {
 	int32_t size = TIMG_BLOCK_SIZE;
+	struct ByteBlock* real_blockp = (struct ByteBlock*) blockp;
 
 	for (int32_t i=0;i<size*size;i++) {
 		int32_t x = i % size;
 		int32_t y = i / size; 
+		//size_t offset = (size*y+x) * 0;
 
-		func((void *)&blockp->data[x][y], x, y);
+		func((void *)(&real_blockp->data), x, y);
 	}
 }
 
@@ -48,9 +50,12 @@ void floatblock_init(struct FloatBlock* blockp)
 	assert(blockp != NULL);
 	int32_t size = TIMG_BLOCK_SIZE;
 
-	for (int32_t i=0;i<size*size;i++) {
-		blockp->data[i % size][i / size] = -1.0;
+	for (int32_t y=0;y<size;y++) {
+		for (int32_t x=0;x<size;x++) {
+			blockp->data[y][x] = 0.0;
+		}
 	}
+
 }
 
 struct FloatBlock* new_floatblock() 
@@ -66,8 +71,17 @@ void del_floatblock(struct FloatBlock* blockp)
 	free(blockp);
 }
 
+/* Some debug helper functions. */
 void byte_print_callback(void* valuep, int32_t x, int32_t y) {
-	printf("%3d ", *(uint8_t*)valuep);
+	printf("%3d ", ((struct ByteBlock*)valuep)->data[y][x]);
+
+	if (x==TIMG_BLOCK_SIZE-1) {
+		printf("\n");
+	}
+}
+
+void float_print_callback(void* valuep, int32_t x, int32_t y) {
+	printf("%6.2f ", ((struct FloatBlock*)valuep)->data[y][x]);
 
 	if (x==TIMG_BLOCK_SIZE-1) {
 		printf("\n");
@@ -75,6 +89,9 @@ void byte_print_callback(void* valuep, int32_t x, int32_t y) {
 }
 
 void byteblock_print(struct ByteBlock* blockp) {
-	block_map(blockp, byte_print_callback);
+	block_map((void *)blockp, byte_print_callback);
 }
 
+void floatblock_print(struct FloatBlock* blockp) {
+	block_map((void *)blockp, float_print_callback);
+}

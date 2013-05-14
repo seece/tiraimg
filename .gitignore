@@ -9,3 +9,6 @@ tiraimg
 test
 !test/
 !tiraimg/
+
+# Project specific
+*.log

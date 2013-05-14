@@ -45,7 +45,9 @@ void TestDCT(CuTest* tc)
 	struct FloatBlock output;
 	floatblock_init(&output);
 
+	floatblock_print(&output);
 	dct_calculate(&input, &output);
+
 
 	//del_block(blockp);
 }

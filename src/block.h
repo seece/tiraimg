@@ -23,6 +23,7 @@ void byteblock_print(struct ByteBlock* blockp);
 void floatblock_init(struct FloatBlock* blockp);
 struct FloatBlock* new_floatblock();
 void del_floatblock(struct FloatBlock* blockp);
+void floatblock_print(struct FloatBlock* blockp);
 
 
 
