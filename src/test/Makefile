@@ -1,6 +1,6 @@
 CC=c99
-CFLAGS=-c -g -Wall -pedantic -O2 -I..
-LDFLAGS=
+CFLAGS=-c -g -Wall -pedantic -O2 -I.. 
+LDFLAGS=-lm
 SOURCES=$(wildcard *.c)
 ALL_SOURCES=$(wildcard ../*.c) 
 ALL_SOURCES:=$(filter-out ../main.c, $(ALL_SOURCES))

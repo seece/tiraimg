@@ -1,14 +1,29 @@
 #ifndef BLOCK_H_
 #define BLOCK_H_
 
+#include <stdint.h>
+
 #define TIMG_BLOCK_SIZE 8 
 
-struct Block 
+struct ByteBlock 
 {
-	char data[TIMG_BLOCK_SIZE][TIMG_BLOCK_SIZE];
+	uint8_t data[TIMG_BLOCK_SIZE][TIMG_BLOCK_SIZE];
 };
 
-void block_init(struct Block* blockp);
-struct Block* new_block();
+struct FloatBlock 
+{
+	float data[TIMG_BLOCK_SIZE][TIMG_BLOCK_SIZE];
+};
+
+void byteblock_init(struct ByteBlock* blockp);
+struct ByteBlock* new_byteblock();
+void del_byteblock(struct ByteBlock* blockp);
+void byteblock_print(struct ByteBlock* blockp);
+
+void floatblock_init(struct FloatBlock* blockp);
+struct FloatBlock* new_floatblock();
+void del_floatblock(struct FloatBlock* blockp);
+
+
 
 #endif
