@@ -1,22 +1,8 @@
 
 #include <math.h>
 #include "eks_math.h"
+#include "block.h"
 #include "dct.h"
-
-static void bias_block(
-		struct ByteBlock const* input,
-	       	float bias_value, 
-		struct FloatBlock* output) 
-{
-	int size = TIMG_BLOCK_SIZE;
-
-	for (int32_t y=0;y<size;y++) {
-		for (int32_t x=0;x<size;x++) {
-			output->data[x][y]+=bias_value;
-		}
-	}
-
-}
 
 static double normalize_scale_factor(int frequency) 
 {

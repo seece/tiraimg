@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include "CuTest.h"
+//#include "
 
 CuSuite* CuGetSuite();
-CuSuite* CuStringGetSuite();
+CuSuite* CuGetDCTSuite();
 
 void RunAllTests(void) 
 {
@@ -10,11 +11,13 @@ void RunAllTests(void)
 	CuSuite* suite = CuSuiteNew();
 
 	CuSuiteAddSuite(suite, CuGetSuite());
+	CuSuiteAddSuite(suite, CuGetDCTSuite());
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);
 	CuSuiteDetails(suite, output);
 	printf("%s\n", output->buffer);
+	CuSuiteDelete(suite);
 }
 
 int main(void) 
