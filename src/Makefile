@@ -1,4 +1,4 @@
-CC=gcc
+CC=c99
 CFLAGS=-c -g -Wall -pedantic -O2
 SOURCES=$(wildcard *.c)
 OBJECTS=$(SOURCES:.c=.o)

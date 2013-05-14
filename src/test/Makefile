@@ -1,5 +1,5 @@
-CC=gcc
-CFLAGS=-c -g -Wall -pedantic -O2
+CC=c99
+CFLAGS=-c -g -Wall -pedantic -O2 -I..
 LDFLAGS=
 SOURCES=$(wildcard *.c)
 ALL_SOURCES=$(wildcard ../*.c) 
