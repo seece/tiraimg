@@ -25,7 +25,7 @@ Harjoitustyön aihe on JPEG-pakkauksen kaltainen kuvanpakkausalgoritmi. Tarkemmi
 ### Aikavaativuus
 Tavoitteenani on päästä algoritmien standardiratkaisujen aikavaativuuksiin. En siis käytä esim. DCT:n laskemiseen FFT:stä johdettua $O(N \log N)$-versiota.
 
-DCT-II:n aikavaativuus on $O(N^2)$, sillä jokaisen pakattavan näytteen kohdalla on käytävä läpi myös jokainen muukin näyte. Sama pätee DCT-III:lle. Huffman-koodauksen aikavaativuus on $O(N \log N)$, sillä aluksi koko syötedata pitää käydä kerran lävitse eri symboleiden esiintymistiheyksien selvittämiseksi, mutta varsinaisessa koodauksessa haetaan arvoja binääripuusta. Näytteille suoritetaan myös muita operaatioita, mutta niissä ei tarkastella muita näytteita, joten tämän prosessoinnin aikavaativuus on $O(N)$. 
+DCT-II:n aikavaativuus on $O(N^2)$, sillä jokaisen pakattavan näytteen kohdalla on käytävä läpi myös jokainen muukin näyte. Sama pätee DCT-III:lle. Huffman-koodauksen aikavaativuus on $O(N \log N)$, sillä aluksi koko syötedata pitää käydä kerran lävitse eri symboleiden esiintymistiheyksien selvittämiseksi, mutta varsinaisessa koodauksessa haetaan arvoja binääripuusta. Näytteille suoritetaan myös muita operaatioita, mutta niissä ei tarkastella muita näytteitä, joten tämän prosessoinnin aikavaativuus on $O(N)$. 
 
 ### Tilavaativuus
 Algoritmin suorituksessa on luonnollisesti pidettävä muistissa pakattava kuva kokonaisuudessaan, mutta tätä ei lasketa mukaan tilavaativuuden O-analyysiin. 
