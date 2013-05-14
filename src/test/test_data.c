@@ -1,6 +1,6 @@
 #include "block.h"
 
-struct ByteBlock test_input[TIMG_BLOCK_SIZE][TIMG_BLOCK_SIZE] = {{
+struct ByteBlock test_input[8][8] = {{
 	52, 55, 61, 66,  70,  61,  64, 73,
 	63, 59, 55, 90,  109, 85,  69, 72,
 	62, 59, 68, 113, 144, 104, 66, 73,

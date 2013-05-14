@@ -28,6 +28,8 @@ void bias_block(struct ByteBlock const* input,
 		struct FloatBlock* output);
 void floatblock_print(struct FloatBlock* blockp);
 
+void byteblock_to_float(struct ByteBlock *input, 
+		struct FloatBlock* output);
 
 
 #endif

@@ -86,6 +86,18 @@ void bias_block(
 
 }
 
+void byteblock_to_float(struct ByteBlock *input, 
+		struct FloatBlock* output)
+{
+	int size = TIMG_BLOCK_SIZE;
+
+	for (int32_t y=0;y<size;y++) {
+		for (int32_t x=0;x<size;x++) {
+			output->data[y][x] = (float)input->data[y][x];
+		}
+	}
+}
+
 /* Some debug helper functions. */
 void byte_print_callback(void* valuep, int32_t x, int32_t y) 
 {

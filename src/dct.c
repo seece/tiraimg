@@ -1,10 +1,59 @@
 
 #include <math.h>
+#include <assert.h>
 #include "eks_math.h"
 #include "block.h"
 #include "dct.h"
 
-static double normalize_scale_factor(int frequency) 
+uint8_t const quantization_matrix[8][8] = {
+	16, 11, 10, 16, 24, 40, 51, 61,
+	12, 12, 14, 19, 26, 58, 60, 55,
+	14, 13, 16, 24, 40, 57, 69, 56,
+	14, 17, 22, 29, 51, 87, 80, 62,
+	18, 22, 37, 56, 68, 109, 103, 77,
+	24, 35, 55, 64, 81, 104, 113, 92,
+	49, 64, 78, 87, 103, 121, 120, 101,
+	72, 92, 95, 98, 112, 100, 103, 99
+};
+
+void quantize_floatblock(
+		const struct FloatBlock* input,
+		int32_t quality,
+		struct ByteBlock* output)
+{
+	float mult;
+	int32_t size = TIMG_BLOCK_SIZE;
+
+	assert(quality > 0);
+	assert(quality <= 100);
+
+	if (quality > 50) {
+		mult = (100.0-(float)quality)/50.0;
+	} else {
+		mult = 50.0/(float)quality;
+	}
+
+	for (int32_t y=0;y<size;y++) {
+		for (int32_t x=0;x<size;x++) {
+			float in = (float)input->data[y][x];
+			float scale = (float)quantization_matrix[y][x];
+			int32_t out = round(in/(scale * mult));			
+			output->data[y][x] = MIN(MAX(out, 0), 255);
+		}
+	}
+}
+
+void quantize_byteblock(
+		const struct ByteBlock* input,
+		int32_t quality,
+		struct ByteBlock* output)
+{
+	struct FloatBlock float_input;
+	byteblock_to_float(input, &float_input);
+	quantize_floatblock(&float_input, quality, output);
+}
+
+static double normalize_scale_factor(int32_t frequency) 
 {
 	if (frequency == 0) 
 		return sqrt(1.0/(double)TIMG_BLOCK_SIZE);
@@ -17,7 +66,7 @@ static float single_dct(
 		int32_t v, 
 		struct FloatBlock const* input)
 {
-	int size = TIMG_BLOCK_SIZE;
+	int32_t size = TIMG_BLOCK_SIZE;
 	double phasemult = M_PI/(double)size;
 	double scaleu = normalize_scale_factor(u);
 	double scalev = normalize_scale_factor(v);
