@@ -1,10 +1,11 @@
 #ifndef CU_TEST_H
 #define CU_TEST_H
 
+#include <stddef.h>
 #include <setjmp.h>
 #include <stdarg.h>
 
-#define CUTEST_VERSION  "CuTest 1.5"
+#define CUTEST_VERSION  "CuTest 1.5a"
 
 /* CuString */
 
