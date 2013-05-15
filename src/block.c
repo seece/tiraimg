@@ -99,7 +99,7 @@ void byteblock_to_float(struct ByteBlock *input,
 }
 
 /* Some debug helper functions. */
-void byte_print_callback(void* valuep, int32_t x, int32_t y) 
+static void byte_print_callback(void* valuep, int32_t x, int32_t y) 
 {
 	printf("%3d ", ((struct ByteBlock*)valuep)->data[y][x]);
 
@@ -108,7 +108,7 @@ void byte_print_callback(void* valuep, int32_t x, int32_t y)
 	}
 }
 
-void float_print_callback(void* valuep, int32_t x, int32_t y) 
+static void float_print_callback(void* valuep, int32_t x, int32_t y) 
 {
 	printf("%7.2f ", ((struct FloatBlock*)valuep)->data[y][x]);
 
@@ -126,3 +126,16 @@ void floatblock_print(struct FloatBlock* blockp)
 {
 	block_map((void *)blockp, float_print_callback);
 }
+
+void multiply_floatblock(struct FloatBlock* multiplier,
+		struct FloatBlock* target) 
+{
+	int size = TIMG_BLOCK_SIZE;
+
+	for (int32_t y=0;y<size;y++) {
+		for (int32_t x=0;x<size;x++) {
+			target->data[y][x] *= multiplier->data[y][x];
+		}
+	}
+}
+

@@ -27,9 +27,12 @@ void bias_block(struct ByteBlock const* input,
 	       	float bias_value, 
 		struct FloatBlock* output);
 void floatblock_print(struct FloatBlock* blockp);
+void multiply_floatblock(struct FloatBlock* multiplier,
+		struct FloatBlock* target);
 
 void byteblock_to_float(struct ByteBlock *input, 
 		struct FloatBlock* output);
+
 
 
 #endif
