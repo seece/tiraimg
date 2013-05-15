@@ -105,3 +105,47 @@ void dct_calculate(struct ByteBlock const* input,
 		}
 	}
 }
+
+static float single_idct(
+		int32_t x, 
+		int32_t y, 
+		struct FloatBlock const* dctdata)
+{
+	int32_t size = TIMG_BLOCK_SIZE;
+	double phasemult = M_PI/(double)size;
+	//double scaleu = normalize_scale_factor(u);
+	//double scalev = normalize_scale_factor(v);
+	float sum = 0.0f;
+
+	for (int32_t v=0;v<size;v++) {
+		for (int32_t u=0;u<size;u++) {
+			float sample = dctdata->data[v][u];
+			float result;
+			result = cos(phasemult*((double)x+0.5)*(double)u);	
+			result *= cos(phasemult*((double)y+0.5)*(double)v);
+			result *= normalize_scale_factor(u);
+			result *= normalize_scale_factor(v);
+
+			result*=sample;
+			sum += result;
+		}
+	}
+
+	return sum;
+}
+
+void idct_calculate(struct ByteBlock const* dctdata,
+		struct FloatBlock* output)
+{
+	int32_t size = TIMG_BLOCK_SIZE;
+	//struct FloatBlock biased_input;
+	//bias_block(input, -128.0, &biased_input);
+
+	// Loop through pixels.
+	for (int32_t y=0;y<size;y++) {
+		for (int32_t x=0;x<size;x++) {
+			float val = single_idct(x, y, dctdata);
+			output->data[y][x] = val;
+		}
+	}
+}
