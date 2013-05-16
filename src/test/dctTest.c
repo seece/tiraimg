@@ -11,6 +11,7 @@
 #include "jpeg.h"
 #include "test_data.h"
 
+/*
 static void byteblock_compare_test(CuTest* tc, struct ByteBlock* a, struct ByteBlock* b) 
 {
 	int size = TIMG_BLOCK_SIZE;
@@ -21,11 +22,7 @@ static void byteblock_compare_test(CuTest* tc, struct ByteBlock* a, struct ByteB
 		}
 	}
 }
-
-static bool double_compare(double a, double b) {
-	const double thresold = 0.01;
-	return fabs(a-b) <= thresold;
-}
+*/
 
 void TestDCT(CuTest* tc) 
 {
