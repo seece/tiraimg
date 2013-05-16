@@ -70,21 +70,26 @@ void TestTwoWayDCT(CuTest* tc)
 	int size = TIMG_BLOCK_SIZE;
 
 	struct ByteBlock input;
+	struct ByteBlock result;
+	struct FloatBlock dct_coeffs;
+
 	memcpy(&input, &test_input, sizeof(input));
-
-	byteblock_print(&input);
-
-	struct FloatBlock output;
-	floatblock_init(&output);
-
-	dct_calculate(&input, &output);
-	floatblock_print(&output);
+	dct_calculate(&input, &dct_coeffs);
 
 	for (int y=0;y<size;y++) {
 		for (int x=0;x<size;x++) {
-			CuAssertDblEquals(tc, test_dct_data.data[y][x], output.data[y][x], 0.01);
+			CuAssertDblEquals(tc, test_dct_data.data[y][x], dct_coeffs.data[y][x], 0.01);
 		}
 	}
+
+	idct_calculate(&dct_coeffs, &result);
+
+	for (int y=0;y<size;y++) {
+		for (int x=0;x<size;x++) {
+			CuAssertIntEquals(tc, input.data[y][x], result.data[y][x]);
+		}
+	}
+	
 }
 
 void TestQuantization(CuTest* tc) 
