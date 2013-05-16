@@ -1,6 +1,6 @@
 /**
- * Additional math definitions that are not available
- * in the C99 standard library.
+ * Additional math definitions that are not available in the C99 standard 
+ * library.
  */
 
 #ifndef EKS_MATH_H_

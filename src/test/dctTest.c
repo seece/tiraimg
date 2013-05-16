@@ -6,6 +6,7 @@
 #include "CuTest.h"
 #include "block.h"
 #include "dct.h"
+#include "jpeg.h"
 #include "test_data.h"
 
 static void byteblock_compare_test(CuTest* tc, struct ByteBlock* a, struct ByteBlock* b) 

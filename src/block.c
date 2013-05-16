@@ -1,3 +1,8 @@
+/**
+ * ByteBlock and FloatBlock manipulation functions.
+ */
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stddef.h>
