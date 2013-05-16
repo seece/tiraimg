@@ -56,6 +56,14 @@ void quantize_byteblock(
 	quantize_floatblock(&float_input, quality, output);
 }
 
+
+/**
+ * @brief Returns a normalized scale factor matching the given frequency. 
+ *
+ * @param frequency Spatial frequency.
+ *
+ * @return The normalized scale factor.
+ */
 static double normalize_scale_factor(int32_t frequency) 
 {
 	if (frequency == 0) 
