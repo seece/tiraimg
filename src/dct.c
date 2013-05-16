@@ -21,23 +21,19 @@ void quantize_floatblock(
 		int32_t quality,
 		struct ByteBlock* output)
 {
-	float mult;
 	int32_t size = TIMG_BLOCK_SIZE;
+	struct ByteBlock quant_matrix;
 
 	assert(quality > 0);
 	assert(quality <= 100);
 
-	if (quality > 50) {
-		mult = (100.0-(float)quality)/50.0;
-	} else {
-		mult = 50.0/(float)quality;
-	}
+	get_scaled_quant_matrix(quality, &quant_matrix);
 
 	for (int32_t y=0;y<size;y++) {
 		for (int32_t x=0;x<size;x++) {
 			float in = (float)input->data[y][x];
-			float scale = (float)quantization_matrix[y][x];
-			int32_t out = round(in/(scale * mult));			
+
+			int32_t out = round(in/quant_matrix.data[y][x]);			
 			output->data[y][x] = MIN(MAX(out, 0), 255);
 		}
 	}
@@ -184,6 +180,7 @@ void idct_calculate(struct FloatBlock const* dctdata,
 	for (int32_t y=0;y<size;y++) {
 		for (int32_t x=0;x<size;x++) {
 			float val = single_idct(x, y, dctdata);
+			//val = 1.0f;
 			output->data[y][x] = val;
 		}
 	}

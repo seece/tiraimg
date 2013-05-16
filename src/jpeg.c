@@ -2,6 +2,10 @@
  * Strictly JPEG related constants and functions.
  */
 
+#include <stdint.h>
+#include <assert.h>
+#include <math.h>
+#include "block.h"
 #include "jpeg.h"
 
 /**
@@ -18,3 +22,31 @@ uint8_t const quantization_matrix[8][8] = {
 	72, 92, 95, 98, 112, 100, 103, 99
 };
 
+
+/**
+ * @brief Creates a scaled JPEG quantization matrix.
+ *
+ * @param quality The quality value to use, range: [1, 100]
+ * @param output Pointer to the result ByteBlock.
+ */
+void get_scaled_quant_matrix(int32_t quality, struct ByteBlock* output)
+{
+	float mult;
+
+	assert(quality > 0);
+	assert(quality <= 100);
+
+	if (quality > 50) {
+		mult = (100.0-(float)quality)/50.0;
+	} else {
+		mult = 50.0/(float)quality;
+	}
+
+	for (int32_t y=0;y<8;y++) {
+		for (int32_t x=0;x<8;x++) {
+			int32_t in = quantization_matrix[y][x];
+			int32_t out = round(in*mult);			
+			output->data[y][x] = out;
+		}
+	}
+}

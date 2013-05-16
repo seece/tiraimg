@@ -43,7 +43,7 @@ void floatblock_print(struct FloatBlock* blockp);
 void multiply_floatblock(struct FloatBlock* multiplier,
 		struct FloatBlock* target);
 
-void byteblock_to_float(struct ByteBlock *input, 
+void byteblock_to_float(const struct ByteBlock *input, 
 		struct FloatBlock* output);
 
 

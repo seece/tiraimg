@@ -150,7 +150,7 @@ void bias_block(
  * @param input The original ByteBlock.
  * @param output The new FloatBlock.
  */
-void byteblock_to_float(struct ByteBlock *input, 
+void byteblock_to_float(const struct ByteBlock *input, 
 		struct FloatBlock* output)
 {
 	int size = TIMG_BLOCK_SIZE;

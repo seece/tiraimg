@@ -3,8 +3,6 @@
 
 #include "block.h"
 
-extern const uint8_t quantization_matrix[8][8];
-
 void dct_calculate(struct ByteBlock const* input, 
 		struct FloatBlock* output); 
 void idct_calculate(struct FloatBlock const* dctdata,
