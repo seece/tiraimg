@@ -91,6 +91,23 @@ void TestBlockMultiply(CuTest* tc)
 	}
 }
 
+void TestByteBlockToFloatConversion(CuTest* tc) 
+{
+	struct FloatBlock output;	
+	
+	void byteblock_to_float(const struct ByteBlock *input, 
+			struct FloatBlock* output);
+
+	byteblock_to_float(&test_input, &output);
+
+	for (int y=0;y<size;y++) {
+		for (int x=0;x<size;x++) {
+			CuAssertDblEquals(tc, (float)test_input.data[y][x], 
+					output.data[y][x], 0.0001);
+		}
+	}
+}
+
 CuSuite* CuGetBlockSuite(void) 
 {
 	CuSuite* suite = CuSuiteNew();
@@ -98,5 +115,6 @@ CuSuite* CuGetBlockSuite(void)
 	SUITE_ADD_TEST(suite, TestFloatBlockInit);
 	SUITE_ADD_TEST(suite, TestBlockBias);
 	SUITE_ADD_TEST(suite, TestBlockMultiply);
+	SUITE_ADD_TEST(suite, TestByteBlockToFloatConversion);
 	return suite;
 }
