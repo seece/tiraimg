@@ -134,7 +134,7 @@ void dct_calculate(struct ByteBlock const* input,
  *
  * @return the sample value
  */
-static float single_idct(
+static int32_t single_idct(
 		int32_t x, 
 		int32_t y, 
 		struct FloatBlock const* dctdata)
@@ -159,7 +159,7 @@ static float single_idct(
 		}
 	}
 
-	return sum;
+	return round(sum);
 }
 
 
@@ -170,18 +170,16 @@ static float single_idct(
  * @param output Sample output block.
  */
 void idct_calculate(struct FloatBlock const* dctdata,
-		struct FloatBlock* output)
+		struct ByteBlock* output)
 {
 	int32_t size = TIMG_BLOCK_SIZE;
-	//struct FloatBlock biased_input;
-	//bias_block(input, -128.0, &biased_input);
-
+	
 	// Loop through pixels.
 	for (int32_t y=0;y<size;y++) {
 		for (int32_t x=0;x<size;x++) {
-			float val = single_idct(x, y, dctdata);
-			//val = 1.0f;
-			output->data[y][x] = val;
+			int32_t val = single_idct(x, y, dctdata);
+			// The sample values were biased by 128 before storage.
+			output->data[y][x] = val + 128;
 		}
 	}
 }

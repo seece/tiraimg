@@ -66,33 +66,23 @@ void TestIDCT(CuTest* tc)
 	int size = TIMG_BLOCK_SIZE;
 
 	struct FloatBlock input;
-	struct FloatBlock output;
-	//struct ByteBlock temp_scaled_quant_matrix;
-	//struct FloatBlock scaled_quant_matrix;
+	struct ByteBlock output;
 
 	memcpy(&input, &test_dct_data, sizeof(input));
-	floatblock_init(&output);
-
-	//byteblock_to_float(test_input, &input);
-	//get_scaled_quant_matrix(50, &temp_scaled_quant_matrix);
-	//byteblock_to_float(&temp_scaled_quant_matrix, &scaled_quant_matrix);
-
-	//byteblock_print(&input);
+	byteblock_init(&output);
 
 	idct_calculate(&input, &output);
-	printf("IDCT output:\n");
-	floatblock_print(&output);
 
 	for (int y=0;y<size;y++) {
 		for (int x=0;x<size;x++) {
-			//CuAssertDblEquals(tc, reference[y][x], output.data[y][x], 0.01);
+			CuAssertIntEquals(tc, test_input.data[y][x], output.data[y][x]);
 		}
 	}
 }
 
 void TestQuantization(CuTest* tc) 
 {
-	/* This is approximately theexpected result. The divisors
+	/* This is approximately the expected result. The divisors
 	 * are equivalent to the rounded entries of a scaled 
 	 * quantization matrix at quality level 50.
 	 */

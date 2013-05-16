@@ -6,7 +6,7 @@
 void dct_calculate(struct ByteBlock const* input, 
 		struct FloatBlock* output); 
 void idct_calculate(struct FloatBlock const* dctdata,
-		struct FloatBlock* output);
+		struct ByteBlock* output);
 
 void quantize_floatblock(
 		const struct FloatBlock* input,
