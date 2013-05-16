@@ -3,6 +3,7 @@
 
 CuSuite* CuGetSuite();
 CuSuite* CuGetDCTSuite();
+CuSuite* CuGetBlockSuite();
 
 void RunAllTests(void) 
 {
@@ -10,6 +11,7 @@ void RunAllTests(void)
 	CuSuite* suite = CuSuiteNew();
 
 	CuSuiteAddSuite(suite, CuGetSuite());
+	CuSuiteAddSuite(suite, CuGetBlockSuite());
 	CuSuiteAddSuite(suite, CuGetDCTSuite());
 
 	CuSuiteRun(suite);
