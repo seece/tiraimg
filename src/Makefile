@@ -1,5 +1,5 @@
 CC=c99
-CFLAGS=-c -g -Wall -pedantic -O2
+CFLAGS=-c -g -Wall -Werror-implicit-function-declaration -pedantic -O2
 LDFLAGS=-lm
 SOURCES=$(wildcard *.c)
 OBJECTS=$(SOURCES:.c=.o)
