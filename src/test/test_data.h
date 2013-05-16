@@ -1,3 +1,7 @@
+/**
+ * This file contains test data for the unit tests.
+ */
+
 #ifndef TEST_DATA_H_
 #define TEST_DATA_H_
 

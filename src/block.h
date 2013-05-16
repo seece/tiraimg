@@ -1,3 +1,8 @@
+/**
+ * Includes the definitions of the two main data containers,
+ * ByteBlock and FloatBlock and functions to operate them.
+ */
+
 #ifndef BLOCK_H_
 #define BLOCK_H_
 
@@ -5,11 +10,19 @@
 
 #define TIMG_BLOCK_SIZE 8 
 
+/**
+ * A two dimensional byte array used to represent pixel values of a
+ * single color channel, or quantized DCT coefficients before entropy
+ * encoding. Has a fixed size.
+ */
 struct ByteBlock 
 {
 	uint8_t data[TIMG_BLOCK_SIZE][TIMG_BLOCK_SIZE];
 };
 
+/** A fixed size two-dimensional float array used as an intermediary container
+ * in DCT and IDCT calculations.
+ */
 struct FloatBlock 
 {
 	float data[TIMG_BLOCK_SIZE][TIMG_BLOCK_SIZE];

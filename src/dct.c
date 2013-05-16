@@ -5,6 +5,9 @@
 #include "block.h"
 #include "dct.h"
 
+/**
+ * @brief The official JPEG quantization matrix.
+ */
 uint8_t const quantization_matrix[8][8] = {
 	16, 11, 10, 16, 24, 40, 51, 61,
 	12, 12, 14, 19, 26, 58, 60, 55,
@@ -16,6 +19,14 @@ uint8_t const quantization_matrix[8][8] = {
 	72, 92, 95, 98, 112, 100, 103, 99
 };
 
+
+/**
+ * @brief Truncates the given FloatBlock values.
+ *
+ * @param input Original float values.
+ * @param quality The quality factor between 1-100.
+ * @param output A block to hold the resulting values.
+ */
 void quantize_floatblock(
 		const struct FloatBlock* input,
 		int32_t quality,
@@ -43,6 +54,13 @@ void quantize_floatblock(
 	}
 }
 
+/**
+ * @brief Truncates the given ByteBlock values, see <quantize_floatblock>"()"
+ *
+ * @param input Original float values.
+ * @param quality The quality factor between 1-100.
+ * @param output A block to hold the resulting values.
+ */
 void quantize_byteblock(
 		const struct ByteBlock* input,
 		int32_t quality,
@@ -61,6 +79,15 @@ static double normalize_scale_factor(int32_t frequency)
 	return sqrt(2.0/(double)TIMG_BLOCK_SIZE);
 }
 
+/**
+ * @brief Calculates a DCT-coefficient for a sample block.
+ *
+ * @param u The horizontal spatial frequency, range: [0, 7]
+ * @param v The vertical spatial frequency, range: [0, 7]
+ * @param input The input sample block.
+ *
+ * @return The calculated coefficient.
+ */
 static float single_dct(
 		int32_t u, 
 		int32_t v, 
@@ -90,6 +117,13 @@ static float single_dct(
 	return sum;
 }
 
+
+/**
+ * @brief Calculates a discrete cosine transform (DCT-II) of a block.
+ *
+ * @param input Block of unnormalized samples (pixels).
+ * @param output Stores the DCT coefficients here.
+ */
 void dct_calculate(struct ByteBlock const* input,
 		struct FloatBlock* output) 
 {
@@ -106,6 +140,15 @@ void dct_calculate(struct ByteBlock const* input,
 	}
 }
 
+/**
+ * @brief Calculates a single sample from the given coefficients with IDCT.
+ *
+ * @param x The x-coordinate of the sample point, range: [0, 7]
+ * @param y The y-coordinate of the sample point, range: [0, 7]
+ * @param dctdata The DCT-coefficients to use.
+ *
+ * @return the sample value
+ */
 static float single_idct(
 		int32_t x, 
 		int32_t y, 
@@ -134,7 +177,14 @@ static float single_idct(
 	return sum;
 }
 
-void idct_calculate(struct ByteBlock const* dctdata,
+
+/**
+ * @brief Calculates an inverse cosine transform (DCT-III) of a FloatBlock.
+ *
+ * @param dctdata Normalized (scaled) DCT coefficients.
+ * @param output Sample output block.
+ */
+void idct_calculate(struct FloatBlock const* dctdata,
 		struct FloatBlock* output)
 {
 	int32_t size = TIMG_BLOCK_SIZE;
