@@ -1,6 +1,6 @@
 CC=c99
 CFLAGS=-c -g -Wall -Werror-implicit-function-declaration -pedantic -O2 
-LDFLAGS=-lm 
+LDFLAGS=-lm -lnetpbm
 SOURCES=$(wildcard *.c)
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=../tiraimg

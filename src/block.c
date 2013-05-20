@@ -42,7 +42,7 @@ struct ByteBlock* new_byteblock()
 
 
 /**
- * @brief Frees memory of a ByteBlock.
+ * @brief Frees memory of a ByteBlock allocated from the heap.
  *
  * @param blockp Pointer to the ByteBlock.
  */
@@ -109,7 +109,7 @@ struct FloatBlock* new_floatblock()
 
 
 /**
- * @brief Frees memory of a floatblock.
+ * @brief Frees memory of a FloatBlock allocated from the heap.
  *
  * @param blockp Pointer to the FloatBlock to be freed.
  */

@@ -1,6 +1,6 @@
 CC=c99
 CFLAGS=-c -g -Wall -Werror-implicit-function-declaration -pedantic -O2 -I.. 
-LDFLAGS=-lm
+LDFLAGS=-lm -lnetpbm
 SOURCES=$(wildcard *.c)
 ALL_SOURCES=$(wildcard ../*.c) 
 ALL_SOURCES:=$(filter-out ../main.c, $(ALL_SOURCES))
