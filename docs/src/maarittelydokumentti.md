@@ -2,7 +2,7 @@ Määrittelydokumentti
 
 Pekka Väänänen
 
-*13. Toukokuuta 2013*
+*20. Toukokuuta 2013*
 
 ## Aiheen kuvaus
 
@@ -12,7 +12,7 @@ Pakkaamaton kuvadata vie suuremmalla kuvakoolla runsaasti tilaa, joten sen pakka
 Harjoitustyön aihe on JPEG-pakkauksen kaltainen kuvanpakkausalgoritmi. Tarkemmin ilmaistuna kyseessä on JFIF-pakkauksen muunnos.
 
 ### Algoritmi
-1. Kuva muutetaan RGB-väriavaruudesta YCbCr-väriavaruuteen, jotta pikselien kirkkaus voidaan tallentaa korkeammalla tarkkuudella kuin niiden värisävy.
+1. Kuva muutetaan RGB-väriavaruudesta YCbCr-väriavaruuteen, koska tässä väriavaruudessa värin kirkkaus ja sävy on eritelty omiin värikanaviinsa. Pikselien kirkkaus voidaan täten tallentaa korkeammalla tarkkuudella kuin niiden värisävy.
 2. Kuva jaetaan 8x8 pikselin kokoisiin ruutuihin, ja jokaiselle värikanavalle suoritetaan diskreetti kosinimuunnos (DCT). Jokaisen pikselin värisävy (chroma-komponentit) tallenetaan matalammalla tarkkuudella kuin kirkkaus (luma-komponentti).
 3. Ruutujen taajuusinformaatio kvantisoidaan siten, että korkeiden taajuuksien erottelutarkkuus laskee eniten.  
 4. Aikaisempien askeleiden lopputulos pakataan häviöttömällä algoritmilla, eli tässä tapauksessa Huffman-koodauksella. 
@@ -21,9 +21,13 @@ Harjoitustyön aihe on JPEG-pakkauksen kaltainen kuvanpakkausalgoritmi. Tarkemmi
 * DCT (DCT-II) ja IDCT (DCT-III)
 * Huffman-koodaus
 
-#### Tavoitteet
+DCT-algoritmi suorittaa lineaarisen muunnoksen diskreetistä syötedatasta taajuusesitysmuotoon, jossa signaali esitetään eri taajuksilla värähtelevien kosinien summana. Algoritmista on olemassa erilaisia muunnoksia, mutta tässä harjoitustyössä käytän DCT-II:sta, joka muuttaa datan taajuusmuotoon. Käytän myös vastaavaa käänteismuunnosta DCT-III:sta, joka muuttaa DCT-II:n laskemat taajuuskertoimet takaisin diskreetiksi signaaliksi.
+
+Huffman-koodauksessa syötedatan symboleista muodostetaan binääripuu, jossa harvoin esiintyvät symbolit päätyvät puun lehtiin. Symbolien binääriesitys muodostetaan niiden sijainnin mukaan, jolloin useimmin esiintyville tapauksille valitaan lyhyempi esitysmuoto.
+
+## Tavoitteet
 ### Aikavaativuus
-Tavoitteenani on päästä algoritmien standardiratkaisujen aikavaativuuksiin. En siis käytä esim. DCT:n laskemiseen FFT:stä johdettua $O(N \log N)$-versiota.
+Tavoitteenani on päästä algoritmien standardiratkaisujen aikavaativuuksiin. En siis käytä esim. DCT:n laskemiseen Fast Fourier Transformista johdettua $O(N \log N)$-versiota.
 
 DCT-II:n aikavaativuus on $O(N^2)$, sillä jokaisen pakattavan näytteen kohdalla on käytävä läpi myös jokainen muukin näyte. Sama pätee DCT-III:lle. Huffman-koodauksen aikavaativuus on $O(N \log N)$, sillä aluksi koko syötedata pitää käydä kerran lävitse eri symboleiden esiintymistiheyksien selvittämiseksi, mutta varsinaisessa koodauksessa haetaan arvoja binääripuusta. Näytteille suoritetaan myös muita operaatioita, mutta niissä ei tarkastella muita näytteitä, joten tämän prosessoinnin aikavaativuus on $O(N)$. 
 
