@@ -3,6 +3,6 @@
 #include <stdint.h>
 
 extern bool init_ppm_image_loader(void);
-extern bool load_ppm_image(char * path, int32_t* width, int32_t height, void* data);
+extern bool load_ppm_image(char* path, int32_t* width, int32_t* height, struct Pixel** data);
 
 #endif

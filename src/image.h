@@ -3,11 +3,12 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "pixel.h"
 
 struct Image {
 	int32_t width;
 	int32_t height;
-	char * data;
+	struct Pixel * data;
 };
 
 extern bool init_image_loader(void);

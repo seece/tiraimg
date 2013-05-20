@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include "pixel.h"
 #include "image.h"
 #include "image_ppm.h"
 
@@ -40,5 +41,8 @@ void del_image(struct Image* imagep)
 
 struct Image* load_image(char * path)
 {
-	return NULL;
+	struct Image* imagep = malloc(sizeof(struct Image));
+	load_ppm_image(path, &imagep->width, &imagep->height, &imagep->data);
+	return imagep;
 }
+
