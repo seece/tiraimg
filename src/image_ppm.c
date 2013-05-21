@@ -22,23 +22,19 @@ bool load_ppm_image(
 {
 
 	FILE* fp = pm_openr(path);
-
-	if (fp == NULL) {
-		return false;
-	}
-
 	int64_t amount;
 	int32_t imagewidth;
 	int32_t imageheight;
-
 	pixval maxval;
 	pixel** imagepixels;
+
+	if (fp == NULL) {
+		return true;
+	}
 
 	imagepixels = ppm_readppm(fp, &imagewidth, &imageheight, &maxval);
 
 	pm_close(fp);
-
-	//printf("image size: %d, %d, maxval: %d\n", imagewidth, imageheight, maxval);
 
 	int32_t pixelamount = imagewidth * imageheight;
 	struct Pixel* finalpixels = malloc(sizeof(struct Pixel) * pixelamount);
@@ -54,13 +50,12 @@ bool load_ppm_image(
 			(finalpixels + offset)->r = pix->r;
 			(finalpixels + offset)->g = pix->g;
 			(finalpixels + offset)->b = pix->b;
-			//printf("%.3d ", pix->r);
 		}
-
-		//printf("\n");
 	}
 
 	*data = finalpixels;
+
+	ppm_freearray(imagepixels, imageheight);
 
 	return false;
 }
