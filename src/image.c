@@ -1,10 +1,12 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <assert.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <tgmath.h>
 #include "pixel.h"
+#include "block.h"
 #include "image.h"
 #include "image_ppm.h"
 
@@ -48,19 +50,85 @@ struct Image* load_image(char * path)
 	return imagep;
 }
 
+inline bool inside_bounds(int32_t x, int32_t y, int32_t w, int32_t h)
+{
+	if (x < 0 || y < 0)
+		return false;
+
+	if (x >= w || y >= h)
+		return false;
+
+	return true;
+}
+
+static void fill_block(
+		struct ColorBlock* cblock, 
+		struct Image* imagep, 
+		int32_t block_x, 
+		int32_t block_y) 
+{
+
+	const int32_t size = TIMG_BLOCK_SIZE;
+
+	for (int32_t y=0;y<size;y++) {
+		for (int32_t x=0;x<size;x++) {
+			struct Pixel p;
+
+			int32_t pixel_x = block_x + x;
+			int32_t pixel_y = block_y + y;
+			int32_t pixel_offset = (y)*imagep->width + x + 0;
+
+			// The values outside picture area are all 0.
+			if (inside_bounds(pixel_x, pixel_y, imagep->width, imagep->height)) {
+				p = imagep->data[pixel_offset];
+			} else {
+				p.r = p.g = p.b = 0;
+			}
+
+			printf("%d, %d: %d\n", block_x, block_y, cblock->chan[0].data[0][0]);
+
+			
+			//cblock->chan[0].data[0][0] = p.r;
+			//cblock->chan[0].data[y][x] = p.r;
+			//cblock->chan[1].data[y][x] = p.g;
+			//cblock->chan[2].data[y][x] = p.b;
+			
+		}
+	}
+}
+
 void image_to_blockarray(struct Image* imagep, struct BlockArray* arrayp)
 {
-	const int size = TIMG_BLOCK_SIZE;
+	const int32_t size = TIMG_BLOCK_SIZE;
 
 	assert(imagep && arrayp);
 	assert(imagep->data);
 
 	arrayp->width = imagep->width;
 	arrayp->height = imagep->height;
-	arrayp->columns = ceil(imagep->width/(double)size);
-	arrayp->rows = ceil(imagep->height/(double)size);
+	arrayp->columns = imagep->width/size + (imagep->width % size != 0);
+	arrayp->rows = imagep->height/size + (imagep->height % size != 0);
 
-	arrayp->data = NULL;
+	assert(arrayp->rows > 0);
+	assert(arrayp->columns> 0);
+
+	arrayp->data = calloc(arrayp->columns * arrayp->rows, 
+			sizeof(struct ColorBlock));
+	printf("struktin koko %d\n", sizeof(struct ColorBlock));
+	printf("r and c: %d, %d\n", arrayp->rows, arrayp->columns);
+	printf("amount: %d\n", arrayp->columns * arrayp->rows* sizeof(struct ColorBlock));
+
+	arrayp->data[0].chan[0].data[0][0] = 1;
+
+	for (int32_t y=0;y<arrayp->rows;y++) {
+		for (int32_t x=0;x<arrayp->columns;x++) {
+			int32_t ofs = y*size + x;
+			//printf("x,y: ofs: (%d, %d): %d\n", x, y, ofs);
+			fill_block(&arrayp->data[ofs], 
+				imagep, x*size, y*size);
+		}
+	}
+
 }
 
 
@@ -75,7 +143,7 @@ void free_blockarray(struct BlockArray* arrayp)
 
 	// TODO add a proper error message here?
 	if (!arrayp->data)
-		return
+		return;
 
 	free(arrayp->data);
 }

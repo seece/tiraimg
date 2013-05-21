@@ -10,7 +10,6 @@ void TestImageLoaderInit(CuTest* tc)
 
 void TestLoadSmallImage(CuTest* tc) 
 {
-	//init_image_loader();
 	struct Image* imagep = load_image("testdata/small.ppm");
 	CuAssertIntEquals(tc, 32, imagep->width);
 	CuAssertIntEquals(tc, 32, imagep->height);
@@ -44,6 +43,17 @@ void TestCreatedImageSize(CuTest* tc)
 	del_image(imagep);
 }
 
+void TestImageToBlocks(CuTest* tc)
+{
+	struct Image* imagep = load_image("testdata/small.ppm");
+	struct BlockArray array;
+
+	image_to_blockarray(imagep, &array);
+
+	free_blockarray(&array);
+	del_image(imagep);
+}
+
 CuSuite* CuGetImageSuite(void) 
 {
 	CuSuite* suite = CuSuiteNew();
@@ -51,5 +61,6 @@ CuSuite* CuGetImageSuite(void)
 	SUITE_ADD_TEST(suite, TestLoadSmallImage);
 	SUITE_ADD_TEST(suite, TestImageArraySize);
 	SUITE_ADD_TEST(suite, TestCreatedImageSize);
+	SUITE_ADD_TEST(suite, TestImageToBlocks);
 	return suite;
 }

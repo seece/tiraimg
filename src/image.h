@@ -6,7 +6,6 @@
 #include "block.h"
 #include "pixel.h"
 
-
 /**
  * @brief Represents an image made of pixels with three color channels.
  */
@@ -15,8 +14,6 @@ struct Image {
 	int32_t height;
 	struct Pixel* data;
 };
-
-
 
 /**
  * @brief An image made of ByteBlocks.
