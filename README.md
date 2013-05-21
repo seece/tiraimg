@@ -1,5 +1,6 @@
 tiraimg
 =======
 
-Build dependencies:
-	libnetpbm9-dev
+Build prerequisites:
+
+	libnetpbm10-dev
