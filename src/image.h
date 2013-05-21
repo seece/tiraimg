@@ -8,7 +8,7 @@
 
 
 /**
- * Represents an image made of pixels with three color channels.
+ * @brief Represents an image made of pixels with three color channels.
  */
 struct Image {
 	int32_t width;
@@ -17,16 +17,22 @@ struct Image {
 };
 
 
+
 /**
- * An image made of ByteBlocks.
+ * @brief An image made of ByteBlocks.
  */
 struct BlockArray {
-	int32_t columns;	// width in blocks
-	int32_t rows;		// height in blocks
-	int32_t width;		// actual image width in pixels
-	int32_t height;		// actual image height in pixels
+	/** width in blocks */
+	int32_t columns;	
+	/** height in blocks */
+	int32_t rows;		
+	/** actual image width in pixels */
+	int32_t width;		
+	/** actual image height in pixels */
+	int32_t height;		
 
 	struct ColorBlock {
+		/** color data with each channel in its respective block */
 		struct ByteBlock chan[3];
 	} * data;
 };

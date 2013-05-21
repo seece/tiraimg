@@ -13,4 +13,4 @@ test
 # Project specific
 *.log
 *.scan
-html/
+doxygen/
