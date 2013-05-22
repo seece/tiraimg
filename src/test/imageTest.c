@@ -48,6 +48,10 @@ void TestImageToBlocks(CuTest* tc)
 	struct Image* imagep = load_image("testdata/small.ppm");
 	struct BlockArray array;
 
+	CuAssertTrue(tc, imagep != NULL);
+	CuAssertIntEquals(tc, 32, imagep->width);
+	CuAssertIntEquals(tc, 32, imagep->height);
+
 	image_to_blockarray(imagep, &array);
 
 	free_blockarray(&array);

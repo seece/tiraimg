@@ -85,13 +85,9 @@ static void fill_block(
 				p.r = p.g = p.b = 0;
 			}
 
-			printf("%d, %d: %d\n", block_x, block_y, cblock->chan[0].data[0][0]);
-
-			
-			//cblock->chan[0].data[0][0] = p.r;
-			//cblock->chan[0].data[y][x] = p.r;
-			//cblock->chan[1].data[y][x] = p.g;
-			//cblock->chan[2].data[y][x] = p.b;
+			cblock->chan[0].data[y][x] = p.r;
+			cblock->chan[1].data[y][x] = p.g;
+			cblock->chan[2].data[y][x] = p.b;
 			
 		}
 	}
@@ -103,27 +99,26 @@ void image_to_blockarray(struct Image* imagep, struct BlockArray* arrayp)
 
 	assert(imagep && arrayp);
 	assert(imagep->data);
+	assert(imagep->width > 0);
+	assert(imagep->height > 0);
 
 	arrayp->width = imagep->width;
 	arrayp->height = imagep->height;
+
+	// The division is rounded upwards.
 	arrayp->columns = imagep->width/size + (imagep->width % size != 0);
 	arrayp->rows = imagep->height/size + (imagep->height % size != 0);
 
 	assert(arrayp->rows > 0);
 	assert(arrayp->columns> 0);
 
-	arrayp->data = calloc(arrayp->columns * arrayp->rows, 
-			sizeof(struct ColorBlock));
-	printf("struktin koko %d\n", sizeof(struct ColorBlock));
-	printf("r and c: %d, %d\n", arrayp->rows, arrayp->columns);
-	printf("amount: %d\n", arrayp->columns * arrayp->rows* sizeof(struct ColorBlock));
+	int32_t block_num = arrayp->columns * arrayp->rows;
 
-	arrayp->data[0].chan[0].data[0][0] = 1;
+	arrayp->data = calloc(block_num, sizeof(struct ColorBlock));
 
 	for (int32_t y=0;y<arrayp->rows;y++) {
 		for (int32_t x=0;x<arrayp->columns;x++) {
-			int32_t ofs = y*size + x;
-			//printf("x,y: ofs: (%d, %d): %d\n", x, y, ofs);
+			int32_t ofs = y*arrayp->columns + x;
 			fill_block(&arrayp->data[ofs], 
 				imagep, x*size, y*size);
 		}
