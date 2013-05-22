@@ -58,6 +58,21 @@ void TestImageToBlocks(CuTest* tc)
 	del_image(imagep);
 }
 
+void TestImageReadPixel(CuTest* tc)
+{
+	struct Image* imagep = new_image(16, 20);
+
+	imagep->data[0].r = 17;
+	imagep->data[16*2 + 5].r = 10;
+	imagep->data[16*10 + 15].g = 112;
+
+	CuAssertIntEquals(tc, 17, image_read_pixel(imagep, 0, 0).r);
+	CuAssertIntEquals(tc, 10, image_read_pixel(imagep, 5, 2).r);
+	CuAssertIntEquals(tc, 112, image_read_pixel(imagep, 15, 10).g);
+
+	del_image(imagep);
+}
+
 CuSuite* CuGetImageSuite(void) 
 {
 	CuSuite* suite = CuSuiteNew();
@@ -66,5 +81,6 @@ CuSuite* CuGetImageSuite(void)
 	SUITE_ADD_TEST(suite, TestImageArraySize);
 	SUITE_ADD_TEST(suite, TestCreatedImageSize);
 	SUITE_ADD_TEST(suite, TestImageToBlocks);
+	SUITE_ADD_TEST(suite, TestImageReadPixel);
 	return suite;
 }

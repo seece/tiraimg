@@ -44,6 +44,7 @@ bool init_image_loader(void);
 void del_image(struct Image* imagep);
 struct Image* new_image(int32_t width, int32_t height);
 struct Image* load_image(const char * path);
+struct Pixel image_read_pixel(struct Image* imagep, int32_t x, int32_t y);
 void image_to_blockarray(struct Image* imagep, struct BlockArray* arrayp);
 void free_blockarray(struct BlockArray* arrayp);
 

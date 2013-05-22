@@ -90,6 +90,16 @@ inline bool inside_bounds(int32_t x, int32_t y, int32_t w, int32_t h)
 	return true;
 }
 
+struct Pixel image_read_pixel(struct Image* imagep, int32_t x, int32_t y)
+{
+	assert(imagep);
+	assert(imagep->data);
+	assert(inside_bounds(x, y, imagep->width, imagep->height));
+
+	int32_t ofs = y*imagep->width + x;
+	return imagep->data[ofs];
+}
+
 static void fill_block(
 		struct ColorBlock* cblock, 
 		struct Image* imagep, 
