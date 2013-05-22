@@ -1,3 +1,9 @@
+/**
+ * @file image.h
+ * @brief Image processing datatypes and functions.
+ */
+
+
 #ifndef IMAGE_H_
 #define IMAGE_H_
 
@@ -37,7 +43,7 @@ struct BlockArray {
 bool init_image_loader(void);
 void del_image(struct Image* imagep);
 struct Image* new_image(int32_t width, int32_t height);
-struct Image* load_image(char * path);
+struct Image* load_image(const char * path);
 void image_to_blockarray(struct Image* imagep, struct BlockArray* arrayp);
 void free_blockarray(struct BlockArray* arrayp);
 

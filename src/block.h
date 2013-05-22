@@ -17,6 +17,7 @@
  */
 struct ByteBlock 
 {
+	/** 8-bit data. */
 	uint8_t data[TIMG_BLOCK_SIZE][TIMG_BLOCK_SIZE];
 };
 
@@ -25,6 +26,7 @@ struct ByteBlock
  */
 struct FloatBlock 
 {
+	/** Floating point data. */
 	float data[TIMG_BLOCK_SIZE][TIMG_BLOCK_SIZE];
 };
 

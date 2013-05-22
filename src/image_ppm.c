@@ -4,8 +4,11 @@
 #include "pixel.h"
 #include "image_ppm.h"
 
+
 /**
- * Initializes libnetpbm image loading library.
+ * @brief Initializes libnetpbm image loading library.
+ *
+ * @return false on success, true on failure
  */
 bool init_ppm_image_loader(void)
 {
@@ -14,8 +17,19 @@ bool init_ppm_image_loader(void)
 	return false;
 }
 
+
+/**
+ * @brief Loads a PPM format picture, and saves the result as an Pixel array.
+ *
+ * @param path the image path.
+ * @param width pointer to the resulting width variable.
+ * @param height pointer to the resulting height variable.
+ * @param data pointer to a Pixel array, image data will be saved here.
+ *
+ * @return false on success, true on failure
+ */
 bool load_ppm_image(
-	char* path, 
+	const char* path, 
 	int32_t* width, 
 	int32_t* height, 
 	struct Pixel** data)
@@ -28,9 +42,8 @@ bool load_ppm_image(
 	pixval maxval;
 	pixel** imagepixels;
 
-	if (fp == NULL) {
+	if (!fp) 
 		return true;
-	}
 
 	imagepixels = ppm_readppm(fp, &imagewidth, &imageheight, &maxval);
 
@@ -38,6 +51,9 @@ bool load_ppm_image(
 
 	int32_t pixelamount = imagewidth * imageheight;
 	struct Pixel* finalpixels = malloc(sizeof(struct Pixel) * pixelamount);
+
+	if (!finalpixels) 
+		return true;
 
 	*width = imagewidth;
 	*height= imageheight;

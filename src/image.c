@@ -10,14 +10,27 @@
 #include "image.h"
 #include "image_ppm.h"
 
+
+
 /**
- * Initializes image loading library.
+ * @brief Initializes image loading library.
+ *
+ * @return false on success, true on failure
  */
 bool init_image_loader(void)
 {
 	return init_ppm_image_loader();
 }
 
+
+/**
+ * @brief Creates a new image with the given dimensions.
+ *
+ * @param width image width in pixels
+ * @param height image height in pixels
+ *
+ * @return pointer to the allocated Image structure.
+ */
 struct Image* new_image(int32_t width, int32_t height)
 {
 	struct Image* img = malloc(sizeof(struct Image));
@@ -32,6 +45,13 @@ struct Image* new_image(int32_t width, int32_t height)
 	return img;
 }
 
+
+/**
+ * @brief Deletes an allocated image.
+ * Both the image data and the image struct are freed.
+ *
+ * @param imagep the image to be deleted
+ */
 void del_image(struct Image* imagep)
 {
 	assert(imagep);
@@ -43,7 +63,16 @@ void del_image(struct Image* imagep)
 	free(imagep);
 }
 
-struct Image* load_image(char * path)
+
+/**
+ * @brief Loads an image from the disk.
+ * Currently only PPM format is supported.
+ *
+ * @param path image file path
+ *
+ * @return pointer to the new image
+ */
+struct Image* load_image(const char * path)
 {
 	struct Image* imagep = malloc(sizeof(struct Image));
 	load_ppm_image(path, &imagep->width, &imagep->height, &imagep->data);
