@@ -90,6 +90,18 @@ inline bool inside_bounds(int32_t x, int32_t y, int32_t w, int32_t h)
 	return true;
 }
 
+
+/**
+ * @brief Reads a single pixel from the source image.
+ * Invalid picture pointer or out-of-bounds coordinates will 
+ * halt the program.
+ *
+ * @param imagep the target image
+ * @param x pixel x-coordinate
+ * @param y pixel y-coordinate
+ *
+ * @return pixel struct
+ */
 struct Pixel image_read_pixel(struct Image* imagep, int32_t x, int32_t y)
 {
 	assert(imagep);
