@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include "CuTest.h"
 #include "image.h"
@@ -5,7 +6,6 @@
 void TestImageLoaderInit(CuTest* tc) 
 {
 	init_image_loader();
-
 }
 
 void TestLoadSmallImage(CuTest* tc) 
@@ -73,6 +73,56 @@ void TestImageReadPixel(CuTest* tc)
 	del_image(imagep);
 }
 
+void TestImageReadPixelRandom(CuTest* tc)
+{
+	struct Image* imagep = new_image(65, 32);
+	image_fill_noise(imagep, 11);
+	struct Pixel original, result;
+	int32_t ofs;
+
+	for (int y=0;y<imagep->height;y++) {
+		for (int x=0;x<imagep->width;x++) {
+			ofs = y*imagep->width + x;
+			original = imagep->data[ofs];
+			result = image_read_pixel(imagep, x, y);
+
+			CuAssertIntEquals(tc, original.r, result.r);
+			CuAssertIntEquals(tc, original.g, result.g);
+			CuAssertIntEquals(tc, original.b, result.b);
+		}
+	}
+
+
+	del_image(imagep);
+}
+
+void TestBlockArrayReadPixel(CuTest* tc)
+{
+	struct Image* imagep = new_image(16, 20);
+	struct BlockArray array;
+	struct Pixel original, result;
+
+	image_fill_noise(imagep, 10);
+	// We assume the image-blockarray conversion already works correctly.
+	image_to_blockarray(imagep, &array);
+
+	for (int y=0;y<imagep->height;y++) {
+		for (int x=0;x<imagep->width;x++) {
+			// We also assume image_read_pixel gives always
+			// correct results.
+			original = image_read_pixel(imagep, x, y);
+			result = blockarray_read_pixel(&array, x, y);
+
+			CuAssertIntEquals(tc, original.r, result.r);
+			CuAssertIntEquals(tc, original.g, result.g);
+			CuAssertIntEquals(tc, original.b, result.b);
+		}
+	}
+
+	free_blockarray(&array);
+	del_image(imagep);
+}
+
 CuSuite* CuGetImageSuite(void) 
 {
 	CuSuite* suite = CuSuiteNew();
@@ -82,5 +132,7 @@ CuSuite* CuGetImageSuite(void)
 	SUITE_ADD_TEST(suite, TestCreatedImageSize);
 	SUITE_ADD_TEST(suite, TestImageToBlocks);
 	SUITE_ADD_TEST(suite, TestImageReadPixel);
+	SUITE_ADD_TEST(suite, TestImageReadPixelRandom);
+	SUITE_ADD_TEST(suite, TestBlockArrayReadPixel);
 	return suite;
 }

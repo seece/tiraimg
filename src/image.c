@@ -10,8 +10,6 @@
 #include "image.h"
 #include "image_ppm.h"
 
-
-
 /**
  * @brief Initializes image loading library.
  *
@@ -112,6 +110,30 @@ struct Pixel image_read_pixel(struct Image* imagep, int32_t x, int32_t y)
 	return imagep->data[ofs];
 }
 
+struct Pixel blockarray_read_pixel(struct BlockArray* arrayp, int32_t x, int32_t y)
+{
+	assert(arrayp);
+	assert(arrayp->data);
+	assert(inside_bounds(x, y, arrayp->width, arrayp->height));
+
+	const int32_t size = TIMG_BLOCK_SIZE;
+
+	int32_t column = x/size;
+	int32_t row = y/size;
+	int32_t ofs = row*arrayp->columns + column;
+	int32_t block_x = x % size;
+	int32_t block_y = y % size;
+
+	struct ColorBlock* cblockp = &arrayp->data[ofs];
+
+	struct Pixel p;
+	p.r = cblockp->chan[0].data[block_y][block_x];
+	p.r = cblockp->chan[1].data[block_y][block_x];
+	p.r = cblockp->chan[2].data[block_y][block_x];
+
+	return p;
+}
+
 static void fill_block(
 		struct ColorBlock* cblock, 
 		struct Image* imagep, 
@@ -192,4 +214,17 @@ void free_blockarray(struct BlockArray* arrayp)
 		return;
 
 	free(arrayp->data);
+}
+
+void image_fill_noise(struct Image* imagep, int32_t seed)
+{
+	assert(imagep);
+	srand(seed);
+	int32_t imagesize = imagep->width*imagep->height;
+
+	for (int i=0;i<imagesize;i++) {
+		imagep->data[i].r = rand() % 256;
+		imagep->data[i].g = rand() % 256;
+		imagep->data[i].b = rand() % 256;
+	}
 }
