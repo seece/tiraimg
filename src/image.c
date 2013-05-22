@@ -124,12 +124,14 @@ struct Pixel blockarray_read_pixel(struct BlockArray* arrayp, int32_t x, int32_t
 	int32_t block_x = x % size;
 	int32_t block_y = y % size;
 
+	//printf("\tpix: (%d, %d), b: (%d, %d), ofs: %d\n", column, row, block_x, block_y, ofs);
+
 	struct ColorBlock* cblockp = &arrayp->data[ofs];
 
 	struct Pixel p;
 	p.r = cblockp->chan[0].data[block_y][block_x];
-	p.r = cblockp->chan[1].data[block_y][block_x];
-	p.r = cblockp->chan[2].data[block_y][block_x];
+	p.g = cblockp->chan[1].data[block_y][block_x];
+	p.b = cblockp->chan[2].data[block_y][block_x];
 
 	return p;
 }
