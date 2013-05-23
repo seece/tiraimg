@@ -124,8 +124,6 @@ struct Pixel blockarray_read_pixel(struct BlockArray* arrayp, int32_t x, int32_t
 	int32_t block_x = x % size;
 	int32_t block_y = y % size;
 
-	//printf("\tpix: (%d, %d), b: (%d, %d), ofs: %d\n", column, row, block_x, block_y, ofs);
-
 	struct ColorBlock* cblockp = &arrayp->data[ofs];
 
 	struct Pixel p;
@@ -160,12 +158,14 @@ static void copy_block(
 			int32_t py = block_pixel_y + y;	
 			int32_t p_offset = py*imagep->width + px;
 
+			if (!inside_bounds(px, py, imagep->width, imagep->height)) 
+				continue;
+
 			struct Pixel p = imagep->data[p_offset];
-			
+
 			cblock->chan[0].data[y][x] = p.r;
 			cblock->chan[1].data[y][x] = p.g;
 			cblock->chan[2].data[y][x] = p.b;
-
 		}
 	}
 }
@@ -202,6 +202,7 @@ void image_to_blockarray(struct Image* imagep, struct BlockArray* arrayp)
 	arrayp->columns = cols;
 	arrayp->rows = rows;
 
+	// calloc initializes all values to zero, which we like.
 	arrayp->data = calloc(amount, sizeof(struct ColorBlock));
 
 	// Loop through all the allocated blocks.
@@ -250,4 +251,9 @@ void image_fill_noise(struct Image* imagep, int32_t seed)
 		imagep->data[i].g = rand() % 256;
 		imagep->data[i].b = rand() % 256;
 	}
+}
+
+int64_t save_image_ppm(const char * path, struct Image* imagep)
+{
+	return 0L;
 }
