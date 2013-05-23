@@ -15,7 +15,7 @@
  *
  * @return false on success, true on failure
  */
-bool init_image_loader(void)
+bool image_init_loader(void)
 {
 	return init_ppm_image_loader();
 }
@@ -29,7 +29,7 @@ bool init_image_loader(void)
  *
  * @return pointer to the allocated Image structure.
  */
-struct Image* new_image(int32_t width, int32_t height)
+struct Image* image_new(int32_t width, int32_t height)
 {
 	struct Image* img = malloc(sizeof(struct Image));
 	img->width = width;
@@ -50,7 +50,7 @@ struct Image* new_image(int32_t width, int32_t height)
  *
  * @param imagep the image to be deleted
  */
-void del_image(struct Image* imagep)
+void image_del(struct Image* imagep)
 {
 	assert(imagep);
 
@@ -70,7 +70,7 @@ void del_image(struct Image* imagep)
  *
  * @return pointer to the new image
  */
-struct Image* load_image(const char * path)
+struct Image* image_load(const char * path)
 {
 	struct Image* imagep = malloc(sizeof(struct Image));
 	load_ppm_image(path, &imagep->width, &imagep->height, &imagep->data);
@@ -222,7 +222,7 @@ void image_to_blockarray(struct Image* imagep, struct BlockArray* arrayp)
  *
  * @param arrayp BlockArray whose data should be freed.
  */
-void free_blockarray(struct BlockArray* arrayp)
+void blockarray_free(struct BlockArray* arrayp)
 {
 	assert(arrayp);
 

@@ -7,12 +7,12 @@
 
 void TestImageLoaderInit(CuTest* tc) 
 {
-	init_image_loader();
+	image_init_loader();
 }
 
 void TestLoadSmallImage(CuTest* tc) 
 {
-	struct Image* imagep = load_image("testdata/tiny.ppm");
+	struct Image* imagep = image_load("testdata/tiny.ppm");
 	CuAssertIntEquals(tc, 32, imagep->width);
 	CuAssertIntEquals(tc, 16, imagep->height);
 
@@ -24,12 +24,12 @@ void TestLoadSmallImage(CuTest* tc)
 		CuAssertIntEquals(tc, tinypic_data[i*3 + 2], imagep->data[i].b);
 	}
 
-	del_image(imagep);
+	image_del(imagep);
 }
 
 void TestImageArraySize(CuTest* tc)
 {
-	struct Image* imagep = new_image(64, 65);
+	struct Image* imagep = image_new(64, 65);
 	struct BlockArray arrayp;
 
 	image_to_blockarray(imagep, &arrayp);
@@ -39,18 +39,18 @@ void TestImageArraySize(CuTest* tc)
 	CuAssertIntEquals(tc, 8, arrayp.columns);
 	CuAssertIntEquals(tc, 9, arrayp.rows);
 
-	del_image(imagep);
-	free_blockarray(&arrayp);
+	image_del(imagep);
+	blockarray_free(&arrayp);
 }
 
 void TestCreatedImageSize(CuTest* tc)
 {
-	struct Image* imagep = new_image(64, 65);
+	struct Image* imagep = image_new(64, 65);
 
 	CuAssertIntEquals(tc, 64, imagep->width);
 	CuAssertIntEquals(tc, 65, imagep->height);
 
-	del_image(imagep);
+	image_del(imagep);
 }
 
 
@@ -87,7 +87,7 @@ void compare_image_blockarray(CuTest* tc, struct Image* imagep,
 
 void TestImageToBlocks(CuTest* tc)
 {
-	struct Image* imagep = load_image("testdata/small.ppm");
+	struct Image* imagep = image_load("testdata/small.ppm");
 	struct BlockArray array;
 
 	CuAssertTrue(tc, imagep != NULL);
@@ -96,13 +96,13 @@ void TestImageToBlocks(CuTest* tc)
 
 	compare_image_blockarray(tc, imagep, &array);
 
-	free_blockarray(&array);
-	del_image(imagep);
+	blockarray_free(&array);
+	image_del(imagep);
 }
 
 void TestRandomImageToBlocks(CuTest* tc)
 {
-	struct Image* imagep = new_image(33, 32);
+	struct Image* imagep = image_new(33, 32);
 	struct BlockArray array;
 
 	CuAssertTrue(tc, imagep != NULL);
@@ -112,13 +112,13 @@ void TestRandomImageToBlocks(CuTest* tc)
 
 	compare_image_blockarray(tc, imagep, &array);
 
-	free_blockarray(&array);
-	del_image(imagep);
+	blockarray_free(&array);
+	image_del(imagep);
 }
 
 void TestImageReadPixel(CuTest* tc)
 {
-	struct Image* imagep = new_image(16, 20);
+	struct Image* imagep = image_new(16, 20);
 
 	imagep->data[0].r = 17;
 	imagep->data[16*2 + 5].r = 10;
@@ -128,12 +128,12 @@ void TestImageReadPixel(CuTest* tc)
 	CuAssertIntEquals(tc, 10, image_read_pixel(imagep, 5, 2).r);
 	CuAssertIntEquals(tc, 112, image_read_pixel(imagep, 15, 10).g);
 
-	del_image(imagep);
+	image_del(imagep);
 }
 
 void TestImageReadPixelRandom(CuTest* tc)
 {
-	struct Image* imagep = new_image(65, 32);
+	struct Image* imagep = image_new(65, 32);
 	image_fill_noise(imagep, 11);
 	struct Pixel original, result;
 	int32_t ofs;
@@ -151,12 +151,12 @@ void TestImageReadPixelRandom(CuTest* tc)
 	}
 
 
-	del_image(imagep);
+	image_del(imagep);
 }
 
 void TestBlockArrayReadPixel(CuTest* tc)
 {
-	struct Image* imagep = new_image(16, 20);
+	struct Image* imagep = image_new(16, 20);
 	struct BlockArray array;
 	struct Pixel original, result;
 
@@ -177,19 +177,19 @@ void TestBlockArrayReadPixel(CuTest* tc)
 		}
 	}
 
-	free_blockarray(&array);
-	del_image(imagep);
+	blockarray_free(&array);
+	image_del(imagep);
 }
 
 void TestImageSave(CuTest* tc) 
 {
-	struct Image* imagep = load_image("testdata/tiny.ppm");
+	struct Image* imagep = image_load("testdata/tiny.ppm");
 	struct Image* result_image;
 
 	bool save_result = image_save("temp/testimage.ppm", imagep);
 	CuAssertTrue(tc, save_result);
 
-	result_image = load_image("temp/testimage.ppm");
+	result_image = image_load("temp/testimage.ppm");
 	CuAssertTrue(tc, result_image != NULL);
 	CuAssertTrue(tc, result_image->data != NULL);
 
@@ -202,8 +202,8 @@ void TestImageSave(CuTest* tc)
 		CuAssertIntEquals(tc, imagep->data[i].b, result_image->data[i].b);
 	}
 
-	del_image(imagep);
-	del_image(result_image);
+	image_del(imagep);
+	image_del(result_image);
 }
 
 CuSuite* CuGetImageSuite(void) 

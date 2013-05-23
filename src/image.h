@@ -41,16 +41,18 @@ struct BlockArray {
 	} * data;
 };
 
-bool init_image_loader(void);
-void del_image(struct Image* imagep);
-struct Image* new_image(int32_t width, int32_t height);
-struct Image* load_image(const char * path);
+bool image_init_loader(void);
+void image_del(struct Image* imagep);
+struct Image* image_new(int32_t width, int32_t height);
+struct Image* image_load(const char * path);
 struct Pixel image_read_pixel(struct Image* imagep, int32_t x, int32_t y);
-struct Pixel blockarray_read_pixel(struct BlockArray* arrayp, int32_t x, int32_t y);
-void image_to_blockarray(struct Image* imagep, struct BlockArray* arrayp);
-void free_blockarray(struct BlockArray* arrayp);
-
 void image_fill_noise(struct Image* imagep, int32_t seed);
 int64_t image_save(const char * path, struct Image* imagep);
+
+struct Pixel blockarray_read_pixel(struct BlockArray* arrayp, int32_t x, int32_t y);
+void image_to_blockarray(struct Image* imagep, struct BlockArray* arrayp);
+void blockarray_free(struct BlockArray* arrayp);
+
+
 #endif
 
