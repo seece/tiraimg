@@ -11,17 +11,17 @@
 #define TIMG_BLOCK_SIZE 8 
 
 /**
- * A two dimensional byte array used to represent pixel values of a
+ * @brief A two dimensional byte array used to represent pixel values of a
  * single color channel, or quantized DCT coefficients before entropy
  * encoding. Has a fixed size.
  */
 struct ByteBlock 
 {
-	/** 8-bit data. */
+	/** Two-dimensional array of 8-bit data. */
 	uint8_t data[TIMG_BLOCK_SIZE][TIMG_BLOCK_SIZE];
 };
 
-/** A fixed size two-dimensional float array used as an intermediary container
+/** @brief A fixed size two-dimensional float array used as an intermediary container
  * in DCT and IDCT calculations.
  */
 struct FloatBlock 

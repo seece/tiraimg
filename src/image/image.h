@@ -21,7 +21,8 @@ struct Image {
 };
 
 /**
- * @brief An image made of ByteBlocks.
+ * @brief An image made of ByteBlocks. Each 8x8 block is separated to
+ * three ByteBlocks, one per color channel.
  */
 struct BlockArray {
 	/** width in blocks */
