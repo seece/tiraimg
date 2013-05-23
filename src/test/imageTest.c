@@ -53,30 +53,64 @@ void TestCreatedImageSize(CuTest* tc)
 	del_image(imagep);
 }
 
-void TestImageToBlocks(CuTest* tc)
+
+/**
+ * @brief Compares an Image to a BlockArray.
+ *
+ * @param tc the test case where to report assertion failures
+ * @param imagep the image
+ * @param arrayp the blockarray
+ */
+void compare_image_blockarray(CuTest* tc, struct Image* imagep, 
+		struct BlockArray* arrayp)
 {
-	struct Image* imagep = new_image(32, 32);
-	struct BlockArray array;
 	struct Pixel original;
 	int32_t ofs, block_ofs;
 
+	for (int y=0;y<imagep->height;y++) {
+		for (int x=0;x<imagep->width;x++) {
+			ofs = y*imagep->width + x;
+			int32_t blockx = x/8;
+			int32_t blocky = y/8;
+			int32_t bx = x%8;
+			int32_t by = y%8;
+
+			block_ofs = (blockx) + ((blocky) * arrayp->columns);
+			original = imagep->data[ofs];
+
+			CuAssertIntEquals(tc, original.r, arrayp->data[block_ofs].chan[0].data[by][bx]);
+			CuAssertIntEquals(tc, original.g, arrayp->data[block_ofs].chan[1].data[by][bx]);
+			CuAssertIntEquals(tc, original.b, arrayp->data[block_ofs].chan[2].data[by][bx]);
+		}
+	}
+}
+
+void TestImageToBlocks(CuTest* tc)
+{
+	struct Image* imagep = load_image("testdata/small.ppm");
+	struct BlockArray array;
+
 	CuAssertTrue(tc, imagep != NULL);
-	CuAssertIntEquals(tc, 32, imagep->width);
-	CuAssertIntEquals(tc, 32, imagep->height);
+
+	image_to_blockarray(imagep, &array);
+
+	compare_image_blockarray(tc, imagep, &array);
+
+	free_blockarray(&array);
+	del_image(imagep);
+}
+
+void TestRandomImageToBlocks(CuTest* tc)
+{
+	struct Image* imagep = new_image(33, 32);
+	struct BlockArray array;
+
+	CuAssertTrue(tc, imagep != NULL);
 
 	image_fill_noise(imagep, 12);
 	image_to_blockarray(imagep, &array);
 
-	for (int y=0;y<imagep->height;y++) {
-		for (int x=0;x<imagep->width;x++) {
-
-			ofs = y*imagep->width + x;
-			block_ofs = (x/8) + (y/8) * array.columns;
-			original = imagep->data[ofs];
-
-			CuAssertIntEquals(tc, original.r, array.data[block_ofs].chan[0].data[y%8][x%8]);
-		}
-	}
+	compare_image_blockarray(tc, imagep, &array);
 
 	free_blockarray(&array);
 	del_image(imagep);
@@ -137,17 +171,9 @@ void TestBlockArrayReadPixel(CuTest* tc)
 			original = image_read_pixel(imagep, x, y);
 			result = blockarray_read_pixel(&array, x, y);
 
-			/*
 			CuAssertIntEquals(tc, original.r, result.r);
 			CuAssertIntEquals(tc, original.g, result.g);
 			CuAssertIntEquals(tc, original.b, result.b);
-			*/
-			/*
-			printf("%d, %d\n", x, y);
-			assert(original.r==result.r);
-			assert(original.g==result.g);
-			assert(original.b==result.b);
-			*/
 		}
 	}
 
@@ -163,6 +189,7 @@ CuSuite* CuGetImageSuite(void)
 	SUITE_ADD_TEST(suite, TestImageArraySize);
 	SUITE_ADD_TEST(suite, TestCreatedImageSize);
 	SUITE_ADD_TEST(suite, TestImageToBlocks);
+	SUITE_ADD_TEST(suite, TestRandomImageToBlocks);
 	SUITE_ADD_TEST(suite, TestImageReadPixel);
 	SUITE_ADD_TEST(suite, TestImageReadPixelRandom);
 	SUITE_ADD_TEST(suite, TestBlockArrayReadPixel);

@@ -136,38 +136,47 @@ struct Pixel blockarray_read_pixel(struct BlockArray* arrayp, int32_t x, int32_t
 	return p;
 }
 
-static void fill_block(
-		struct ColorBlock* cblock, 
+/**
+ * @brief Copies values from part of an image to a single ColorBlock.
+ *
+ * @param imagep
+ * @param block_x
+ * @param block_y
+ * @param cblock the target ColorBlock
+ */
+static void copy_block(
 		struct Image* imagep, 
 		int32_t block_x, 
-		int32_t block_y) 
+		int32_t block_y,
+		struct ColorBlock* cblock) 
 {
-
 	const int32_t size = TIMG_BLOCK_SIZE;
+	int32_t block_pixel_x = block_x * size;
+	int32_t block_pixel_y = block_y * size;
 
 	for (int32_t y=0;y<size;y++) {
 		for (int32_t x=0;x<size;x++) {
-			struct Pixel p;
+			int32_t px = block_pixel_x + x;	
+			int32_t py = block_pixel_y + y;	
+			int32_t p_offset = py*imagep->width + px;
 
-			int32_t pixel_x = block_x + x;
-			int32_t pixel_y = block_y + y;
-			int32_t pixel_offset = (y)*imagep->width + x + 0;
-
-			// The values outside picture area are all 0.
-			if (inside_bounds(pixel_x, pixel_y, imagep->width, imagep->height)) {
-				p = imagep->data[pixel_offset];
-			} else {
-				p.r = p.g = p.b = 0;
-			}
-
+			struct Pixel p = imagep->data[p_offset];
+			
 			cblock->chan[0].data[y][x] = p.r;
 			cblock->chan[1].data[y][x] = p.g;
 			cblock->chan[2].data[y][x] = p.b;
-			
+
 		}
 	}
 }
 
+/**
+ * @brief Converts an Image to a BlockArray. Allocates memory to hold all 
+ * color information.
+ *
+ * @param imagep the source image
+ * @param arrayp result will be saved here
+ */
 void image_to_blockarray(struct Image* imagep, struct BlockArray* arrayp)
 {
 	const int32_t size = TIMG_BLOCK_SIZE;
@@ -180,22 +189,27 @@ void image_to_blockarray(struct Image* imagep, struct BlockArray* arrayp)
 	arrayp->width = imagep->width;
 	arrayp->height = imagep->height;
 
-	// The division is rounded upwards.
-	arrayp->columns = imagep->width/size + (imagep->width % size != 0);
-	arrayp->rows = imagep->height/size + (imagep->height % size != 0);
+	int32_t cols = imagep->width/8;
+	int32_t rows = imagep->height/8;
 
-	assert(arrayp->rows > 0);
-	assert(arrayp->columns> 0);
+	if (imagep->width % size != 0)
+		cols++;
 
-	int32_t block_num = arrayp->columns * arrayp->rows;
+	if (imagep->height % size != 0)
+		rows++;
 
-	arrayp->data = calloc(block_num, sizeof(struct ColorBlock));
+	int32_t amount = cols*rows;
+	arrayp->columns = cols;
+	arrayp->rows = rows;
 
-	for (int32_t y=0;y<arrayp->rows;y++) {
-		for (int32_t x=0;x<arrayp->columns;x++) {
+	arrayp->data = calloc(amount, sizeof(struct ColorBlock));
+
+	// Loop through all the allocated blocks.
+	for (int y=0;y<rows;y++) {
+		for (int x=0;x<cols;x++) {
 			int32_t ofs = y*arrayp->columns + x;
-			fill_block(&arrayp->data[ofs], 
-				imagep, x*size, y*size);
+			struct ColorBlock* blockp = &arrayp->data[ofs];
+			copy_block(imagep, x, y, blockp);
 		}
 	}
 
@@ -218,6 +232,13 @@ void free_blockarray(struct BlockArray* arrayp)
 	free(arrayp->data);
 }
 
+
+/**
+ * @brief Fills the given image with random noise.
+ *
+ * @param imagep the target image
+ * @param seed seed for the random generator
+ */
 void image_fill_noise(struct Image* imagep, int32_t seed)
 {
 	assert(imagep);

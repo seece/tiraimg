@@ -34,6 +34,7 @@ struct BlockArray {
 	/** actual image height in pixels */
 	int32_t height;		
 
+	/** array of ColorBlocks that hold the data */
 	struct ColorBlock {
 		/** color data with each channel in its respective block */
 		struct ByteBlock chan[3];
