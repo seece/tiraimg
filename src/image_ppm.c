@@ -1,8 +1,11 @@
+#include <stdio.h>
+#include <assert.h>
 #include <pam.h>
 #include <ppm.h>
-#include <stdbool.h>
+#include <stdbool.h> // pm_config.h redefines bool  
 #include "pixel.h"
 #include "image_ppm.h"
+#include "image.h"
 
 
 /**
@@ -76,3 +79,40 @@ bool load_ppm_image(
 	return false;
 }
 
+
+/**
+ * @brief Saves an image to disk as PPM.
+ *
+ * @param path target file path
+ * @param imagep file to be saved
+ *
+ * @return the amount of bytes written, 0 on error
+ */
+int64_t image_ppm_save(const char * path, struct Image* imagep)
+{
+	assert(imagep);
+
+	int64_t bytes_written = 0;
+	int32_t pixels = imagep->width * imagep->height;
+
+	FILE* fp = fopen(path, "w");
+
+	if (!fp)
+		return 0;
+
+	fprintf(fp, "P3\n");
+	fprintf(fp, "# tiraimg export\n");
+	fprintf(fp, "%d %d\n", imagep->width, imagep->height);
+	fprintf(fp, "%d\n", 255);
+
+	for (int32_t i=0;i<pixels;i++) {
+		struct Pixel* pix = &imagep->data[i];
+		fprintf(fp, "%d %d %d", pix->r, pix->g, pix->b);
+		fprintf(fp, "\n");
+	}
+
+	bytes_written = ftell(fp);
+	fclose(fp);
+
+	return bytes_written;
+}

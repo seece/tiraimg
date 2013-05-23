@@ -20,3 +20,4 @@ $(EXECUTABLE): $(OBJECTS)
 clean: 
 	rm $(EXECUTABLE)
 	rm $(TEST_OBJECTS)
+	rm temp/testfile.ppm

@@ -253,7 +253,16 @@ void image_fill_noise(struct Image* imagep, int32_t seed)
 	}
 }
 
-int64_t save_image_ppm(const char * path, struct Image* imagep)
+/**
+ * @brief Saves an image to disk. Currently the only format supported
+ * is PPM.
+ *
+ * @param path target file path
+ * @param imagep file to be saved
+ *
+ * @return the amount of bytes written, 0 on error
+ */
+int64_t image_save(const char * path, struct Image* imagep)
 {
-	return 0L;
+	return image_ppm_save(path, imagep);
 }

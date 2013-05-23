@@ -181,6 +181,31 @@ void TestBlockArrayReadPixel(CuTest* tc)
 	del_image(imagep);
 }
 
+void TestImageSave(CuTest* tc) 
+{
+	struct Image* imagep = load_image("testdata/tiny.ppm");
+	struct Image* result_image;
+
+	bool save_result = image_save("temp/testimage.ppm", imagep);
+	CuAssertTrue(tc, save_result);
+
+	result_image = load_image("temp/testimage.ppm");
+	CuAssertTrue(tc, result_image != NULL);
+	CuAssertTrue(tc, result_image->data != NULL);
+
+	CuAssertIntEquals(tc, imagep->width, result_image->width);
+	CuAssertIntEquals(tc, imagep->height, result_image->height);
+
+	for (int i=0;i<imagep->width*imagep->height;i++) {
+		CuAssertIntEquals(tc, imagep->data[i].r, result_image->data[i].r);
+		CuAssertIntEquals(tc, imagep->data[i].g, result_image->data[i].g);
+		CuAssertIntEquals(tc, imagep->data[i].b, result_image->data[i].b);
+	}
+
+	del_image(imagep);
+	del_image(result_image);
+}
+
 CuSuite* CuGetImageSuite(void) 
 {
 	CuSuite* suite = CuSuiteNew();
@@ -193,5 +218,6 @@ CuSuite* CuGetImageSuite(void)
 	SUITE_ADD_TEST(suite, TestImageReadPixel);
 	SUITE_ADD_TEST(suite, TestImageReadPixelRandom);
 	SUITE_ADD_TEST(suite, TestBlockArrayReadPixel);
+	SUITE_ADD_TEST(suite, TestImageSave);
 	return suite;
 }

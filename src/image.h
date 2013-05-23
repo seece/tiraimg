@@ -51,5 +51,6 @@ void image_to_blockarray(struct Image* imagep, struct BlockArray* arrayp);
 void free_blockarray(struct BlockArray* arrayp);
 
 void image_fill_noise(struct Image* imagep, int32_t seed);
+int64_t image_save(const char * path, struct Image* imagep);
 #endif
 
