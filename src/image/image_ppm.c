@@ -39,7 +39,6 @@ bool load_ppm_image(
 {
 
 	FILE* fp = pm_openr(path);
-	int64_t amount;
 	int32_t imagewidth;
 	int32_t imageheight;
 	pixval maxval;
