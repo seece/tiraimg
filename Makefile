@@ -1,16 +1,15 @@
 all clean:
 	$(MAKE) -C src $@
-	$(MAKE) -C src/test $@
+	$(MAKE) -C test $@
 
 tiraimg:
 	$(MAKE) -C src $@
 
-test:
-	$(MAKE) -C src/test $@
+tests:
+	$(MAKE) -C test $@
 
-check: test
-	./test
+check: tests
+	./tests
 	
 .PHONY:	all
-.PHONY:	check
 .PHONY:	clean 
