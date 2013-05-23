@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include <tgmath.h>
 #include "pixel.h"
-#include "block.h"
+#include "../block.h"
 #include "image.h"
 #include "image_ppm.h"
 

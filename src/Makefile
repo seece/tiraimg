@@ -1,7 +1,8 @@
 CC=c99
 CFLAGS=-c -g -Wall -Werror-implicit-function-declaration -pedantic -O2 
 LDFLAGS=-lm -lnetpbm
-SOURCES=$(wildcard *.c)
+SUBDIRS=$(wildcard */)
+SOURCES=$(wildcard *.c) $(wildcard $(addsuffix *.c,$(SUBDIRS)))
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=../tiraimg
 
@@ -14,5 +15,6 @@ clean:
 	rm $(OBJECTS)
 	rm $(EXECUTABLE)
 
+.PHONY : all
 .PHONY : clean
 

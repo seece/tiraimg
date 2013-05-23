@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include "CuTest.h"
-#include "image.h"
+#include "image/image.h"
 #include "test_data.h"
 
 void TestImageLoaderInit(CuTest* tc) 

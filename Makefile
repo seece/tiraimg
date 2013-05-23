@@ -9,7 +9,7 @@ tests:
 	$(MAKE) -C test $@
 
 check: tests
-	mkdir -p temp
+	@mkdir -p temp
 	./tests
 	
 .PHONY:	all

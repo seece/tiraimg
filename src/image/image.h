@@ -9,7 +9,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "block.h"
+#include "../block.h"
 #include "pixel.h"
 
 /**
