@@ -33,7 +33,7 @@ void byteblock_init(struct ByteBlock* blockp)
  *
  * @return Pointer to the new ByteBlock.
  */
-struct ByteBlock* new_byteblock() 
+struct ByteBlock* byteblock_new() 
 {
 	struct ByteBlock* blockp = malloc(sizeof(struct ByteBlock));
 	byteblock_init(blockp);
@@ -46,7 +46,7 @@ struct ByteBlock* new_byteblock()
  *
  * @param blockp Pointer to the ByteBlock.
  */
-void del_byteblock(struct ByteBlock* blockp)
+void byteblock_del(struct ByteBlock* blockp)
 {
 	assert(blockp != NULL);
 	free(blockp);
@@ -100,7 +100,7 @@ void floatblock_init(struct FloatBlock* blockp)
  *
  * @return Pointer to the new FloatBlock.
  */
-struct FloatBlock* new_floatblock() 
+struct FloatBlock* floatblock_new() 
 {
 	struct FloatBlock* blockp = malloc(sizeof(struct FloatBlock));
 	floatblock_init(blockp);
@@ -113,7 +113,7 @@ struct FloatBlock* new_floatblock()
  *
  * @param blockp Pointer to the FloatBlock to be freed.
  */
-void del_floatblock(struct FloatBlock* blockp)
+void floatblock_del(struct FloatBlock* blockp)
 {
 	assert(blockp != NULL);
 	free(blockp);
@@ -127,7 +127,7 @@ void del_floatblock(struct FloatBlock* blockp)
  * @param bias_value The value to add to all values of this FloatBlock.
  * @param output Result will be stored in this FloatBlock.
  */
-void bias_block(
+void byteblock_bias(
 		struct ByteBlock const* input,
 	       	float bias_value, 
 		struct FloatBlock* output) 
@@ -217,7 +217,7 @@ void floatblock_print(struct FloatBlock* blockp)
  * @param multiplier The block that stores the factors.
  * @param target The block of other factors, stores the results.
  */
-void multiply_floatblock(struct FloatBlock* multiplier,
+void floatblock_multiply(struct FloatBlock* multiplier,
 		struct FloatBlock* target) 
 {
 	int32_t size = TIMG_BLOCK_SIZE;

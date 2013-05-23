@@ -5,15 +5,15 @@
 
 void dct_calculate(struct ByteBlock const* input, 
 		struct FloatBlock* output); 
-void idct_calculate(struct FloatBlock const* dctdata,
+void dct_calculate_inverse(struct FloatBlock const* dctdata,
 		struct ByteBlock* output);
 
-void quantize_floatblock(
+void dct_quantize_floatblock(
 		const struct FloatBlock* input,
 		int32_t quality,
 		struct ByteBlock* output);
 
-void quantize_byteblock(
+void dct_quantize_byteblock(
 		const struct ByteBlock* input,
 		int32_t quality,
 		struct ByteBlock* output);

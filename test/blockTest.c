@@ -24,7 +24,7 @@ void generate_random_floatblock(struct FloatBlock* blockp, float low, float high
 
 void TestByteBlockInit(CuTest* tc) 
 {
-	struct ByteBlock* blockp = new_byteblock();
+	struct ByteBlock* blockp = byteblock_new();
 
 	for (int y=0;y<size;y++) {
 		for (int x=0;x<size;x++) {
@@ -32,12 +32,12 @@ void TestByteBlockInit(CuTest* tc)
 		}
 	}
 
-	del_byteblock(blockp);
+	byteblock_del(blockp);
 }
 
 void TestFloatBlockInit(CuTest* tc) 
 {
-	struct FloatBlock* blockp = new_floatblock();
+	struct FloatBlock* blockp = floatblock_new();
 
 	for (int y=0;y<size;y++) {
 		for (int x=0;x<size;x++) {
@@ -45,7 +45,7 @@ void TestFloatBlockInit(CuTest* tc)
 		}
 	}
 
-	del_floatblock(blockp);
+	floatblock_del(blockp);
 }
 
 void TestBlockBias(CuTest* tc) 
@@ -56,7 +56,7 @@ void TestBlockBias(CuTest* tc)
 	struct FloatBlock output;
 
 	float bias_amount = -128.0f;
-	bias_block(&input, bias_amount, &output);
+	byteblock_bias(&input, bias_amount, &output);
 
 	for (int y=0;y<size;y++) {
 		for (int x=0;x<size;x++) {
@@ -79,7 +79,7 @@ void TestBlockMultiply(CuTest* tc)
 	srand(14);
 	generate_random_floatblock(&third, -10.0, 0.0);
 
-	multiply_floatblock(&first, &second);
+	floatblock_multiply(&first, &second);
 
 	// The third block contains the original values of the second block.
 

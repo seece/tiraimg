@@ -56,7 +56,7 @@ void TestIDCT(CuTest* tc)
 	memcpy(&input, &test_dct_data, sizeof(input));
 	byteblock_init(&output);
 
-	idct_calculate(&input, &output);
+	dct_calculate_inverse(&input, &output);
 
 	for (int y=0;y<size;y++) {
 		for (int x=0;x<size;x++) {
@@ -82,7 +82,7 @@ void TestTwoWayDCT(CuTest* tc)
 		}
 	}
 
-	idct_calculate(&dct_coeffs, &result);
+	dct_calculate_inverse(&dct_coeffs, &result);
 
 	for (int y=0;y<size;y++) {
 		for (int x=0;x<size;x++) {
@@ -112,7 +112,7 @@ void TestQuantization(CuTest* tc)
 	int size = TIMG_BLOCK_SIZE;
 	struct ByteBlock output;
 
-	quantize_byteblock(&test_input, 90, &output);
+	dct_quantize_byteblock(&test_input, 90, &output);
 	printf("output: \n");
 	byteblock_print(&output);
 	printf("\n");

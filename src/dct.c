@@ -16,7 +16,7 @@
  * @param quality The quality factor between 1-100.
  * @param output A block to hold the resulting values.
  */
-void quantize_floatblock(
+void dct_quantize_floatblock(
 		const struct FloatBlock* input,
 		int32_t quality,
 		struct ByteBlock* output)
@@ -40,20 +40,20 @@ void quantize_floatblock(
 }
 
 /**
- * @brief Truncates the given ByteBlock values, see <quantize_floatblock>"()"
+ * @brief Truncates the given ByteBlock values, see <dct_quantize_floatblock>"()"
  *
  * @param input Original float values.
  * @param quality The quality factor between 1-100.
  * @param output A block to hold the resulting values.
  */
-void quantize_byteblock(
+void dct_quantize_byteblock(
 		const struct ByteBlock* input,
 		int32_t quality,
 		struct ByteBlock* output)
 {
 	struct FloatBlock float_input;
 	byteblock_to_float(input, &float_input);
-	quantize_floatblock(&float_input, quality, output);
+	dct_quantize_floatblock(&float_input, quality, output);
 }
 
 
@@ -122,7 +122,7 @@ void dct_calculate(struct ByteBlock const* input,
 {
 	int32_t size = TIMG_BLOCK_SIZE;
 	struct FloatBlock biased_input;
-	bias_block(input, -128.0, &biased_input);
+	byteblock_bias(input, -128.0, &biased_input);
 
 	// Loop through frequencies.
 	for (int32_t y=0;y<size;y++) {
@@ -177,7 +177,7 @@ static int32_t single_idct(
  * @param dctdata Normalized (scaled) DCT coefficients.
  * @param output Sample output block.
  */
-void idct_calculate(struct FloatBlock const* dctdata,
+void dct_calculate_inverse(struct FloatBlock const* dctdata,
 		struct ByteBlock* output)
 {
 	int32_t size = TIMG_BLOCK_SIZE;
