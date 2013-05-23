@@ -77,6 +77,17 @@ struct Image* image_load(const char * path)
 	return imagep;
 }
 
+
+/**
+ * @brief Checks if the given point is inside a rectangle defined by w and h.
+ *
+ * @param x point x-coordinate 
+ * @param y point y-coordinate
+ * @param w rectangle width 
+ * @param h rectangle height
+ *
+ * @return true if inside, otherwise false
+ */
 inline bool inside_bounds(int32_t x, int32_t y, int32_t w, int32_t h)
 {
 	if (x < 0 || y < 0)
@@ -110,6 +121,16 @@ struct Pixel image_read_pixel(struct Image* imagep, int32_t x, int32_t y)
 	return imagep->data[ofs];
 }
 
+
+/**
+ * @brief Reads a single pixel from the source BlockArray.
+ *
+ * @param arrayp the target image as BlockArray
+ * @param x pixel x-coordinate
+ * @param y pixel y-coordinate
+ *
+ * @return the read Pixel struct 
+ */
 struct Pixel blockarray_read_pixel(struct BlockArray* arrayp, int32_t x, int32_t y)
 {
 	assert(arrayp);
@@ -226,9 +247,10 @@ void blockarray_free(struct BlockArray* arrayp)
 {
 	assert(arrayp);
 
-	// TODO add a proper error message here?
-	if (!arrayp->data)
+	if (!arrayp->data) {
+		fprintf(stderr, "Error: trying to free empty BlockArray!\n");
 		return;
+	}
 
 	free(arrayp->data);
 }

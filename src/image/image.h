@@ -3,7 +3,6 @@
  * @brief Image processing datatypes and functions.
  */
 
-
 #ifndef IMAGE_H_
 #define IMAGE_H_
 
@@ -52,7 +51,6 @@ int64_t image_save(const char * path, struct Image* imagep);
 struct Pixel blockarray_read_pixel(struct BlockArray* arrayp, int32_t x, int32_t y);
 void image_to_blockarray(struct Image* imagep, struct BlockArray* arrayp);
 void blockarray_free(struct BlockArray* arrayp);
-
 
 #endif
 
