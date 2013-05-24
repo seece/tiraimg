@@ -206,6 +206,14 @@ void TestImageSave(CuTest* tc)
 	image_del(result_image);
 }
 
+void TestImageYCbCrConversion(CuTest* tc) 
+{
+	struct Image* imagep = image_load("testdata/tiny.ppm");
+	image_to_ycbcr(imagep);
+	image_to_rgb(imagep);
+	image_del(imagep);
+}
+
 CuSuite* CuGetImageSuite(void) 
 {
 	CuSuite* suite = CuSuiteNew();
@@ -219,5 +227,6 @@ CuSuite* CuGetImageSuite(void)
 	SUITE_ADD_TEST(suite, TestImageReadPixelRandom);
 	SUITE_ADD_TEST(suite, TestBlockArrayReadPixel);
 	SUITE_ADD_TEST(suite, TestImageSave);
+	SUITE_ADD_TEST(suite, TestImageYCbCrConversion);
 	return suite;
 }

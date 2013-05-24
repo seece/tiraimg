@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include "block.h"
 
+typedef void (*map_func_t)(void* valuep, int32_t x, int32_t y);
 
 /**
  * @brief Initializes ByteBlock.
@@ -58,11 +59,9 @@ void byteblock_del(struct ByteBlock* blockp)
  * or ByteBlock.
  *
  * @param blockp Pointer to the block to iterate over.
- * @param func The callback function to call.
+ * @param func The callback function to call on each value.
  */
-static void block_map(
-		void* blockp,
-		void (*func)(void* valuep, int32_t x, int32_t y)) 
+static void block_map(void* blockp, map_func_t func)
 {
 	int32_t size = TIMG_BLOCK_SIZE;
 	struct ByteBlock* real_blockp = (struct ByteBlock*) blockp;
@@ -210,6 +209,18 @@ void floatblock_print(struct FloatBlock* blockp)
 	block_map((void *)blockp, float_print_callback);
 }
 
+/*
+static float_ycbcr_callback(void* valuep, int32_t x, int32_t y)
+{
+	//struct FloatBlock* block = (struct FloatBlock*) valuep;
+	float* arrayp = (float*) valuep;
+}
+
+void floatblock_to_ycbcr(struct FloatBlock* blockp)
+{
+	block_map((void *)blockp, float_ycbcr_callback);
+}
+*/
 
 /**
  * @brief Entrywise multiplication of two FloatBlocks.

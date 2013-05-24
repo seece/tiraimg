@@ -116,5 +116,6 @@ CuSuite* CuGetBlockSuite(void)
 	SUITE_ADD_TEST(suite, TestBlockBias);
 	SUITE_ADD_TEST(suite, TestBlockMultiply);
 	SUITE_ADD_TEST(suite, TestByteBlockToFloatConversion);
+	//SUITE_ADD_TEST(suite, TestFloatColorspaceConversion);
 	return suite;
 }

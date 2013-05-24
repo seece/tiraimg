@@ -48,6 +48,8 @@ struct Image* image_load(const char * path);
 struct Pixel image_read_pixel(struct Image* imagep, int32_t x, int32_t y);
 void image_fill_noise(struct Image* imagep, int32_t seed);
 int64_t image_save(const char * path, struct Image* imagep);
+void image_to_ycbcr(struct Image* imagep);
+void image_to_rgb(struct Image* imagep);
 
 struct Pixel blockarray_read_pixel(struct BlockArray* arrayp, int32_t x, int32_t y);
 void image_to_blockarray(struct Image* imagep, struct BlockArray* arrayp);

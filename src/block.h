@@ -48,6 +48,6 @@ void floatblock_multiply(struct FloatBlock* multiplier,
 void byteblock_to_float(const struct ByteBlock *input, 
 		struct FloatBlock* output);
 
-
+//void floatblock_to_ycbcr(struct FloatBlock* blockp);
 
 #endif

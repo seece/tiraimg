@@ -10,6 +10,8 @@
 #include "image.h"
 #include "image_ppm.h"
 
+typedef void (*image_map_func_t)(struct Pixel* pixelp, int32_t x, int32_t y);
+
 /**
  * @brief Initializes image loading library.
  *
@@ -287,4 +289,54 @@ void image_fill_noise(struct Image* imagep, int32_t seed)
 int64_t image_save(const char * path, struct Image* imagep)
 {
 	return image_ppm_save(path, imagep);
+}
+
+static void image_map(struct Image* imagep, image_map_func_t func) {
+	int32_t ofs;
+	struct Pixel* pix;
+
+	for (int32_t y=0;y<imagep->height;y++) {
+		for (int32_t x=0;x<imagep->width;x++) {
+			ofs = imagep->width*y + x;	
+			pix = &imagep->data[ofs];
+			func(pix, x, y);
+		}
+	}
+}
+
+static void rgb_to_ycbcr_mapfunc(struct Pixel* pixelp, int32_t x, int32_t y) 
+{
+	// We assume a range of [0, 255]
+	float r = pixelp->r;
+	float g = pixelp->g;
+	float b = pixelp->b;
+
+	// Y'
+	pixelp->r = 0.0 + 0.299 *      r + 0.587 *    g + 0.114 *   b;
+	// Cb
+	pixelp->g = 128.0 - 0.168736 * r - 0.331264 * g + 0.5 *     b;
+	// Cr
+	pixelp->b = 128.0 + 0.5 *      r + 0.418688 * g - 0.081312 *b;
+}
+
+static void ycbcr_to_rgb_mapfunc(struct Pixel* pixelp, int32_t x, int32_t y) 
+{
+	float yy = pixelp->r;
+	float cb = pixelp->g;
+	float cr = pixelp->b;
+
+	// red
+	pixelp->r = yy                          + 1.402   * (cr - 128.0);
+	// green
+	pixelp->g = yy - 0.34414 * (cb - 128.0) - 0.71414 * (cr - 128.0);
+	// blue
+	pixelp->b = yy + 1.772   * (cb - 128.0);
+}
+
+void image_to_ycbcr(struct Image* imagep) {
+	image_map(imagep, rgb_to_ycbcr_mapfunc);
+}
+
+void image_to_rgb(struct Image* imagep) {
+	image_map(imagep, ycbcr_to_rgb_mapfunc);
 }

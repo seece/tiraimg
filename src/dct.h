@@ -2,6 +2,7 @@
 #define DCT_H_
 
 #include "block.h"
+#include "image/image.h"
 
 void dct_calculate(struct ByteBlock const* input, 
 		struct FloatBlock* output); 
