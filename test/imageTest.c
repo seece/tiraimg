@@ -5,6 +5,21 @@
 #include "image/image.h"
 #include "test_data.h"
 
+void check_images_equal(CuTest* tc, struct Image* a, struct Image* b)
+{
+	CuAssertIntEquals(tc, a->width, b->width);
+	CuAssertIntEquals(tc, a->height, b->height);
+
+	int32_t size = a->width * a->height;
+
+	for (int i=0;i<size;i++) {
+		CuAssertIntEquals(tc, a->data[i].r, b->data[i].r);
+		CuAssertIntEquals(tc, a->data[i].g, b->data[i].g);
+		CuAssertIntEquals(tc, a->data[i].b, b->data[i].b);
+	}
+
+}
+
 void TestImageLoaderInit(CuTest* tc) 
 {
 	image_init_loader();
@@ -196,6 +211,8 @@ void TestImageSave(CuTest* tc)
 	CuAssertIntEquals(tc, imagep->width, result_image->width);
 	CuAssertIntEquals(tc, imagep->height, result_image->height);
 
+	check_images_equal(tc, imagep, result_image);
+
 	for (int i=0;i<imagep->width*imagep->height;i++) {
 		CuAssertIntEquals(tc, imagep->data[i].r, result_image->data[i].r);
 		CuAssertIntEquals(tc, imagep->data[i].g, result_image->data[i].g);
@@ -206,12 +223,30 @@ void TestImageSave(CuTest* tc)
 	image_del(result_image);
 }
 
+
+void TestImageClone(CuTest* tc)
+{
+	struct Image* orig = image_load("testdata/tiny.ppm");
+	struct Image* imagep = image_clone(orig);
+	
+	check_images_equal(tc, orig, imagep);
+
+	image_del(imagep);
+	image_del(orig);
+}
+
 void TestImageYCbCrConversion(CuTest* tc) 
 {
-	struct Image* imagep = image_load("testdata/tiny.ppm");
+	struct Image* orig = image_load("testdata/tiny.ppm");
+	struct Image* imagep = image_clone(orig);
+
 	image_to_ycbcr(imagep);
 	image_to_rgb(imagep);
+
+	check_images_equal(tc, orig, imagep);
+
 	image_del(imagep);
+	image_del(orig);
 }
 
 CuSuite* CuGetImageSuite(void) 
@@ -227,6 +262,8 @@ CuSuite* CuGetImageSuite(void)
 	SUITE_ADD_TEST(suite, TestImageReadPixelRandom);
 	SUITE_ADD_TEST(suite, TestBlockArrayReadPixel);
 	SUITE_ADD_TEST(suite, TestImageSave);
+	SUITE_ADD_TEST(suite, TestImageClone);
 	SUITE_ADD_TEST(suite, TestImageYCbCrConversion);
+
 	return suite;
 }
