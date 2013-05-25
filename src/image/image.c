@@ -10,7 +10,6 @@
 #include "image.h"
 #include "image_ppm.h"
 
-
 /**
  * @brief This typedef describes a mapping function pointer
  * type. Used with image_map
@@ -29,7 +28,6 @@ bool image_init_loader(void)
 {
 	return init_ppm_image_loader();
 }
-
 
 /**
  * @brief Creates a new image with the given dimensions.
@@ -165,19 +163,28 @@ struct Pixel blockarray_read_pixel(struct BlockArray* arrayp, int32_t x, int32_t
 	return p;
 }
 
-/**
- * @brief Copies values from part of an image to a single ColorBlock.
- *
- * @param imagep
- * @param block_x
- * @param block_y
- * @param cblock the target ColorBlock
- */
-static void copy_to_block(
+static void copy_pixel_to_channels(struct Pixel* pixelp, struct ColorBlock* cblock,
+		int32_t x, int32_t y)
+{
+	cblock->chan[0].data[y][x] = pixelp->r;
+	cblock->chan[1].data[y][x] = pixelp->g;
+	cblock->chan[2].data[y][x] = pixelp->b;
+}
+
+static void copy_channels_to_pixel(struct Pixel* pixelp, struct ColorBlock* cblock,
+		int32_t x, int32_t y)
+{
+	pixelp->r = cblock->chan[0].data[y][x];
+	pixelp->g = cblock->chan[1].data[y][x];
+	pixelp->b = cblock->chan[2].data[y][x];
+}
+
+static void block_pixel_map(
 		struct Image* imagep, 
 		int32_t block_x, 
 		int32_t block_y,
-		struct ColorBlock* cblock) 
+		struct ColorBlock* cblock,
+		void (*func)(struct Pixel*, struct ColorBlock*, int32_t, int32_t)) 
 {
 	const int32_t size = TIMG_BLOCK_SIZE;
 	int32_t block_pixel_x = block_x * size;
@@ -192,40 +199,7 @@ static void copy_to_block(
 			if (!inside_bounds(px, py, imagep->width, imagep->height)) 
 				continue;
 
-			struct Pixel p = imagep->data[p_offset];
-
-			cblock->chan[0].data[y][x] = p.r;
-			cblock->chan[1].data[y][x] = p.g;
-			cblock->chan[2].data[y][x] = p.b;
-		}
-	}
-}
-
-static void copy_from_block(
-		struct ColorBlock* cblock,
-		int32_t block_x, 
-		int32_t block_y,
-		struct Image* imagep 
-		) 
-{
-	const int32_t size = TIMG_BLOCK_SIZE;
-
-	for (int32_t y=0;y<size;y++) {
-		for (int32_t x=0;x<size;x++) {
-			int32_t px = block_x * size + x;	
-			int32_t py = block_y * size + y;	
-			int32_t p_offset = py*imagep->width + px;
-
-			if (!inside_bounds(px, py, imagep->width, imagep->height)) 
-				continue;
-
-			struct Pixel p;
-			
-			p.r = cblock->chan[0].data[y][x];
-			p.g = cblock->chan[1].data[y][x];
-			p.b = cblock->chan[2].data[y][x];
-
-			imagep->data[p_offset] = p;
+			func(&imagep->data[p_offset], cblock, x, y);
 		}
 	}
 }
@@ -270,7 +244,8 @@ void image_to_blockarray(struct Image* imagep, struct BlockArray* arrayp)
 		for (int x=0;x<cols;x++) {
 			int32_t ofs = y*arrayp->columns + x;
 			struct ColorBlock* blockp = &arrayp->data[ofs];
-			copy_to_block(imagep, x, y, blockp);
+			block_pixel_map(imagep, x, y, blockp, 
+				copy_pixel_to_channels);
 		}
 	}
 
@@ -291,7 +266,8 @@ struct Image* blockarray_to_image(struct BlockArray* arrayp)
 		for (int x=0;x<cols;x++) {
 			int32_t ofs = y*arrayp->columns + x;
 			struct ColorBlock* blockp = &arrayp->data[ofs];
-			copy_from_block(blockp, x, y, result);
+			block_pixel_map(result, x, y, blockp, 
+				copy_channels_to_pixel);
 		}
 	}
 
