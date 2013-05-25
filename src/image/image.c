@@ -336,7 +336,7 @@ static void rgb_to_ycbcr_mapfunc(struct Pixel* source, struct Pixel* dest,
 	// Cb
 	dest->g = 128.0 - 0.168736 * r - 0.331264 * g + 0.5 *     b;
 	// Cr
-	dest->b = 128.0 + 0.5 *      r + 0.418688 * g - 0.081312 *b;
+	dest->b = 128.0 + 0.5 *      r - 0.418688 * g - 0.081312 *b;
 }
 
 static void ycbcr_to_rgb_mapfunc(struct Pixel* source, struct Pixel* dest, 
@@ -371,6 +371,7 @@ static void image_clone_mapfunc(struct Pixel* source, struct Pixel* dest,
 	dest->g = source->g;
 	dest->b = source->b;
 }
+
 struct Image* image_clone(struct Image* imagep) 
 {
 	assert(imagep);

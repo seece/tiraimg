@@ -5,7 +5,7 @@
 #include "image/image.h"
 #include "test_data.h"
 
-void check_images_equal(CuTest* tc, struct Image* a, struct Image* b)
+void check_images_equal(CuTest* tc, struct Image* a, struct Image* b, int32_t delta)
 {
 	CuAssertIntEquals(tc, a->width, b->width);
 	CuAssertIntEquals(tc, a->height, b->height);
@@ -13,9 +13,17 @@ void check_images_equal(CuTest* tc, struct Image* a, struct Image* b)
 	int32_t size = a->width * a->height;
 
 	for (int i=0;i<size;i++) {
-		CuAssertIntEquals(tc, a->data[i].r, b->data[i].r);
-		CuAssertIntEquals(tc, a->data[i].g, b->data[i].g);
-		CuAssertIntEquals(tc, a->data[i].b, b->data[i].b);
+		if (delta == 0) {
+			CuAssertIntEquals(tc, a->data[i].r, b->data[i].r);
+			CuAssertIntEquals(tc, a->data[i].g, b->data[i].g);
+			CuAssertIntEquals(tc, a->data[i].b, b->data[i].b);
+		} else {
+			CuAssertDblEquals(tc, a->data[i].r, b->data[i].r, delta);
+			CuAssertDblEquals(tc, a->data[i].g, b->data[i].g, delta);
+			CuAssertDblEquals(tc, a->data[i].b, b->data[i].b, delta);
+		}
+
+		
 	}
 
 }
@@ -211,7 +219,7 @@ void TestImageSave(CuTest* tc)
 	CuAssertIntEquals(tc, imagep->width, result_image->width);
 	CuAssertIntEquals(tc, imagep->height, result_image->height);
 
-	check_images_equal(tc, imagep, result_image);
+	check_images_equal(tc, imagep, result_image, 0);
 
 	for (int i=0;i<imagep->width*imagep->height;i++) {
 		CuAssertIntEquals(tc, imagep->data[i].r, result_image->data[i].r);
@@ -229,7 +237,19 @@ void TestImageClone(CuTest* tc)
 	struct Image* orig = image_load("testdata/tiny.ppm");
 	struct Image* imagep = image_clone(orig);
 	
-	check_images_equal(tc, orig, imagep);
+	check_images_equal(tc, orig, imagep, 0);
+
+	image_del(imagep);
+	image_del(orig);
+}
+
+void TestImageCloneRandom(CuTest* tc)
+{
+	struct Image* orig = image_new(100, 132);
+	image_fill_noise(orig, 15);
+	struct Image* imagep = image_clone(orig);
+	
+	check_images_equal(tc, orig, imagep, 0);
 
 	image_del(imagep);
 	image_del(orig);
@@ -243,7 +263,10 @@ void TestImageYCbCrConversion(CuTest* tc)
 	image_to_ycbcr(imagep);
 	image_to_rgb(imagep);
 
-	check_images_equal(tc, orig, imagep);
+	bool save_result = image_save("temp/gammaimage.ppm", imagep);
+
+	// We allow some rounding-error to happen.
+	check_images_equal(tc, orig, imagep, 3);
 
 	image_del(imagep);
 	image_del(orig);
@@ -263,6 +286,7 @@ CuSuite* CuGetImageSuite(void)
 	SUITE_ADD_TEST(suite, TestBlockArrayReadPixel);
 	SUITE_ADD_TEST(suite, TestImageSave);
 	SUITE_ADD_TEST(suite, TestImageClone);
+	SUITE_ADD_TEST(suite, TestImageCloneRandom);
 	SUITE_ADD_TEST(suite, TestImageYCbCrConversion);
 
 	return suite;
