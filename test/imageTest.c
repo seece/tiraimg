@@ -22,8 +22,6 @@ void check_images_equal(CuTest* tc, struct Image* a, struct Image* b, int32_t de
 			CuAssertDblEquals(tc, a->data[i].g, b->data[i].g, delta);
 			CuAssertDblEquals(tc, a->data[i].b, b->data[i].b, delta);
 		}
-
-		
 	}
 
 }
@@ -272,6 +270,23 @@ void TestImageYCbCrConversion(CuTest* tc)
 	image_del(orig);
 }
 
+void TestBlockArrayImageConversion(CuTest* tc)
+{
+	struct Image* orig = image_load("testdata/tiny.ppm");
+	struct Image* imagep;
+	struct BlockArray array;
+
+	image_to_blockarray(orig, &array);
+
+	imagep = blockarray_to_image(&array);
+
+	check_images_equal(tc, orig, imagep, 0);
+
+	blockarray_free(&array);
+	image_del(imagep);
+	image_del(orig);
+}
+
 CuSuite* CuGetImageSuite(void) 
 {
 	CuSuite* suite = CuSuiteNew();
@@ -288,6 +303,7 @@ CuSuite* CuGetImageSuite(void)
 	SUITE_ADD_TEST(suite, TestImageClone);
 	SUITE_ADD_TEST(suite, TestImageCloneRandom);
 	SUITE_ADD_TEST(suite, TestImageYCbCrConversion);
+	SUITE_ADD_TEST(suite, TestBlockArrayImageConversion);
 
 	return suite;
 }

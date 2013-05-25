@@ -1,5 +1,6 @@
 /**
- * Additional math definitions that are not available in the C99 standard 
+ * @file eks_math.h
+ * @brief Additional math definitions that are not available in the C99 standard 
  * library.
  */
 

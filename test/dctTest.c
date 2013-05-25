@@ -9,20 +9,9 @@
 #include "block.h"
 #include "dct.h"
 #include "jpeg.h"
+#include "image/image.h"
 #include "test_data.h"
-
-/*
-static void byteblock_compare_test(CuTest* tc, struct ByteBlock* a, struct ByteBlock* b) 
-{
-	int size = TIMG_BLOCK_SIZE;
-
-	for (int y=0;y<size;y++) {
-		for (int x=0;x<size;x++) {
-			CuAssertIntEquals(tc, a->data[y][x], b->data[y][x]);
-		}
-	}
-}
-*/
+#include "testHelpers.h"
 
 void TestDCT(CuTest* tc) 
 {
@@ -126,6 +115,8 @@ void TestQuantization(CuTest* tc)
 	}
 }
 
+
+
 CuSuite* CuGetDCTSuite(void) 
 {
 	CuSuite* suite = CuSuiteNew();
@@ -133,5 +124,6 @@ CuSuite* CuGetDCTSuite(void)
 	SUITE_ADD_TEST(suite, TestIDCT);
 	SUITE_ADD_TEST(suite, TestTwoWayDCT);
 	SUITE_ADD_TEST(suite, TestQuantization);
+
 	return suite;
 }

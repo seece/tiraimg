@@ -13,7 +13,7 @@
 
 /**
  * @brief This typedef describes a mapping function pointer
- * type. Used with <image_map>"()"
+ * type. Used with image_map
  */
 typedef void (*image_map_func_t)(struct Pixel* source, 
 		struct Pixel* dest, 
@@ -173,7 +173,7 @@ struct Pixel blockarray_read_pixel(struct BlockArray* arrayp, int32_t x, int32_t
  * @param block_y
  * @param cblock the target ColorBlock
  */
-static void copy_block(
+static void copy_to_block(
 		struct Image* imagep, 
 		int32_t block_x, 
 		int32_t block_y,
@@ -197,6 +197,35 @@ static void copy_block(
 			cblock->chan[0].data[y][x] = p.r;
 			cblock->chan[1].data[y][x] = p.g;
 			cblock->chan[2].data[y][x] = p.b;
+		}
+	}
+}
+
+static void copy_from_block(
+		struct ColorBlock* cblock,
+		int32_t block_x, 
+		int32_t block_y,
+		struct Image* imagep 
+		) 
+{
+	const int32_t size = TIMG_BLOCK_SIZE;
+
+	for (int32_t y=0;y<size;y++) {
+		for (int32_t x=0;x<size;x++) {
+			int32_t px = block_x * size + x;	
+			int32_t py = block_y * size + y;	
+			int32_t p_offset = py*imagep->width + px;
+
+			if (!inside_bounds(px, py, imagep->width, imagep->height)) 
+				continue;
+
+			struct Pixel p;
+			
+			p.r = cblock->chan[0].data[y][x];
+			p.g = cblock->chan[1].data[y][x];
+			p.b = cblock->chan[2].data[y][x];
+
+			imagep->data[p_offset] = p;
 		}
 	}
 }
@@ -241,12 +270,33 @@ void image_to_blockarray(struct Image* imagep, struct BlockArray* arrayp)
 		for (int x=0;x<cols;x++) {
 			int32_t ofs = y*arrayp->columns + x;
 			struct ColorBlock* blockp = &arrayp->data[ofs];
-			copy_block(imagep, x, y, blockp);
+			copy_to_block(imagep, x, y, blockp);
 		}
 	}
 
 }
 
+
+struct Image* blockarray_to_image(struct BlockArray* arrayp)
+{
+	assert(arrayp);
+	assert(arrayp->data);
+
+	int32_t cols = arrayp->columns;
+	int32_t rows= arrayp->rows;
+
+	struct Image* result = image_new(arrayp->width, arrayp->height);
+
+	for (int y=0;y<rows;y++) {
+		for (int x=0;x<cols;x++) {
+			int32_t ofs = y*arrayp->columns + x;
+			struct ColorBlock* blockp = &arrayp->data[ofs];
+			copy_from_block(blockp, x, y, result);
+		}
+	}
+
+	return result;
+}
 
 /**
  * @brief Frees all BlockArray data. Does not free the BlockArray itself.
@@ -330,7 +380,7 @@ static void image_map(struct Image* source, struct Image* dest,
 
 
 /**
- * @brief JFIF RGB -> Y'CbCr conversion function, used in <image_to_ycbcr>"()"
+ * @brief JFIF RGB -> Y'CbCr conversion function, used in image_to_ycbcr
  */
 static void rgb_to_ycbcr_mapfunc(struct Pixel* source, struct Pixel* dest, 
 		int32_t x, int32_t y) 
@@ -349,7 +399,7 @@ static void rgb_to_ycbcr_mapfunc(struct Pixel* source, struct Pixel* dest,
 }
 
 /**
- * @brief JFIF Y'CbCr -> RGB conversion function, used in <image_to_rgb>"()"
+ * @brief JFIF Y'CbCr -> RGB conversion function, used in image_to_rgb
  */
 static void ycbcr_to_rgb_mapfunc(struct Pixel* source, struct Pixel* dest, 
 		int32_t x, int32_t y) 
@@ -412,3 +462,4 @@ struct Image* image_clone(struct Image* imagep)
 
 	return newimage;
 }
+
