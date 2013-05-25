@@ -163,6 +163,11 @@ struct Pixel blockarray_read_pixel(struct BlockArray* arrayp, int32_t x, int32_t
 	return p;
 }
 
+
+/**
+ * @brief Callback function that copies pixel values to 
+ * ColorBlock channels. Used with block_pixel_map.
+ */
 static void copy_pixel_to_channels(struct Pixel* pixelp, struct ColorBlock* cblock,
 		int32_t x, int32_t y)
 {
@@ -171,6 +176,11 @@ static void copy_pixel_to_channels(struct Pixel* pixelp, struct ColorBlock* cblo
 	cblock->chan[2].data[y][x] = pixelp->b;
 }
 
+/**
+ * @brief Callback function that copies color channel values from
+ * the given ColorBlock and saves them to the pixel struct fields.
+ * Used with block_pixel_map.
+ */
 static void copy_channels_to_pixel(struct Pixel* pixelp, struct ColorBlock* cblock,
 		int32_t x, int32_t y)
 {
@@ -179,6 +189,17 @@ static void copy_channels_to_pixel(struct Pixel* pixelp, struct ColorBlock* cblo
 	pixelp->b = cblock->chan[2].data[y][x];
 }
 
+
+/**
+ * @brief Iterates over a 8x8 part of an image, and calls the given
+ * callback function on every iteration.
+ *
+ * @param imagep the image to process
+ * @param block_x block x-coordinate in MCU blocks
+ * @param block_y block y-coordinate in MCU blocks
+ * @param cblock the color block to process
+ * @param func the processing callback to call for every pixel
+ */
 static void block_pixel_map(
 		struct Image* imagep, 
 		int32_t block_x, 

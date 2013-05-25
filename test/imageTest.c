@@ -4,27 +4,7 @@
 #include "CuTest.h"
 #include "image/image.h"
 #include "test_data.h"
-
-void check_images_equal(CuTest* tc, struct Image* a, struct Image* b, int32_t delta)
-{
-	CuAssertIntEquals(tc, a->width, b->width);
-	CuAssertIntEquals(tc, a->height, b->height);
-
-	int32_t size = a->width * a->height;
-
-	for (int i=0;i<size;i++) {
-		if (delta == 0) {
-			CuAssertIntEquals(tc, a->data[i].r, b->data[i].r);
-			CuAssertIntEquals(tc, a->data[i].g, b->data[i].g);
-			CuAssertIntEquals(tc, a->data[i].b, b->data[i].b);
-		} else {
-			CuAssertDblEquals(tc, a->data[i].r, b->data[i].r, delta);
-			CuAssertDblEquals(tc, a->data[i].g, b->data[i].g, delta);
-			CuAssertDblEquals(tc, a->data[i].b, b->data[i].b, delta);
-		}
-	}
-
-}
+#include "testHelpers.h"
 
 void TestImageLoaderInit(CuTest* tc) 
 {

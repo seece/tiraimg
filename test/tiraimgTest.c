@@ -20,6 +20,13 @@ void TestBlockArrayDCT(CuTest* tc)
 	compress_blockarray_dct(&array, quality);
 	compress_blockarray_dct_inverse(&array, quality);
 
+	struct Image* result = blockarray_to_image(&array);
+
+	CuAssertTrue(tc, result != NULL);
+
+	check_images_equal(tc, imagep, result, 0);
+
+	image_del(result);
 	blockarray_free(&array);
 	image_del(imagep);
 }
