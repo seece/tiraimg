@@ -18,4 +18,6 @@ void dct_quantize_byteblock(
 		const struct ByteBlock* input,
 		int32_t quality,
 		struct ByteBlock* output);
+
+//void dct_blockarray_calculate();
 #endif

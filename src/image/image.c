@@ -10,6 +10,11 @@
 #include "image.h"
 #include "image_ppm.h"
 
+
+/**
+ * @brief This typedef describes a mapping function pointer
+ * type. Used with <image_map>"()"
+ */
 typedef void (*image_map_func_t)(struct Pixel* source, 
 		struct Pixel* dest, 
 		int32_t x, 
@@ -297,11 +302,11 @@ int64_t image_save(const char * path, struct Image* imagep)
 
 /**
  * @brief Performs a function on every pixel of the given image. The 
- * result is saved to a separate (possibly the same) image. The images
+ * result is saved to another (possibly the same) image. The images
  * must be the same size.
  *
  * @param source source image
- * @param dest destination image, function result is saved here
+ * @param dest destination image, the processed result is saved here
  * @param func the processing function pointer
  */
 static void image_map(struct Image* source, struct Image* dest, 
@@ -323,10 +328,14 @@ static void image_map(struct Image* source, struct Image* dest,
 	}
 }
 
+
+/**
+ * @brief JFIF RGB -> Y'CbCr conversion function, used in <image_to_ycbcr>"()"
+ */
 static void rgb_to_ycbcr_mapfunc(struct Pixel* source, struct Pixel* dest, 
 		int32_t x, int32_t y) 
 {
-	// We assume a range of [0, 255]
+	// We assume a range of [0, 255] for the color components.
 	float r = source->r;
 	float g = source->g;
 	float b = source->b;
@@ -339,6 +348,9 @@ static void rgb_to_ycbcr_mapfunc(struct Pixel* source, struct Pixel* dest,
 	dest->b = 128.0 + 0.5 *      r - 0.418688 * g - 0.081312 *b;
 }
 
+/**
+ * @brief JFIF Y'CbCr -> RGB conversion function, used in <image_to_rgb>"()"
+ */
 static void ycbcr_to_rgb_mapfunc(struct Pixel* source, struct Pixel* dest, 
 		int32_t x, int32_t y) 
 {
@@ -354,11 +366,22 @@ static void ycbcr_to_rgb_mapfunc(struct Pixel* source, struct Pixel* dest,
 	dest->b = yy + 1.772   * (cb - 128.0);
 }
 
+/**
+ * @brief Inplace RGB to Y'CbCr conversion.
+ *
+ * @param imagep the target image
+ */
 void image_to_ycbcr(struct Image* imagep) 
 {
 	image_map(imagep, imagep, rgb_to_ycbcr_mapfunc);
 }
 
+
+/**
+ * @brief Inplace Y'CbCr to RGB conversion.
+ *
+ * @param imagep the target image
+ */
 void image_to_rgb(struct Image* imagep) 
 {
 	image_map(imagep, imagep, ycbcr_to_rgb_mapfunc);
@@ -372,6 +395,14 @@ static void image_clone_mapfunc(struct Pixel* source, struct Pixel* dest,
 	dest->b = source->b;
 }
 
+
+/**
+ * @brief Copies all image data to a new allocated Image struct.
+ *
+ * @param imagep the source image
+ *
+ * @return pointer to the new allocated image
+ */
 struct Image* image_clone(struct Image* imagep) 
 {
 	assert(imagep);
