@@ -58,7 +58,6 @@ void compress_blockarray_dct_inverse(struct BlockArray* arrayp, int32_t quality)
 				floatblock_add(&temp, -128.0, &temp);
 				floatblock_multiply(&float_quant_matrix, &temp);
 
-
 				if ((y == x) && (y == 0) && (i == 0) ) {
 					printf("topr:\n");
 					byteblock_print(&cblock->chan[i]);
