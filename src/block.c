@@ -6,8 +6,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stddef.h>
+#include <math.h>
 #include <assert.h>
 #include <stdint.h>
+#include "eks_math.h"
 #include "block.h"
 
 typedef void (*map_func_t)(void* valuep, int32_t x, int32_t y);
@@ -120,13 +122,13 @@ void floatblock_del(struct FloatBlock* blockp)
 
 
 /**
- * @brief Adds a certain floating point value to the each value of a FloatBlock.
+ * @brief Adds a certain floating point value to the each value of a ByteBlock.
  *
  * @param input The FloatBlock to read the original values from.
  * @param bias_value The value to add to all values of this FloatBlock.
  * @param output Result will be stored in this FloatBlock.
  */
-void byteblock_bias(
+void byteblock_add(
 		struct ByteBlock const* input,
 	       	float bias_value, 
 		struct FloatBlock* output) 
@@ -139,9 +141,29 @@ void byteblock_bias(
 			output->data[y][x] = val + bias_value;
 		}
 	}
-
 }
 
+/**
+ * @brief Adds a certain floating point value to the each value of a FloatBlock.
+ *
+ * @param input The FloatBlock to read the original values from.
+ * @param bias_value The value to add to all values of this FloatBlock.
+ * @param output Result will be stored in this FloatBlock.
+ */
+void floatblock_add(
+		struct FloatBlock const* input,
+	       	float bias_value, 
+		struct FloatBlock* output) 
+{
+	int size = TIMG_BLOCK_SIZE;
+
+	for (int32_t y=0;y<size;y++) {
+		for (int32_t x=0;x<size;x++) {
+			float val =input->data[y][x];
+			output->data[y][x] = val + bias_value;
+		}
+	}
+}
 
 /**
  * @brief Converts a ByteBlock to a FloatBlock.
@@ -161,8 +183,31 @@ void byteblock_to_float(const struct ByteBlock *input,
 	}
 }
 
-/* Some debug helper functions. */
 
+/**
+ * @brief Converts a FloatBlock to a ByteBlock. Output is rounded to the 
+ * nearest integer.
+ *
+ * @param input original FloatBlock
+ * @param output rounded output block
+ */
+void floatblock_to_byte(const struct FloatBlock *input, 
+		struct ByteBlock* output)
+{
+	int size = TIMG_BLOCK_SIZE;
+
+	for (int32_t y=0;y<size;y++) {
+		for (int32_t x=0;x<size;x++) {
+			float val = input->data[y][x];
+
+			if (val < 0) {
+				printf("Warning: float value %f < 0 in byte conv!\n", val);
+			}
+
+			output->data[y][x] = MIN(255, MAX(0, round(val)));
+		}
+	}
+}
 
 /**
  * @brief byteblock_print callback function.
@@ -187,7 +232,6 @@ static void float_print_callback(void* valuep, int32_t x, int32_t y)
 		printf("\n");
 	}
 }
-
 
 /**
  * @brief Prints the values of a ByteBlock.

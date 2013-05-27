@@ -14,9 +14,15 @@ void dct_quantize_floatblock(
 		int32_t quality,
 		struct ByteBlock* output);
 
+void dct_quantize_floatblock_float(
+		const struct FloatBlock* input,
+		int32_t quality,
+		struct FloatBlock* output);
+
 void dct_quantize_byteblock(
 		const struct ByteBlock* input,
 		int32_t quality,
 		struct ByteBlock* output);
+
 
 #endif

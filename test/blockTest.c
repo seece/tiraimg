@@ -56,7 +56,7 @@ void TestBlockBias(CuTest* tc)
 	struct FloatBlock output;
 
 	float bias_amount = -128.0f;
-	byteblock_bias(&input, bias_amount, &output);
+	byteblock_add(&input, bias_amount, &output);
 
 	for (int y=0;y<size;y++) {
 		for (int x=0;x<size;x++) {

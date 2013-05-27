@@ -38,15 +38,21 @@ void byteblock_print(struct ByteBlock* blockp);
 void floatblock_init(struct FloatBlock* blockp);
 struct FloatBlock* floatblock_new();
 void floatblock_del(struct FloatBlock* blockp);
-void byteblock_bias(struct ByteBlock const* input,
+void byteblock_add(struct ByteBlock const* input,
 	       	float bias_value, 
 		struct FloatBlock* output);
 void floatblock_print(struct FloatBlock* blockp);
 void floatblock_multiply(struct FloatBlock* multiplier,
 		struct FloatBlock* target);
+void floatblock_add(
+		struct FloatBlock const* input,
+	       	float bias_value, 
+		struct FloatBlock* output);
 
 void byteblock_to_float(const struct ByteBlock *input, 
 		struct FloatBlock* output);
+void floatblock_to_byte(const struct FloatBlock *input, 
+		struct ByteBlock* output);
 
 //void floatblock_to_ycbcr(struct FloatBlock* blockp);
 

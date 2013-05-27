@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <assert.h>
 #include <math.h>
+#include "eks_math.h"
 #include "block.h"
 #include "jpeg.h"
 
@@ -24,7 +25,7 @@ uint8_t const quantization_matrix[8][8] = {
 
 
 /**
- * @brief Creates a scaled JPEG quantization matrix.
+ * @brief Calculates a scaled JPEG quantization matrix.
  *
  * @param quality The quality value to use, range: [1, 100]
  * @param output Pointer to the result ByteBlock.
@@ -46,7 +47,10 @@ void get_scaled_quant_matrix(int32_t quality, struct ByteBlock* output)
 		for (int32_t x=0;x<8;x++) {
 			int32_t in = quantization_matrix[y][x];
 			int32_t out = round(in*mult);			
-			output->data[y][x] = out;
+
+			// We do not want to save zeroes, since it would mean
+			// we might have to divide by them later on!
+			output->data[y][x] = MAX(1, out);
 		}
 	}
 }

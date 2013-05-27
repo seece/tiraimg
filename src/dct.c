@@ -34,7 +34,7 @@ void dct_quantize_floatblock(
 			float in = (float)input->data[y][x];
 
 			int32_t out = round(in/quant_matrix.data[y][x]);			
-			output->data[y][x] = MIN(MAX(out, 0), 255);
+			output->data[y][x] = out;
 		}
 	}
 }
@@ -122,7 +122,7 @@ void dct_calculate(struct ByteBlock const* input,
 {
 	int32_t size = TIMG_BLOCK_SIZE;
 	struct FloatBlock biased_input;
-	byteblock_bias(input, -128.0, &biased_input);
+	byteblock_add(input, -128.0, &biased_input);
 
 	// Loop through frequencies.
 	for (int32_t y=0;y<size;y++) {
@@ -231,3 +231,25 @@ static dct_blockarray_mapfunc(
 }
 */
 
+void dct_quantize_floatblock_float(
+		const struct FloatBlock* input,
+		int32_t quality,
+		struct FloatBlock* output)
+{
+	int32_t size = TIMG_BLOCK_SIZE;
+	struct ByteBlock quant_matrix;
+
+	assert(quality > 0);
+	assert(quality <= 100);
+
+	get_scaled_quant_matrix(quality, &quant_matrix);
+
+	for (int32_t y=0;y<size;y++) {
+		for (int32_t x=0;x<size;x++) {
+			float in = (float)input->data[y][x];
+
+			float out = round(in/(float)quant_matrix.data[y][x]);			
+			output->data[y][x] = out;
+		}
+	}
+}
