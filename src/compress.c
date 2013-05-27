@@ -72,11 +72,6 @@ void compress_blockarray_dct_inverse(struct BlockArray* arrayp, int32_t quality)
 				}
 
 				dct_calculate_inverse(&temp, &cblock->chan[i]);
-
-				//byteblock_to_float(&cblock->chan[i], &temp);
-
-				//floatblock_to_byte(&temp, &cblock->chan[i]);
-				//dct_quantize_floatblock(&temp, quality, &cblock->chan[i]);
 			}
 		}
 	}
