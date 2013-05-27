@@ -10,10 +10,9 @@
 
 void TestBlockArrayDCT(CuTest* tc) 
 {
-	//struct Image* imagep = image_new(65, 32);
 	struct Image* imagep = image_load("testdata/tiny.ppm");
 	struct BlockArray array;
-	const int32_t quality = 100;
+	const int32_t quality = 90;
 
 	//image_fill_noise(imagep, 10);
 	image_to_blockarray(imagep, &array);
@@ -26,7 +25,7 @@ void TestBlockArrayDCT(CuTest* tc)
 	CuAssertTrue(tc, result != NULL);
 
 	image_save("temp/dctpic.ppm", result);
-	//check_images_equal(tc, imagep, result, 0);
+	check_images_equal(tc, imagep, result, 5);
 
 	image_del(result);
 	blockarray_free(&array);

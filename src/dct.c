@@ -187,7 +187,7 @@ void dct_calculate_inverse(struct FloatBlock const* dctdata,
 		for (int32_t x=0;x<size;x++) {
 			int32_t val = single_idct(x, y, dctdata);
 			// The sample values were biased by 128 before storage.
-			output->data[y][x] = val + 128;
+			output->data[y][x] = MIN(255, MAX(0, val + 128));
 		}
 	}
 }
@@ -249,7 +249,7 @@ void dct_quantize_floatblock_float(
 			float in = (float)input->data[y][x];
 
 			float out = round(in/(float)quant_matrix.data[y][x]);			
-			output->data[y][x] = out;
+			output->data[y][x] = MIN(127.0f, MAX(-128.0f, out));
 		}
 	}
 }
