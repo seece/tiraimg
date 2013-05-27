@@ -14,6 +14,7 @@ void TestBlockArrayDCT(CuTest* tc)
 	struct BlockArray array;
 	const int32_t quality = 90;
 
+	image_to_ycbcr(imagep);
 	//image_fill_noise(imagep, 10);
 	image_to_blockarray(imagep, &array);
 
@@ -21,6 +22,8 @@ void TestBlockArrayDCT(CuTest* tc)
 	compress_blockarray_dct_inverse(&array, quality);
 
 	struct Image* result = blockarray_to_image(&array);
+
+	image_to_rgb(result);
 
 	CuAssertTrue(tc, result != NULL);
 
