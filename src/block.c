@@ -284,13 +284,27 @@ void floatblock_multiply(struct FloatBlock* multiplier,
 	}
 }
 
-void get_zigzag_pos(int32_t i, int32_t* xp, int32_t* yp)
+void get_zigzag_pos(int32_t pos, int32_t* xp, int32_t* yp)
 {
+	int32_t i = pos;
+
+	// we just mirror the values to get the offsets for
+	// the second half of the block
+	if (pos >= 36) {
+		i = 27-(pos-36);
+	}
+
 	int32_t phase = floor((1.0+sqrt(8*i+1))/2.0);
 	int32_t edge = (phase * (phase-1))/2.0;
-	int32_t index = i-edge;
-	int32_t x = phase-index-1;
+	int32_t index = i - edge;
+
+	int32_t x = phase - index - 1;
 	int32_t y = index;
+
+	if (pos >= 36) {
+		x = 7-x;
+		y = 7-y;
+	}
 
 	if ((phase % 2) == 0) {
 		int32_t temp = x;
@@ -305,58 +319,24 @@ void get_zigzag_pos(int32_t i, int32_t* xp, int32_t* yp)
 
 void byteblock_pack(struct ByteBlock* input, struct ByteBlock* output)
 {
-	int written = 0;
-
-	for (int i=0;i<32;i++) {
-		int32_t x = i%8;
-		int32_t y = i/8;
+	for (int i=0;i<64;i++) {
+		int32_t x = i % 8;
+		int32_t y = i / 8;
 		int32_t x2, y2;	
 		get_zigzag_pos(i, &x2, &y2);
 
 		output->data[y][x] = input->data[y2][x2];
 	}
-
-	return;
-
-	for (int z=0;z<16;z++) {
-		int x, y;
-		
-		x = z;
-		y = 0;
-
-		int limit = z+1;
-
-		if (z > 7) {
-			int zz = z-8; // from 0 upwards
-			x = 7;
-			y = zz + 1;
-			limit = 7-zz;
-		}
-
-		for (int i=0;i<limit;i++) {
-			int outx = written % 8;
-			int outy = written / 8;
-			int value;
-
-			if (z % 2 == 0) {
-				value = input->data[y][x];
-
-			} else {
-				value = input->data[x][y];
-			}
-
-			output->data[outy][outx] = value;
-
-			x--;	
-			y++;
-			written++;
-		}
-
-
-	}
 }
 
 void byteblock_unpack(struct ByteBlock* input, struct ByteBlock* output)
 {
+	for (int i=0;i<64;i++) {
+		int32_t x = i%8;
+		int32_t y = i/8;
+		int32_t x2, y2;	
+		get_zigzag_pos(i, &x2, &y2);
 
+		output->data[y2][x2] = input->data[y][x];
+	}
 }

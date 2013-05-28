@@ -115,22 +115,15 @@ void TestByteBlockPack(CuTest* tc)
 	struct ByteBlock output;
 	struct ByteBlock result;
 
+	// Fill the test input data with sequential values,
+	// so the correctness is easy to check.
 	for (int i=0;i<64;i++) {
 		input.data[i/8][i%8] = i;
 		output.data[i/8][i%8] = 0;
 	}
 
-	printf("blockpack input:\n");
-
-	byteblock_print(&input);
-
 	byteblock_pack(&input, &output);
-	printf("blockpack output\n");
-	byteblock_print(&output);
-	printf("\n");
-
 	byteblock_compare_test(tc, &zigzag_order, &output);
-
 	byteblock_unpack(&output, &result);
 	byteblock_compare_test(tc, &input, &result);
 }
