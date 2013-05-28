@@ -54,7 +54,7 @@ void byteblock_to_float(const struct ByteBlock *input,
 void floatblock_to_byte(const struct FloatBlock *input, 
 		struct ByteBlock* output);
 void byteblock_pack(struct ByteBlock* input, struct ByteBlock* output);
-void byteblock_unpack(struct ByteBlock* input);
+void byteblock_unpack(struct ByteBlock* input, struct ByteBlock* output);
 
 //void floatblock_to_ycbcr(struct FloatBlock* blockp);
 

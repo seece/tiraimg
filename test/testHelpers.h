@@ -1,6 +1,10 @@
 #ifndef TEST_HELPERS_H_
 #define TEST_HELPERS_H_
 
+#include "CuTest.h"
+#include "image/image.h"
+#include "block.h"
+
 static void byteblock_compare_test(CuTest* tc, struct ByteBlock* a, struct ByteBlock* b) 
 {
 	int size = TIMG_BLOCK_SIZE;

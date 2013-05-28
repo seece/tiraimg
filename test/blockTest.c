@@ -9,6 +9,7 @@
 #include "eks_math.h"
 #include "CuTest.h"
 #include "block.h"
+#include "testHelpers.h"
 #include "test_data.h"
 
 static const int size = TIMG_BLOCK_SIZE;
@@ -112,6 +113,7 @@ void TestByteBlockPack(CuTest* tc)
 {
 	struct ByteBlock input;
 	struct ByteBlock output;
+	struct ByteBlock result;
 
 	for (int i=0;i<64;i++) {
 		input.data[i/8][i%8] = i;
@@ -127,6 +129,10 @@ void TestByteBlockPack(CuTest* tc)
 	byteblock_print(&output);
 	printf("\n");
 
+	byteblock_compare_test(tc, &zigzag_order, &output);
+
+	byteblock_unpack(&output, &result);
+	byteblock_compare_test(tc, &input, &result);
 }
 
 CuSuite* CuGetBlockSuite(void) 

@@ -284,26 +284,54 @@ void floatblock_multiply(struct FloatBlock* multiplier,
 	}
 }
 
+void get_zigzag_pos(int32_t i, int32_t* xp, int32_t* yp)
+{
+	int32_t phase = floor((1.0+sqrt(8*i+1))/2.0);
+	int32_t edge = (phase * (phase-1))/2.0;
+	int32_t index = i-edge;
+	int32_t x = phase-index-1;
+	int32_t y = index;
+
+	if ((phase % 2) == 0) {
+		int32_t temp = x;
+		x = y;
+		y = temp;
+	}
+
+	*xp = x;
+	*yp = y;
+
+}
+
 void byteblock_pack(struct ByteBlock* input, struct ByteBlock* output)
 {
 	int written = 0;
 
-	for (int z=0;z<8;z++) {
+	for (int i=0;i<32;i++) {
+		int32_t x = i%8;
+		int32_t y = i/8;
+		int32_t x2, y2;	
+		get_zigzag_pos(i, &x2, &y2);
+
+		output->data[y][x] = input->data[y2][x2];
+	}
+
+	return;
+
+	for (int z=0;z<16;z++) {
 		int x, y;
 		
 		x = z;
 		y = 0;
 
-		int zz = z-8;
 		int limit = z+1;
 
-		/*
 		if (z > 7) {
-			x = 8 - zz;
-			y = zz;
-			limit = 8-zz;
+			int zz = z-8; // from 0 upwards
+			x = 7;
+			y = zz + 1;
+			limit = 7-zz;
 		}
-		*/
 
 		for (int i=0;i<limit;i++) {
 			int outx = written % 8;
@@ -328,7 +356,7 @@ void byteblock_pack(struct ByteBlock* input, struct ByteBlock* output)
 	}
 }
 
-void byteblock_unpack(struct ByteBlock* input)
+void byteblock_unpack(struct ByteBlock* input, struct ByteBlock* output)
 {
 
 }
