@@ -108,6 +108,27 @@ void TestByteBlockToFloatConversion(CuTest* tc)
 	}
 }
 
+void TestByteBlockPack(CuTest* tc) 
+{
+	struct ByteBlock input;
+	struct ByteBlock output;
+
+	for (int i=0;i<64;i++) {
+		input.data[i/8][i%8] = i;
+		output.data[i/8][i%8] = 0;
+	}
+
+	printf("blockpack input:\n");
+
+	byteblock_print(&input);
+
+	byteblock_pack(&input, &output);
+	printf("blockpack output\n");
+	byteblock_print(&output);
+	printf("\n");
+
+}
+
 CuSuite* CuGetBlockSuite(void) 
 {
 	CuSuite* suite = CuSuiteNew();
@@ -116,6 +137,7 @@ CuSuite* CuGetBlockSuite(void)
 	SUITE_ADD_TEST(suite, TestBlockBias);
 	SUITE_ADD_TEST(suite, TestBlockMultiply);
 	SUITE_ADD_TEST(suite, TestByteBlockToFloatConversion);
+	SUITE_ADD_TEST(suite, TestByteBlockPack);
 	//SUITE_ADD_TEST(suite, TestFloatColorspaceConversion);
 	return suite;
 }

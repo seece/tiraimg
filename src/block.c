@@ -284,3 +284,51 @@ void floatblock_multiply(struct FloatBlock* multiplier,
 	}
 }
 
+void byteblock_pack(struct ByteBlock* input, struct ByteBlock* output)
+{
+	int written = 0;
+
+	for (int z=0;z<8;z++) {
+		int x, y;
+		
+		x = z;
+		y = 0;
+
+		int zz = z-8;
+		int limit = z+1;
+
+		/*
+		if (z > 7) {
+			x = 8 - zz;
+			y = zz;
+			limit = 8-zz;
+		}
+		*/
+
+		for (int i=0;i<limit;i++) {
+			int outx = written % 8;
+			int outy = written / 8;
+			int value;
+
+			if (z % 2 == 0) {
+				value = input->data[y][x];
+
+			} else {
+				value = input->data[x][y];
+			}
+
+			output->data[outy][outx] = value;
+
+			x--;	
+			y++;
+			written++;
+		}
+
+
+	}
+}
+
+void byteblock_unpack(struct ByteBlock* input)
+{
+
+}
