@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <assert.h>
 #include "block.h"
 #include "jpeg.h"
@@ -74,4 +75,34 @@ void compress_blockarray_dct_inverse(struct BlockArray* arrayp, int32_t quality)
 			}
 		}
 	}
+}
+
+/**
+ * @brief Copies ByteBlock data to a given buffer, but discards
+ * the trailing zeros.   
+ *
+ * @param block the source block
+ * @param output destination byte buffer, must be at least 64 bytes 
+ * long.
+ * @return The amount of bytes written to the buffer.
+ */
+int32_t compress_block_encode(const struct ByteBlock* block, 
+	uint8_t* output)
+{
+	int32_t length = 64;
+
+	for (int32_t i=63;i>=0;i--) {
+		int32_t x = i % 8;
+		int32_t y = i / 8;
+
+		int32_t val = block->data[y][x];
+
+		if (val != 0) {
+			length = i+1;
+			break;
+		}
+	}
+
+	memcpy(output, block->data, sizeof(uint8_t) * length);
+	return length;
 }

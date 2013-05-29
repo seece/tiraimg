@@ -5,7 +5,7 @@
 #include "image/image.h"
 #include "block.h"
 
-static void byteblock_compare_test(CuTest* tc, struct ByteBlock* a, struct ByteBlock* b) 
+static void byteblock_compare_test(CuTest* tc, const struct ByteBlock* a, const struct ByteBlock* b) 
 {
 	int size = TIMG_BLOCK_SIZE;
 

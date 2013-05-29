@@ -1,7 +1,11 @@
 
 #include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
 #include "CuTest.h"
 #include "block.h"
+#include "dct.h"
 #include "jpeg.h"
 #include "image/image.h"
 #include "compress.h"
@@ -34,10 +38,34 @@ void TestBlockArrayDCT(CuTest* tc)
 	image_del(imagep);
 }
 
+void TestBlockEncode(CuTest* tc)
+{
+	struct ByteBlock output;
+	struct ByteBlock quantized;
+	uint8_t data[64];
+	int32_t length = -1;
+	int32_t quality = 25;
+
+	dct_quantize_byteblock(&test_input, quality, &quantized);
+	byteblock_pack(&quantized, &output);
+
+	length = compress_block_encode(&output, data);
+
+	CuAssertTrue(tc, length > 0);
+
+	// Check that the data was copied successfully.
+	for (int32_t i=0;i<length;i++) {
+		int32_t x = i % 8;
+		int32_t y = i / 8;
+		CuAssertIntEquals(tc, data[i], output.data[y][x]);
+	}
+}
+
 CuSuite* CuGetSuite(void) 
 {
 	CuSuite* suite = CuSuiteNew();
 
 	SUITE_ADD_TEST(suite, TestBlockArrayDCT);
+	SUITE_ADD_TEST(suite, TestBlockEncode);
 	return suite;
 }
