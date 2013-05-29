@@ -61,11 +61,24 @@ void TestBlockEncode(CuTest* tc)
 	}
 }
 
+void TestImageCompression(CuTest* tc)
+{
+	struct Image* imagep = image_load("testdata/small.ppm");
+	uint8_t* data = NULL;
+	uint64_t length = 0;
+	data = compress_image_full(imagep, 85, &length);
+	CuAssertTrue(tc, data != NULL);
+	CuAssertTrue(tc, length > 0);
+
+	image_del(imagep);
+}
+
 CuSuite* CuGetSuite(void) 
 {
 	CuSuite* suite = CuSuiteNew();
 
 	SUITE_ADD_TEST(suite, TestBlockArrayDCT);
 	SUITE_ADD_TEST(suite, TestBlockEncode);
+	SUITE_ADD_TEST(suite, TestImageCompression);
 	return suite;
 }

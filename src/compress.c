@@ -106,3 +106,46 @@ int32_t compress_block_encode(const struct ByteBlock* block,
 	memcpy(output, block->data, sizeof(uint8_t) * length);
 	return length;
 }
+
+// returns a pointer to the allocated array
+// this doesn't write any headers yet
+uint8_t* compress_image_full(const struct Image* imagep, int32_t quality,
+	uint64_t* length)
+{
+	struct Image* tempimage = image_clone(imagep);
+	struct BlockArray array;
+	assert(tempimage);
+
+	image_to_ycbcr(tempimage);
+	image_to_blockarray(tempimage, &array);
+
+	// maximum of 65 bytes per MCU (
+	int32_t blocks = imagep->width * imagep->height;
+	// pixel data + length information (would cusotm huffman value be better??)
+	uint64_t max_length = blocks*64*3 + blocks; 
+	uint8_t* temp = malloc(max_length);
+
+	uint64_t pos = 0;
+	int32_t rows = array.rows;
+	int32_t cols = array.columns;
+	struct ByteBlock tempblock;
+
+	for (int y=0;y<rows;y++) {
+		for (int x=0;x<cols;x++) {
+			int32_t ofs = y*array.columns + x;
+			struct ColorBlock* cblock = &array.data[ofs];
+
+			byteblock_pack(cblock, &tempblock);
+			// TODO add serialization to temp array
+			// TODO save image dimensions also somewhere
+
+		}
+	}
+
+	free(temp);
+	blockarray_free(&array);
+	image_del(tempimage);
+
+	return NULL;
+}
+

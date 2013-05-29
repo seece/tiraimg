@@ -253,3 +253,4 @@ void dct_quantize_floatblock_float(
 		}
 	}
 }
+
