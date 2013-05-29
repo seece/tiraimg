@@ -48,9 +48,10 @@ void get_scaled_quant_matrix(int32_t quality, struct ByteBlock* output)
 			int32_t in = quantization_matrix[y][x];
 			int32_t out = round(in*mult);			
 
-			// We do not want to save zeroes, since it would mean
-			// we might have to divide by them later on!
-			output->data[y][x] = MAX(1, out);
+			// Limit the values to the range of [1, 255], since we
+			// are outputting bytes, and also because it's JPEG
+			// baseline spec compatible.
+			output->data[y][x] = MIN(255, MAX(1, out));
 		}
 	}
 }
