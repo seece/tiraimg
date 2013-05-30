@@ -7,6 +7,13 @@
 #include "image/image.h"
 #include "dct.h"
 
+/**
+ * @brief Calculates an in-place DCT for the given BlockArray, and saves
+ * the quantized results.
+ *
+ * @param arrayp target array
+ * @param quality compresion quality, range: [1, 100]
+ */
 void compress_blockarray_dct(struct BlockArray* arrayp, int32_t quality)
 {
 	int32_t rows = arrayp->rows;
@@ -30,6 +37,13 @@ void compress_blockarray_dct(struct BlockArray* arrayp, int32_t quality)
 	}
 }
 
+/**
+ * @brief Calculates an in-place inverse DCT for the given BlockArray. Decodes the
+ * quantized values before processing.
+ *
+ * @param arrayp target BlockArray with quantized DCT-coefficients
+ * @param quality the quality level used in compression
+ */
 void compress_blockarray_dct_inverse(struct BlockArray* arrayp, int32_t quality)
 {
 	int32_t rows = arrayp->rows;
@@ -107,45 +121,68 @@ int32_t compress_block_encode(const struct ByteBlock* block,
 	return length;
 }
 
-// returns a pointer to the allocated array
-// this doesn't write any headers yet
+
+/**
+ * @brief Compresses the given image and returns a binary buffer with
+ * the saved image data.
+ *
+ * @param imagep source image
+ * @param quality compression quality, range: [1, 100]
+ * @param length compressed binary blob length is saved here
+ *
+ * @return pointer to the compressed image data
+ */
 uint8_t* compress_image_full(const struct Image* imagep, int32_t quality,
 	uint64_t* length)
 {
 	struct Image* tempimage = image_clone(imagep);
 	struct BlockArray array;
+	struct ByteBlock tempblock;
 	assert(tempimage);
 
 	image_to_ycbcr(tempimage);
 	image_to_blockarray(tempimage, &array);
 
-	// maximum of 65 bytes per MCU (
-	int32_t blocks = imagep->width * imagep->height;
-	// pixel data + length information (would cusotm huffman value be better??)
-	uint64_t max_length = blocks*64*3 + blocks; 
+	int32_t blocks = array.columns * array.rows;
+	// width & height + quality level (uint8_t)
+	int32_t header_length = 2*sizeof(int32_t) + 1;
+ 	// pixel data + block length information + header
+	uint64_t max_length = blocks*64*3 + blocks + header_length; 
 	uint8_t* temp = malloc(max_length);
+	uint64_t written = 0;
+	uint8_t quality_byte = quality & 0xFF;
 
-	uint64_t pos = 0;
-	int32_t rows = array.rows;
-	int32_t cols = array.columns;
-	struct ByteBlock tempblock;
+	memmove(temp, &imagep->width, 4);
+	memmove((temp + 4), &imagep->height, 4);
+	memmove((temp + 8), &quality_byte, 1);
 
-	for (int y=0;y<rows;y++) {
-		for (int x=0;x<cols;x++) {
-			int32_t ofs = y*array.columns + x;
-			struct ColorBlock* cblock = &array.data[ofs];
+	written += header_length;
 
-			byteblock_pack(cblock, &tempblock);
-			// TODO add serialization to temp array
-			// TODO save image dimensions also somewhere
+	int32_t block_length;
 
+	for (int i=0;i<blocks;i++) {
+		struct ColorBlock* cblock = &array.data[i];
+
+		for (int u=0;u<3;u++) {
+			byteblock_pack(&cblock->chan[u], &tempblock);
+			// We save the block length + actual block data
+			uint64_t block_start = written++;
+			block_length = compress_block_encode(&cblock->chan[u], 
+				&temp[written]);
+			memmove(temp + block_start, &block_length, 1);
+
+			written += block_length;
 		}
 	}
+
+	uint8_t* finaldata = malloc(written);
+	memcpy(finaldata, temp, written);
+	*length = written;
 
 	free(temp);
 	blockarray_free(&array);
 	image_del(tempimage);
 
-	return NULL;
+	return finaldata;
 }
 
