@@ -3,6 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include "block.h"
+#include "tiraimg.h"
 #include "jpeg.h"
 #include "image/image.h"
 #include "dct.h"
@@ -64,26 +65,10 @@ void compress_blockarray_dct_inverse(struct BlockArray* arrayp, int32_t quality)
 			int32_t ofs = y*arrayp->columns + x;
 			struct ColorBlock* cblock = &arrayp->data[ofs];
 
-			//printf("%d, %d = %d\n", x, y, ofs);
-
 			for (int i=0;i<3;i++) {
-				//byteblock_add(&cblock->chan[i], -128, &temp);
-
 				byteblock_to_float(&cblock->chan[i], &temp);
 				floatblock_add(&temp, -128.0, &temp);
 				floatblock_multiply(&float_quant_matrix, &temp);
-
-				if ((y == x) && (y == 0) && (i == 0) ) {
-					printf("topr:\n");
-					byteblock_print(&cblock->chan[i]);
-					printf("\n");
-					//byteblock_print(&cblock->chan[i]);
-					//byteblock_print(&quant_matrix);
-					floatblock_print(&float_quant_matrix);
-					printf("\n");
-					floatblock_print(&temp);
-					printf("\n");
-				}
 
 				dct_calculate_inverse(&temp, &cblock->chan[i]);
 			}
@@ -103,6 +88,7 @@ void compress_blockarray_dct_inverse(struct BlockArray* arrayp, int32_t quality)
 int32_t compress_block_encode(const struct ByteBlock* block, 
 	uint8_t* output)
 {
+	assert(block);
 	int32_t length = 64;
 
 	for (int32_t i=63;i>=0;i--) {
@@ -117,6 +103,8 @@ int32_t compress_block_encode(const struct ByteBlock* block,
 		}
 	}
 
+	assert(length > 0);
+	assert(length <= 64);
 	memcpy(output, block->data, sizeof(uint8_t) * length);
 	return length;
 }
@@ -144,17 +132,18 @@ uint8_t* compress_image_full(const struct Image* imagep, int32_t quality,
 	image_to_blockarray(tempimage, &array);
 
 	int32_t blocks = array.columns * array.rows;
-	// width & height + quality level (uint8_t)
-	int32_t header_length = 2*sizeof(int32_t) + 1;
- 	// pixel data + block length information + header
-	uint64_t max_length = blocks*64*3 + blocks + header_length; 
+	// magic + width & height + quality level (uint8_t) 
+	int32_t header_length = 4 + 2*sizeof(int32_t) + 1;
+ 	// pixel data + block length information for each channel + header
+	uint64_t max_length = blocks*64*3 + blocks*3 + header_length; 
 	uint8_t* temp = malloc(max_length);
 	uint64_t written = 0;
 	uint8_t quality_byte = quality & 0xFF;
 
-	memmove(temp, &imagep->width, 4);
-	memmove((temp + 4), &imagep->height, 4);
-	memmove((temp + 8), &quality_byte, 1);
+	memmove(temp, tiraimg_magic, 4);
+	memmove((temp + 4), &imagep->width, 4);
+	memmove((temp + 8), &imagep->height, 4);
+	memmove((temp + 12), &quality_byte, 1);
 
 	written += header_length;
 
@@ -167,8 +156,8 @@ uint8_t* compress_image_full(const struct Image* imagep, int32_t quality,
 			byteblock_pack(&cblock->chan[u], &tempblock);
 			// We save the block length + actual block data
 			uint64_t block_start = written++;
-			block_length = compress_block_encode(&cblock->chan[u], 
-				&temp[written]);
+			block_length = compress_block_encode(&cblock->chan[u], &temp[written]);
+			assert(block_length<=64);
 			memmove(temp + block_start, &block_length, 1);
 
 			written += block_length;
@@ -186,3 +175,8 @@ uint8_t* compress_image_full(const struct Image* imagep, int32_t quality,
 	return finaldata;
 }
 
+struct Image* decompress_image_full(uint8_t* data, uint64_t length)
+{
+	// TODO implement decompression
+	return NULL;
+}

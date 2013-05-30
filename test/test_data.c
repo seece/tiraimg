@@ -25,6 +25,10 @@ struct FloatBlock test_dct_data = {{
 	{-0.17,    0.14,   -1.07,   -4.19,   -1.17,   -0.10,    0.50,    1.68}
 }};
 
+
+/**
+ * @brief RGB picture data of tiny.ppm
+ */
 const uint8_t tinypic_data[] = {
 	114, 97, 55, 64, 57, 33, 199, 187, 121, 193, 
 	184, 121, 199, 190, 125, 196, 186, 116, 186, 176, 

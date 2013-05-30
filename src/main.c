@@ -7,6 +7,9 @@
 #include "tiraimg.h"
 #include "compress.h"
 
+/**
+ * @brief Program processing mode.
+ */
 enum {ACTION_COMPRESS, ACTION_DECOMPRESS} action = 
 	ACTION_COMPRESS;
 
@@ -75,6 +78,31 @@ void handle_arguments(int argc, char** argv)
 	output_path = argv[optind + 1];
 }
 
+/**
+ * @brief Writes a byte array to the disk.
+ *
+ * @param path target file path
+ * @param data pointer to the data to be written
+ * @param length length of the data to be written
+ *
+ * @return how many bytes were actually written to the file
+ */
+unsigned long write_file(char* path, unsigned char* data, unsigned long length)
+{
+	unsigned long bytes_written = 0;
+	FILE* fp;	
+	fp = fopen(path, "w");
+
+	if (fp == NULL)
+		return 0;
+
+	bytes_written = fwrite(data, 1, length, fp);
+
+	fclose(fp);
+
+	return bytes_written;
+}
+
 int main(int argc, char** argv) 
 {
 	handle_arguments(argc, argv);
@@ -82,7 +110,23 @@ int main(int argc, char** argv)
 	printf("input: %s output: %s\n", input_path, output_path);
 
 	if (action == ACTION_COMPRESS) {
-		printf("compress\n");
+		struct Image* imagep = image_load(input_path);
+		printf("Picture dimensions: %dx%d\n", imagep->width, imagep->height);
+		unsigned long length = 0;
+		unsigned long result = 0;
+		unsigned char* data = compress_image_full(imagep, quality, &length);
+
+		printf("Saving %lu bytes to %s...", length, output_path);
+
+		result = write_file(output_path, data, length);
+
+		if (result == length) {
+			printf("OK!\n");
+		} else {
+			printf("ERROR: Only wrote %lu bytes!\n", result);
+		}
+
+		image_del(imagep);
 	}
 
 	if (action == ACTION_DECOMPRESS) {

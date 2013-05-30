@@ -252,19 +252,6 @@ void floatblock_print(struct FloatBlock* blockp)
 	block_map((void *)blockp, float_print_callback);
 }
 
-/*
-static float_ycbcr_callback(void* valuep, int32_t x, int32_t y)
-{
-	//struct FloatBlock* block = (struct FloatBlock*) valuep;
-	float* arrayp = (float*) valuep;
-}
-
-void floatblock_to_ycbcr(struct FloatBlock* blockp)
-{
-	block_map((void *)blockp, float_ycbcr_callback);
-}
-*/
-
 /**
  * @brief Entrywise multiplication of two FloatBlocks.
  *
@@ -283,7 +270,16 @@ void floatblock_multiply(struct FloatBlock* multiplier,
 	}
 }
 
-void get_zigzag_pos(int32_t pos, int32_t* xp, int32_t* yp)
+
+/**
+ * @brief Maps a block index (range: [0, 64[) to a unique xy-coordinates.
+ * Used for reorganizing blocks to a zigzag pattern and vice-versa.
+ *
+ * @param pos the input index
+ * @param xp pointer where the calcluated x-coordinate is saved
+ * @param yp pointer where the calculated y-coordinate is saved
+ */
+static void get_zigzag_pos(int32_t pos, int32_t* xp, int32_t* yp)
 {
 	int32_t i = pos;
 
@@ -316,6 +312,13 @@ void get_zigzag_pos(int32_t pos, int32_t* xp, int32_t* yp)
 
 }
 
+/**
+ * @brief Reorganizes the block contents to a zigzag-pattern for
+ * better compression. 
+ *
+ * @param input source data
+ * @param output output block, shouldn't be same as input
+ */
 void byteblock_pack(struct ByteBlock* input, struct ByteBlock* output)
 {
 	for (int i=0;i<64;i++) {
@@ -328,6 +331,13 @@ void byteblock_pack(struct ByteBlock* input, struct ByteBlock* output)
 	}
 }
 
+
+/**
+ * @brief Unpacks a zigzag pattern byteblock.
+ *
+ * @param input the reorganized block
+ * @param output destination for data, shouldn't be same as input
+ */
 void byteblock_unpack(struct ByteBlock* input, struct ByteBlock* output)
 {
 	for (int i=0;i<64;i++) {

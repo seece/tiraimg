@@ -273,6 +273,15 @@ void image_to_blockarray(struct Image* imagep, struct BlockArray* arrayp)
 }
 
 
+/**
+ * @brief Converts a BlockArray to an image. The image will be in 
+ * the same colorspace as the original BlockArray.
+ *
+ * @param arrayp the source block array
+ *
+ * @return pointer to a new allocated image with the same content
+ * as the source BlockArray
+ */
 struct Image* blockarray_to_image(struct BlockArray* arrayp)
 {
 	assert(arrayp);
