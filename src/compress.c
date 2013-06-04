@@ -9,6 +9,15 @@
 #include "dct.h"
 #include "huffman.h"
 
+const int image_header_size = 4 + 2*sizeof(int32_t) + 1;
+
+struct ImageHeader {
+	char magic[4];
+	int32_t width;
+	int32_t height;
+	uint8_t quality;
+};
+
 /**
  * @brief Calculates an in-place DCT for the given BlockArray, and saves
  * the quantized results.
@@ -110,6 +119,31 @@ int32_t compress_block_encode(const struct ByteBlock* block,
 	return length;
 }
 
+int32_t compress_block_decode(uint8_t* input, struct ByteBlock* block)
+{
+	int32_t pos = 0;
+	int32_t length = 0;
+
+	memset(block->data, 0, sizeof(block->data));
+	memcpy(&length, input, 1); // we assume a little-endian architecture
+
+	assert(length <= 64);
+
+	pos+=1;
+
+	for (int32_t i=0;i<length;i++) {
+		int32_t x, y;
+		x = i % 8;
+		y = i / 8;
+
+		block->data[y][x] = input[pos+i];
+	}
+
+	pos+=length;
+
+	return pos;
+}
+
 static uint64_t write_block_data(struct BlockArray* arrayp, uint8_t* dest)
 {
 	struct ByteBlock tempblock;
@@ -135,6 +169,43 @@ static uint64_t write_block_data(struct BlockArray* arrayp, uint8_t* dest)
 	return written;
 }
 
+static uint64_t read_block_data(uint8_t* data, struct BlockArray* arrayp)
+{
+	int32_t blocks = arrayp->columns * arrayp->rows;
+	arrayp->data = calloc(blocks, sizeof(struct ColorBlock));
+
+	size_t pos = 0;
+
+	for (int32_t i=0;i<blocks;i++) {
+		for (int32_t u=0;u<3;u++) {
+			pos += compress_block_decode(data+pos, &arrayp->data[i].chan[u]);
+		}
+	}
+
+	return pos;
+}
+
+
+uint64_t serialize_header(struct ImageHeader* header, uint8_t* output)
+{
+	memmove(output, header->magic, 4);
+	memmove((output+ 4), &header->width, 4);
+	memmove((output+ 8), &header->height, 4);
+	memmove((output+ 12), &header->quality, 1);
+
+	return image_header_size;
+}
+
+uint64_t unserialize_header(uint8_t* data, struct ImageHeader* header)
+{
+	memcpy(&header->magic, data, 4);
+	memcpy(&header->width, data+4, 4);
+	memcpy(&header->height, data+8, 4);
+	memcpy(&header->quality, data+12, 1);
+
+	return image_header_size;
+}
+
 /**
  * @brief Compresses the given image and returns a binary buffer with
  * the saved image data.
@@ -158,31 +229,29 @@ uint8_t* compress_image_full(const struct Image* imagep, int32_t quality,
 
 	int32_t blocks = array.columns * array.rows;
 	// magic + width & height + quality level (uint8_t) 
-	int32_t header_length = 4 + 2*sizeof(int32_t) + 1;
+	int32_t header_length = image_header_size;
  	// pixel data + block length information for each channel + header
 	uint64_t max_length = blocks*64*3 + blocks*3 + header_length; 
 	uint8_t* temp = malloc(max_length);
 	uint8_t* block_data = NULL;
 	uint64_t datasize = 0;
 	uint64_t block_data_length, image_data_length;
-	uint8_t quality_byte = quality & 0xFF;
 
-	memmove(temp, tiraimg_magic, 4);
-	memmove((temp + 4), &imagep->width, 4);
-	memmove((temp + 8), &imagep->height, 4);
-	memmove((temp + 12), &quality_byte, 1);
+	struct ImageHeader header = {
+		.magic = {'C', 'A', 'T', 'S'},
+		.width = imagep->width,
+		.height= imagep->height,
+		.quality = quality & 0xFF,
+	};
 
-	datasize += header_length;
+	datasize += serialize_header(&header, temp);
+
 	image_data_length = write_block_data(&array, temp+datasize);
 
-	assert(image_data_length> 0);
-
+	assert(image_data_length > 0);
 	block_data = huffman_encode(temp+datasize, image_data_length, &block_data_length);
-
 	assert(block_data_length > 0);
-
 	datasize += block_data_length;
-
 	assert(header_length + block_data_length == datasize);
 	
 	uint8_t* finaldata = malloc(datasize);
@@ -200,6 +269,36 @@ uint8_t* compress_image_full(const struct Image* imagep, int32_t quality,
 
 struct Image* decompress_image_full(uint8_t* data, uint64_t length)
 {
-	// TODO implement decompression
-	return NULL;
+	uint64_t datasize = 0;
+	uint64_t pos = 0;
+	struct ImageHeader header;
+	struct BlockArray array;
+
+	pos += unserialize_header(data, &header);
+	array.columns= header.width/8;
+	array.rows = header.height/8;
+	array.width = header.width;
+	array.height = header.height;
+
+	if (strncmp(tiraimg_magic, header.magic, 4)) {
+		fprintf(stderr, "Invalid magic value!\n");
+		return NULL;
+	}
+
+	printf("Dimensions: %dx%d, quality: %d\n", header.width, header.height, 
+			header.quality);
+
+	uint64_t data_len = length - pos;
+
+	uint8_t* imagedata = huffman_decode(data + pos, data_len, &datasize);
+	uint64_t real_datasize = read_block_data(imagedata, &array);
+
+	assert(datasize == real_datasize);
+
+	struct Image* imagep = blockarray_to_image(&array);
+	image_to_rgb(imagep);
+
+	free(imagedata);
+
+	return imagep;
 }

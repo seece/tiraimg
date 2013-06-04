@@ -11,7 +11,7 @@ double stat_image_mean_absolute_error(struct Image* expected, struct Image* resu
 	assert(expected->width == result->width);
 	assert(expected->height == result->height);
 	
-	int32_t count = expected->width * expected->width;
+	int32_t count = expected->width * expected->height;
 	double sum = 0.0;
 
 	for (int32_t i=0;i<count;i++) {
