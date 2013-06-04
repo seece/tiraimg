@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include <assert.h>
 #include "tiraimg.h"
 #include "compress.h"
 
@@ -71,7 +72,7 @@ void handle_arguments(int argc, char** argv)
 
 	if (argument_count < 2) {
 		print_usage();
-		exit(0);
+		exit(EXIT_FAILURE);
 	}
 
 	input_path = argv[optind];
@@ -103,6 +104,25 @@ unsigned long write_file(char* path, unsigned char* data, unsigned long length)
 	return bytes_written;
 }
 
+unsigned char* read_file(char* path, unsigned long* length) 
+{
+	FILE* fp = fopen(path, "rb");
+
+	if (fp == NULL) {
+		return NULL;
+	}
+
+	fseek(fp, 0, SEEK_END);
+	*length = ftell(fp);
+	rewind(fp);
+
+	unsigned char* data = malloc(*length);
+	assert(fread(data, 1, *length, fp) == *length);
+	fclose(fp);
+
+	return data;
+}
+
 int main(int argc, char** argv) 
 {
 	handle_arguments(argc, argv);
@@ -131,7 +151,23 @@ int main(int argc, char** argv)
 
 	if (action == ACTION_DECOMPRESS) {
 		printf("decompress\n");
+		unsigned long data_len;
+		unsigned char* data = read_file(input_path, &data_len);
+
+		if (!data) {
+			printf("ERROR: Can't load file %s!\n", input_path);
+			exit(EXIT_FAILURE);
+		}
+
+		struct Image* imagep = decompress_image_full(data, data_len);
+
+		if (!imagep) {
+			printf("ERROR: Image decompression failure.\n");
+			exit(EXIT_FAILURE);
+		}
+
+		image_save(output_path, imagep);
 	}
 
-	exit(0);
+	exit(EXIT_SUCCESS);
 }
