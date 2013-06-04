@@ -7,6 +7,7 @@
 #include "jpeg.h"
 #include "image/image.h"
 #include "dct.h"
+#include "huffman.h"
 
 /**
  * @brief Calculates an in-place DCT for the given BlockArray, and saves
@@ -109,6 +110,30 @@ int32_t compress_block_encode(const struct ByteBlock* block,
 	return length;
 }
 
+static uint64_t write_block_data(struct BlockArray* arrayp, uint8_t* dest)
+{
+	struct ByteBlock tempblock;
+	int32_t blocks = arrayp->columns * arrayp->rows;
+	int32_t block_length;
+	uint64_t written = 0;
+
+	for (int i=0;i<blocks;i++) {
+		struct ColorBlock* cblock = &arrayp->data[i];
+
+		for (int u=0;u<3;u++) {
+			byteblock_pack(&cblock->chan[u], &tempblock);
+			// We save the block length + actual block data
+			uint64_t block_start = written++;
+			block_length = compress_block_encode(&cblock->chan[u], &dest[written]);
+			assert(block_length<=64);
+			memmove(dest + block_start, &block_length, 1);
+
+			written += block_length;
+		}
+	}
+
+	return written;
+}
 
 /**
  * @brief Compresses the given image and returns a binary buffer with
@@ -125,7 +150,7 @@ uint8_t* compress_image_full(const struct Image* imagep, int32_t quality,
 {
 	struct Image* tempimage = image_clone(imagep);
 	struct BlockArray array;
-	struct ByteBlock tempblock;
+
 	assert(tempimage);
 
 	image_to_ycbcr(tempimage);
@@ -137,7 +162,9 @@ uint8_t* compress_image_full(const struct Image* imagep, int32_t quality,
  	// pixel data + block length information for each channel + header
 	uint64_t max_length = blocks*64*3 + blocks*3 + header_length; 
 	uint8_t* temp = malloc(max_length);
-	uint64_t written = 0;
+	uint8_t* block_data = NULL;
+	uint64_t datasize = 0;
+	uint64_t block_data_length, image_data_length;
 	uint8_t quality_byte = quality & 0xFF;
 
 	memmove(temp, tiraimg_magic, 4);
@@ -145,29 +172,25 @@ uint8_t* compress_image_full(const struct Image* imagep, int32_t quality,
 	memmove((temp + 8), &imagep->height, 4);
 	memmove((temp + 12), &quality_byte, 1);
 
-	written += header_length;
+	datasize += header_length;
+	image_data_length = write_block_data(&array, temp+datasize);
 
-	int32_t block_length;
+	assert(image_data_length> 0);
 
-	for (int i=0;i<blocks;i++) {
-		struct ColorBlock* cblock = &array.data[i];
+	block_data = huffman_encode(temp+datasize, image_data_length, &block_data_length);
 
-		for (int u=0;u<3;u++) {
-			byteblock_pack(&cblock->chan[u], &tempblock);
-			// We save the block length + actual block data
-			uint64_t block_start = written++;
-			block_length = compress_block_encode(&cblock->chan[u], &temp[written]);
-			assert(block_length<=64);
-			memmove(temp + block_start, &block_length, 1);
+	assert(block_data_length > 0);
 
-			written += block_length;
-		}
-	}
+	datasize += block_data_length;
 
-	uint8_t* finaldata = malloc(written);
-	memcpy(finaldata, temp, written);
-	*length = written;
+	assert(header_length + block_data_length == datasize);
+	
+	uint8_t* finaldata = malloc(datasize);
+	memcpy(finaldata, temp, header_length);
+	memcpy(finaldata + header_length, block_data, block_data_length);
+	*length = datasize;
 
+	free(block_data);
 	free(temp);
 	blockarray_free(&array);
 	image_del(tempimage);
