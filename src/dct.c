@@ -3,6 +3,7 @@
  */
 
 #include <math.h>
+#include <stdio.h>
 #include <assert.h>
 #include "eks_math.h"
 #include "block.h"
@@ -249,7 +250,11 @@ void dct_quantize_floatblock_float(
 			float in = (float)input->data[y][x];
 
 			float out = round(in/(float)quant_matrix.data[y][x]);			
-			output->data[y][x] = MIN(127.0f, MAX(-128.0f, out));
+
+			if (out > 127) {
+				fprintf(stderr, "DCT overflow %f at (%d, %d)\n", out, x, y);
+			}
+			output->data[y][x] = MIN(127.0f, MAX(-127.0f, out));
 		}
 	}
 }

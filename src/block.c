@@ -200,7 +200,11 @@ void floatblock_to_byte(const struct FloatBlock *input,
 			float val = input->data[y][x];
 
 			if (val < 0) {
-				printf("Warning: float value %f < 0 in byte conv!\n", val);
+				fprintf(stderr, "Warning: float value %f < 0 in byte conv!\n", val);
+			}
+
+			if (val > 255) {
+				fprintf(stderr, "Warning: float value %f > 255 in byte conv!\n", val);
 			}
 
 			output->data[y][x] = MIN(255, MAX(0, floor(val)));

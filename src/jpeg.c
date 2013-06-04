@@ -10,7 +10,7 @@
 #include "jpeg.h"
 
 /**
- * @brief The official JPEG quantization matrix.
+ * @brief The JPEG quantization matrix. 
  */
 uint8_t const quantization_matrix[8][8] = {
 	{16, 11, 10, 16, 24, 40, 51, 61},
