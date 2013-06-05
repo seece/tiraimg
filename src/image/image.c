@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <tgmath.h>
+#include "../eks_math.h"
 #include "pixel.h"
 #include "../block.h"
 #include "image.h"
@@ -384,6 +385,8 @@ static void image_map(struct Image* source, struct Image* dest,
 	}
 }
 
+// A helper macro for RGB/Y'CbCr component clamping.
+#define CLAMP(a) (MIN(255, MAX(0, a)))
 
 /**
  * @brief JFIF RGB -> Y'CbCr conversion function, used in image_to_ycbcr
@@ -397,11 +400,11 @@ static void rgb_to_ycbcr_mapfunc(struct Pixel* source, struct Pixel* dest,
 	float b = source->b;
 
 	// Y'
-	dest->r = 0.0 + 0.299 *      r + 0.587 *    g + 0.114 *   b;
+	dest->r = CLAMP(0.0 + 0.299 *      r + 0.587 *    g + 0.114 *   b);
 	// Cb
-	dest->g = 128.0 - 0.168736 * r - 0.331264 * g + 0.5 *     b;
+	dest->g = CLAMP(128.0 - 0.168736 * r - 0.331264 * g + 0.5 *     b);
 	// Cr
-	dest->b = 128.0 + 0.5 *      r - 0.418688 * g - 0.081312 *b;
+	dest->b = CLAMP(128.0 + 0.5 *      r - 0.418688 * g - 0.081312 *b);
 }
 
 /**
@@ -415,12 +418,14 @@ static void ycbcr_to_rgb_mapfunc(struct Pixel* source, struct Pixel* dest,
 	float cr = source->b;
 
 	// red
-	dest->r = yy                          + 1.402   * (cr - 128.0);
+	dest->r = CLAMP(yy                          + 1.402   * (cr - 128.0));
 	// green
-	dest->g = yy - 0.34414 * (cb - 128.0) - 0.71414 * (cr - 128.0);
+	dest->g = CLAMP(yy - 0.34414 * (cb - 128.0) - 0.71414 * (cr - 128.0));
 	// blue
-	dest->b = yy + 1.772   * (cb - 128.0);
+	dest->b = CLAMP(yy + 1.772   * (cb - 128.0));
 }
+
+#undef CLAMP
 
 /**
  * @brief Inplace RGB to Y'CbCr conversion.
