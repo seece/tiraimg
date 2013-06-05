@@ -14,7 +14,7 @@
 enum {ACTION_COMPRESS, ACTION_DECOMPRESS} action = 
 	ACTION_COMPRESS;
 
-int quality = 90;
+int quality = 80;
 bool verbose = false;
 char* input_path = NULL;
 char* output_path = NULL;
@@ -25,7 +25,7 @@ char* output_path = NULL;
  */
 void print_usage(void) 
 {
-	printf("Usage: tiraimg [-Vvd] input output\n");
+	printf("Usage: tiraimg [-Vvd] [-q QUALITY] input output\n");
 }
 
 
@@ -49,7 +49,7 @@ void handle_arguments(int argc, char** argv)
 {
 	int c;
 
-	while((c=getopt(argc, argv, "cd")) != -1) {
+	while((c=getopt(argc, argv, "cdq:")) != -1) {
 		switch (c) {
 			case 'v':
 				verbose = true;
@@ -60,6 +60,9 @@ void handle_arguments(int argc, char** argv)
 				break;
 			case 'd':
 				action = ACTION_DECOMPRESS;
+				break;
+			case 'q':
+				quality = atoi(optarg);
 				break;
 			default:
 				printf("unknown char: %c\n", c);
@@ -77,6 +80,9 @@ void handle_arguments(int argc, char** argv)
 
 	input_path = argv[optind];
 	output_path = argv[optind + 1];
+
+	if (quality > 100)
+		quality = 100;
 }
 
 /**

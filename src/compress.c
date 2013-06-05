@@ -9,8 +9,14 @@
 #include "dct.h"
 #include "huffman.h"
 
+/**
+ * @brief Size of an serialized ImageHeader.
+ */
 const int image_header_size = 4 + 2*sizeof(int32_t) + 1;
 
+/**
+ * @brief Header container for import/export operations.
+ */
 struct ImageHeader {
 	char magic[4];
 	int32_t width;
@@ -23,7 +29,7 @@ struct ImageHeader {
  * the quantized results.
  *
  * @param arrayp target array
- * @param quality compresion quality, range: [1, 100]
+ * @param quality compression quality, range: [1, 100]
  */
 void compress_blockarray_dct(struct BlockArray* arrayp, int32_t quality)
 {
@@ -107,7 +113,7 @@ int32_t compress_block_encode(const struct ByteBlock* block,
 
 		int32_t val = block->data[y][x];
 
-		if (val != 0) {
+		if (val != TIMG_ZERO_BYTE) {
 			length = i+1;
 			break;
 		}
@@ -124,7 +130,7 @@ int32_t compress_block_decode(uint8_t* input, struct ByteBlock* block)
 	int32_t pos = 0;
 	int32_t length = 0;
 
-	memset(block->data, 0, sizeof(block->data));
+	memset(block->data, TIMG_ZERO_BYTE, sizeof(block->data));
 	memcpy(&length, input, 1); // we assume a little-endian architecture
 
 	assert(length <= 64);
@@ -226,6 +232,7 @@ uint8_t* compress_image_full(const struct Image* imagep, int32_t quality,
 
 	image_to_ycbcr(tempimage);
 	image_to_blockarray(tempimage, &array);
+	compress_blockarray_dct(&array, quality);
 
 	int32_t blocks = array.columns * array.rows;
 	// magic + width & height + quality level (uint8_t) 
@@ -267,6 +274,14 @@ uint8_t* compress_image_full(const struct Image* imagep, int32_t quality,
 	return finaldata;
 }
 
+/**
+ * @brief Decompresses a loaded image.
+ *
+ * @param data the image data loaded from a file
+ * @param length data length in bytes
+ *
+ * @return  pointer to the loaded image
+ */
 struct Image* decompress_image_full(uint8_t* data, uint64_t length)
 {
 	uint64_t datasize = 0;
@@ -294,6 +309,7 @@ struct Image* decompress_image_full(uint8_t* data, uint64_t length)
 	uint64_t real_datasize = read_block_data(imagedata, &array);
 
 	assert(datasize == real_datasize);
+	compress_blockarray_dct_inverse(&array, header.quality);
 
 	struct Image* imagep = blockarray_to_image(&array);
 	image_to_rgb(imagep);
