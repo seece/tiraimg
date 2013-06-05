@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include <assert.h>
@@ -84,3 +85,13 @@ void bitbuf_write_bits(struct BitBuffer* buf, int32_t amount, uint8_t data)
 	buf->data[buf->pos] |= data<<shift;
 }
 */
+
+uint8_t bitbuf_read_bit(struct BitBuffer* buf, uint64_t offset)
+{
+	assert(buf);
+	assert(buf->data);
+	assert(offset/8 < buf->size);
+
+	return 0 < (buf->data[offset/8] & (1 << (7 - offset % 8)));
+
+}

@@ -71,11 +71,34 @@ void TestBitBufferWriteRandom(CuTest* tc)
 	bitbuf_del(buf);
 }
 
+void TestBitBufferRead(CuTest* tc)
+{
+	struct BitBuffer* buf = bitbuf_new(16);
+
+	for (int32_t i=0;i<100;i++) {
+		uint8_t bit = 0;
+	
+		if (i == 1 || i == 45) {
+			bit = 1;
+		}
+
+		bitbuf_write_bit(buf, bit);
+	}
+
+	CuAssertIntEquals(tc, 0, bitbuf_read_bit(buf, 0));
+	CuAssertIntEquals(tc, 1, bitbuf_read_bit(buf, 1));
+	CuAssertIntEquals(tc, 0, bitbuf_read_bit(buf, 16));
+	CuAssertIntEquals(tc, 1, bitbuf_read_bit(buf, 45));
+
+	bitbuf_del(buf);
+}
+
 CuSuite* CuGetHuffmanSuite(void) 
 {
 	CuSuite* suite = CuSuiteNew();
 	SUITE_ADD_TEST(suite, TestBitBufferWrite);
 	SUITE_ADD_TEST(suite, TestBitBufferWriteRandom);
+	SUITE_ADD_TEST(suite, TestBitBufferRead);
 
 	return suite;
 }
