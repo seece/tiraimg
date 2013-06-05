@@ -5,6 +5,7 @@ CuSuite* CuGetSuite();
 CuSuite* CuGetDCTSuite();
 CuSuite* CuGetBlockSuite();
 CuSuite* CuGetImageSuite();
+CuSuite* CuGetHuffmanSuite();
 
 void RunAllTests(void) 
 {
@@ -15,6 +16,7 @@ void RunAllTests(void)
 	CuSuiteAddSuite(suite, CuGetBlockSuite());
 	CuSuiteAddSuite(suite, CuGetDCTSuite());
 	CuSuiteAddSuite(suite, CuGetImageSuite());
+	CuSuiteAddSuite(suite, CuGetHuffmanSuite());
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);

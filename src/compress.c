@@ -95,7 +95,7 @@ void compress_blockarray_dct_inverse(struct BlockArray* arrayp, int32_t quality)
 
 /**
  * @brief Copies ByteBlock data to a given buffer, but discards
- * the trailing zeros.   
+ * the trailing zeros. Also known as zero run length.
  *
  * @param block the source block
  * @param output destination byte buffer, must be at least 64 bytes 
@@ -128,7 +128,8 @@ int32_t compress_block_encode(const struct ByteBlock* block,
 
 
 /**
- * @brief Decodes an RLE compressed block from a data stream.
+ * @brief Decodes an ZRL (zero run length )compressed block from a 
+ * data stream.
  *
  * @param input serialized block data
  * @param block output block
