@@ -17,7 +17,7 @@ void TestBlockArrayDCT(CuTest* tc)
 {
 	struct Image* imagep = image_load("testdata/tiny.ppm");
 	struct BlockArray array;
-	const int32_t quality = 80;
+	const int32_t quality = 75;
 
 	image_to_ycbcr(imagep);
 	image_to_blockarray(imagep, &array);
@@ -32,9 +32,12 @@ void TestBlockArrayDCT(CuTest* tc)
 	CuAssertTrue(tc, result != NULL);
 
 	//image_save("temp/dctpic.ppm", result);
+
 	double error = stat_image_mean_absolute_error(imagep, result);
 
-	CuAssertTrue(tc, error < 40.0);
+	// With pure noise the error is around 70
+	CuAssertTrue(tc, error < 50.0);
+
 	// Equality checks are not useful for us, since the compression
 	// can introduce single pixel artifacts even though rest of
 	// the picture matches quite well.
