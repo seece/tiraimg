@@ -47,7 +47,7 @@ void print_help(void)
 	printf(
 		" -V\tshow version\n"
 		" -v\tverbose mode\n"
-		" -d\tdecompress, default is compression\n"
+		" -d\tdecompress, default mode is compression\n"
 		" -h\tthis help\n"
 		" \nCompression mode options:\n" 
 		" -q\tcompression quality, range: [1, 100]\n"
@@ -135,6 +135,15 @@ unsigned long write_file(char* path, unsigned char* data, unsigned long length)
 	return bytes_written;
 }
 
+
+/**
+ * @brief Reads a file from the disk to a char array.
+ *
+ * @param path file path
+ * @param length file length output variable
+ *
+ * @return pointer to the allocated data array
+ */
 unsigned char* read_file(char* path, unsigned long* length) 
 {
 	FILE* fp = fopen(path, "rb");
@@ -173,15 +182,20 @@ int main(int argc, char** argv)
 
 		if (result == length) {
 			printf("OK!\n");
+
 		} else {
 			printf("ERROR: Only wrote %lu bytes!\n", result);
 		}
+
+		if (length > 0)
+			free(data);
 
 		image_del(imagep);
 	}
 
 	if (action == ACTION_DECOMPRESS) {
-		printf("decompress\n");
+		printf("Decompressing...\n");
+
 		unsigned long data_len;
 		unsigned char* data = read_file(input_path, &data_len);
 
@@ -198,6 +212,8 @@ int main(int argc, char** argv)
 		}
 
 		image_save(output_path, imagep);
+		image_del(imagep);
+		free(data);
 	}
 
 	exit(EXIT_SUCCESS);
