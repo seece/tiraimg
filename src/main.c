@@ -20,6 +20,13 @@ bool verbose = false;
 char* input_path = NULL;
 char* output_path = NULL;
 
+/**
+ * @brief Prints program version.
+ */
+void print_version(void) 
+{
+	printf("tiraimg version %s\n", tiraimg_version_string);
+}
 
 /**
  * @brief Prints program usage instructions.
@@ -31,13 +38,23 @@ void print_usage(void)
 
 
 /**
- * @brief Prints program version.
+ * @brief Prints detailed program usage instructions.
  */
-void print_version(void) 
+void print_help(void) 
 {
-	printf("tiraimg version %s\n", tiraimg_version_string);
+	print_version();
+	print_usage();
+	printf(
+		" -V\tshow version\n"
+		" -v\tverbose mode\n"
+		" -d\tdecompress, default is compression\n"
+		" -h\tthis help\n"
+		" \nCompression mode options:\n" 
+		" -q\tcompression quality, range: [1, 100]\n"
+		" \nDecompression mode (-d) options:\n" 
+		" -y\tdo not convert output to RGB colorspace\n"
+		);
 }
-
 
 /**
  * @brief Parses the program arguments and sets the global configuration
@@ -50,13 +67,17 @@ void handle_arguments(int argc, char** argv)
 {
 	int c;
 
-	while((c=getopt(argc, argv, "cdyq:")) != -1) {
+	while((c=getopt(argc, argv, "cdhyq:")) != -1) {
 		switch (c) {
 			case 'v':
 				verbose = true;
 				break;
 			case 'V':
 				print_version();
+				exit(0);
+				break;
+			case 'h':
+				print_help();
 				exit(0);
 				break;
 			case 'd':
