@@ -185,7 +185,8 @@ void byteblock_to_float(const struct ByteBlock *input,
 
 
 /**
- * @brief Converts a FloatBlock to a ByteBlock. Output is rounded down.
+ * @brief Converts a FloatBlock to a ByteBlock. Output is rounded to
+ * the nearest integer.
  *
  * @param input original FloatBlock
  * @param output rounded output block
@@ -207,7 +208,7 @@ void floatblock_to_byte(const struct FloatBlock *input,
 				fprintf(stderr, "Warning: float value %f > 255 in byte conv!\n", val);
 			}
 
-			output->data[y][x] = MIN(255, MAX(0, floor(val)));
+			output->data[y][x] = MIN(255, MAX(0, round(val)));
 		}
 	}
 }

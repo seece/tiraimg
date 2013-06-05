@@ -4,6 +4,7 @@
 #include <assert.h>
 #include "block.h"
 #include "tiraimg.h"
+#include "compress.h"
 #include "jpeg.h"
 #include "image/image.h"
 #include "dct.h"
@@ -282,7 +283,7 @@ uint8_t* compress_image_full(const struct Image* imagep, int32_t quality,
  *
  * @return  pointer to the loaded image
  */
-struct Image* decompress_image_full(uint8_t* data, uint64_t length)
+struct Image* decompress_image_full(uint8_t* data, uint64_t length, uint32_t flags)
 {
 	uint64_t datasize = 0;
 	uint64_t pos = 0;
@@ -312,7 +313,9 @@ struct Image* decompress_image_full(uint8_t* data, uint64_t length)
 	compress_blockarray_dct_inverse(&array, header.quality);
 
 	struct Image* imagep = blockarray_to_image(&array);
-	image_to_rgb(imagep);
+
+	if (!(flags & COMPRESS_KEEP_YCBCR))
+		image_to_rgb(imagep);
 
 	free(imagedata);
 

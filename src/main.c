@@ -15,6 +15,7 @@ enum {ACTION_COMPRESS, ACTION_DECOMPRESS} action =
 	ACTION_COMPRESS;
 
 int quality = 80;
+unsigned int flags = 0;
 bool verbose = false;
 char* input_path = NULL;
 char* output_path = NULL;
@@ -25,7 +26,7 @@ char* output_path = NULL;
  */
 void print_usage(void) 
 {
-	printf("Usage: tiraimg [-Vvd] [-q QUALITY] input output\n");
+	printf("Usage: tiraimg [-Vvdy] [-q QUALITY] input output\n");
 }
 
 
@@ -49,7 +50,7 @@ void handle_arguments(int argc, char** argv)
 {
 	int c;
 
-	while((c=getopt(argc, argv, "cdq:")) != -1) {
+	while((c=getopt(argc, argv, "cdyq:")) != -1) {
 		switch (c) {
 			case 'v':
 				verbose = true;
@@ -60,6 +61,9 @@ void handle_arguments(int argc, char** argv)
 				break;
 			case 'd':
 				action = ACTION_DECOMPRESS;
+				break;
+			case 'y':
+				flags |= COMPRESS_KEEP_YCBCR;
 				break;
 			case 'q':
 				quality = atoi(optarg);
@@ -165,7 +169,7 @@ int main(int argc, char** argv)
 			exit(EXIT_FAILURE);
 		}
 
-		struct Image* imagep = decompress_image_full(data, data_len);
+		struct Image* imagep = decompress_image_full(data, data_len, flags);
 
 		if (!imagep) {
 			printf("ERROR: Image decompression failure.\n");

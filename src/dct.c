@@ -35,6 +35,7 @@ void dct_quantize_floatblock(
 			float in = (float)input->data[y][x];
 
 			int32_t out = round(in/(float)quant_matrix.data[y][x]);			
+			out = MIN(255, MAX(0, out));
 			output->data[y][x] = out;
 		}
 	}
@@ -199,39 +200,6 @@ typedef void (*blockarray_map_func_t)(
 		int32_t x, 
 		int32_t y);
 
-/*
-static void blockarray_map(struct BlockArray* arrayp, blockarray_map_func_t func)
-{
-	int32_t rows = arrayp->rows;
-	int32_t cols = arrayp->columns;
-	struct FloatBlock temp;
-
-	for (int y=0;y<rows;y++) {
-		for (int x=0;x<cols;x++) {
-			int32_t ofs = y*arrayp->columns + x;
-			func(arrayp, &arrayp->data[ofs], x, y);
-		}
-	}
-}
-*/
-
-/*
-// not used since quality-parameter can't be passed here
-static dct_blockarray_mapfunc(
-		struct BlockArray* arrayp, 
-		struct ColorBlock* blockp, 
-		int32_t x, 
-		int32_t y)
-{
-	struct FloatBlock temp;
-	
-	for (int i=0;i<3;i++) {
-		dct_calculate(&blockp->chan[i], &temp);
-		dct_quantize_floatblock(&temp, quality, &blockp->chan[i]);
-	}
-}
-*/
-
 void dct_quantize_floatblock_float(
 		const struct FloatBlock* input,
 		int32_t quality,
@@ -254,7 +222,7 @@ void dct_quantize_floatblock_float(
 			if (out > 127) {
 				fprintf(stderr, "DCT overflow %f at (%d, %d)\n", out, x, y);
 			}
-			output->data[y][x] = MIN(127.0f, MAX(-127.0f, out));
+			output->data[y][x] = MIN(127.0f, MAX(-128.0f, out));
 		}
 	}
 }
