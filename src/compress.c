@@ -126,6 +126,15 @@ int32_t compress_block_encode(const struct ByteBlock* block,
 	return length;
 }
 
+
+/**
+ * @brief Decodes an RLE compressed block from a data stream.
+ *
+ * @param input serialized block data
+ * @param block output block
+ *
+ * @return the number of bytes read
+ */
 int32_t compress_block_decode(uint8_t* input, struct ByteBlock* block)
 {
 	int32_t pos = 0;
@@ -151,6 +160,15 @@ int32_t compress_block_decode(uint8_t* input, struct ByteBlock* block)
 	return pos;
 }
 
+/**
+ * @brief Serializes the given BlockArray to the destination byte array.
+ *
+ * @param arrayp the array to serialize
+ * @param dest serialization target, should have enough space to store
+ * the results even in the worst case scenario.
+ *
+ * @return number of bytes written to the array
+ */
 static uint64_t write_block_data(struct BlockArray* arrayp, uint8_t* dest)
 {
 	struct ByteBlock tempblock;
@@ -176,6 +194,14 @@ static uint64_t write_block_data(struct BlockArray* arrayp, uint8_t* dest)
 	return written;
 }
 
+/**
+ * @brief Unserializes a BlockArray from the given data stream.
+ *
+ * @param data source data
+ * @param arrayp destination BlockArray, data field will be allocated
+ *
+ * @return number of bytes read
+ */
 static uint64_t read_block_data(uint8_t* data, struct BlockArray* arrayp)
 {
 	int32_t blocks = arrayp->columns * arrayp->rows;
@@ -193,6 +219,14 @@ static uint64_t read_block_data(uint8_t* data, struct BlockArray* arrayp)
 }
 
 
+/**
+ * @brief Serializes an image file header.
+ *
+ * @param header source header struct
+ * @param output target data array
+ *
+ * @return number of bytes written
+ */
 uint64_t serialize_header(struct ImageHeader* header, uint8_t* output)
 {
 	memmove(output, header->magic, 4);
@@ -203,6 +237,15 @@ uint64_t serialize_header(struct ImageHeader* header, uint8_t* output)
 	return image_header_size;
 }
 
+
+/**
+ * @brief Unserialize a header from a data stream.
+ *
+ * @param data source datat
+ * @param header destination header
+ *
+ * @return number of bytes read
+ */
 uint64_t unserialize_header(uint8_t* data, struct ImageHeader* header)
 {
 	memcpy(&header->magic, data, 4);
@@ -280,8 +323,9 @@ uint8_t* compress_image_full(const struct Image* imagep, int32_t quality,
  *
  * @param data the image data loaded from a file
  * @param length data length in bytes
+ * @param flags decompression flags bit vector, see compress.h for flag values
  *
- * @return  pointer to the loaded image
+ * @return  pointer to the decompressed image
  */
 struct Image* decompress_image_full(uint8_t* data, uint64_t length, uint32_t flags)
 {
