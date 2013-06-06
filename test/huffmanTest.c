@@ -6,6 +6,8 @@
 #include "test_data.h"
 #include "testHelpers.h"
 #include "bitbuf.h"
+#include "trie.h"
+#include "huffman.h"
 
 // from http://stackoverflow.com/a/3974138
 void printBits(size_t const size, void const * const ptr)
@@ -93,12 +95,62 @@ void TestBitBufferRead(CuTest* tc)
 	bitbuf_del(buf);
 }
 
+void TestSimpleDistribution(CuTest* tc)
+{
+	int32_t node_amount;
+	uint8_t data[] = {1, 1, 1, 5, 0, 52, 52};
+	struct Node* code_trees[256];
+	node_amount = huffman_populate_forest(data, sizeof(data), code_trees);
+
+	CuAssertIntEquals(tc, 4, node_amount);
+	CuAssertIntEquals(tc, 1, code_trees[0]->value);
+	CuAssertIntEquals(tc, 3, code_trees[1]->value);
+	CuAssertIntEquals(tc, 1, code_trees[5]->value);
+	CuAssertIntEquals(tc, 2, code_trees[52]->value);
+
+	//printf("node_amount: %d\n", node_amount);
+
+	for (int32_t i=0;i<256;i++) {
+		if (!code_trees[i])
+			continue;
+
+		node_del(code_trees[i]);
+
+		//printf(" %d: %d\n", i, code_trees[i]->value);
+	}
+}
+
+static void print_tree(struct Node* root, int32_t level)
+{
+	if (root == NULL)
+		return;
+
+	printf("%d: %p:\t%p\t%p\t%d\n", level, root, root->left, root->right, root->value);
+
+	print_tree(root->left, level+1);
+	print_tree(root->right, level+1);
+}
+
+void TestSimpleTree(CuTest* tc)
+{
+	int32_t node_amount;
+	uint8_t data[] = {1, 1, 1, 5, 0, 52, 52};
+	struct Node* codes[256];
+	node_amount = huffman_populate_forest(data, sizeof(data), codes);
+
+	struct Node* tree = huffman_create_tree(codes, node_amount);
+	printf("the returned tree, root: %p:\n", tree);
+	print_tree(tree, 0);
+}
+
 CuSuite* CuGetHuffmanSuite(void) 
 {
 	CuSuite* suite = CuSuiteNew();
 	SUITE_ADD_TEST(suite, TestBitBufferWrite);
 	SUITE_ADD_TEST(suite, TestBitBufferWriteRandom);
 	SUITE_ADD_TEST(suite, TestBitBufferRead);
+	SUITE_ADD_TEST(suite, TestSimpleDistribution);
+	SUITE_ADD_TEST(suite, TestSimpleTree);
 
 	return suite;
 }

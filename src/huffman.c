@@ -1,8 +1,104 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <assert.h>
 #include <stdint.h>
 #include "bitbuf.h"
+#include "trie.h"
+
+#define HUFFMAN_MAX_CODES 256
+static struct Node* code_trees[HUFFMAN_MAX_CODES];
+static int32_t node_amount = 0;
+
+int32_t huffman_populate_forest(const uint8_t* data, uint64_t data_len, struct Node* codes[])
+{
+	assert(data);
+	assert(data_len > 0);
+	assert(codes);
+
+	int32_t amount = 0;
+
+	for (int32_t i=0;i<HUFFMAN_MAX_CODES;i++) {
+		codes[i] = NULL;
+	}
+
+	for (uint64_t i=0;i<data_len;i++) {
+		uint8_t byte = data[i];
+
+		if (codes[byte] == NULL) {
+			codes[byte] = node_new();
+			codes[byte]->value = 0;
+			amount++;
+		}
+
+		codes[byte]->value++;
+	}
+
+	return amount;
+}
+
+static int32_t pick_smallest(struct Node* trees[], int32_t amount)
+{
+	int32_t smallest_id = -1;
+	int32_t smallest_value = 0;
+
+	for (int32_t i=0;i<amount;i++) {
+		if (!trees[i])
+			continue;
+
+		if (smallest_id == -1 || (trees[i]->value < smallest_value)) {
+			smallest_id = i;
+			smallest_value = trees[i]->value;
+		}
+	}
+
+	return smallest_id;
+}
+
+struct Node* huffman_create_tree(struct Node* codes[], int32_t amount)
+{
+	struct Node* trees[amount];
+	struct Node* smallest[2] = {NULL, NULL};
+	int32_t smallest_ind[2] = {-1, -1};
+	int32_t count = 0;
+
+	// copy all the created nodes to the tree array
+	for (int32_t i=0;i<HUFFMAN_MAX_CODES;i++) {
+		if (!codes[i])	
+			continue;
+
+		trees[count] = codes[i];
+
+		count++;
+	}
+
+	assert(count == amount);
+
+	// build the whole tree
+	int32_t a, b;
+
+	while (count > 1) {
+		a = pick_smallest(trees, amount);
+		count--;
+
+		if (count == 1)
+			break;
+
+		trees[a] = NULL;
+
+		b = pick_smallest(trees, amount);
+		trees[b] = NULL;
+
+		trees[a] = node_join(&trees[a], &trees[b]);
+		count--;
+	}
+
+	assert(count == 1);
+
+	int32_t final_ind = pick_smallest(trees, amount);
+	return trees[final_ind];
+
+}
 
 uint8_t* huffman_encode(uint8_t* input, uint64_t length, uint64_t* length_result) 
 {
@@ -14,10 +110,19 @@ uint8_t* huffman_encode(uint8_t* input, uint64_t length, uint64_t* length_result
 
 	uint32_t buffersize = length + 4;
 
+	// first calculate the byte distribution
+	// and then join the generated trees to get the
+	// final huffman tree
+	node_amount = huffman_populate_forest(input, length, code_trees);
+	struct Node* tree = huffman_create_tree(code_trees, node_amount);
+	
 	uint8_t* newbuffer = malloc(length);
 	memcpy(newbuffer, input, length);
 
 	*length_result = length;
+
+	bitbuf_del(tempbuf);
+	node_del(tree);
 
 	return newbuffer;
 }
