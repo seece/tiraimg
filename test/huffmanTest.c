@@ -31,7 +31,7 @@ void TestBitBufferWrite(CuTest* tc)
 	struct BitBuffer* buf = bitbuf_new(16);
 
 	for (int32_t i=0;i<10;i++) {
-		bitbuf_write_bit(buf, 1);
+		bitbuf_put_bit(buf, 1);
 	}
 
 	CuAssertIntEquals(tc, 1, buf->pos);
@@ -54,7 +54,7 @@ void TestBitBufferWriteRandom(CuTest* tc)
 		uint8_t bit = rand() % 2;
 
 		bits[i] = bit;
-		bitbuf_write_bit(buf, bit);
+		bitbuf_put_bit(buf, bit);
 		/*
 		printf("%02x %02x\t", buf->data[0], buf->data[1]);
 		printBits(1, &buf->data[0]);
@@ -82,7 +82,7 @@ void TestBitBufferRead(CuTest* tc)
 			bit = 1;
 		}
 
-		bitbuf_write_bit(buf, bit);
+		bitbuf_put_bit(buf, bit);
 	}
 
 	CuAssertIntEquals(tc, 0, bitbuf_read_bit(buf, 0));

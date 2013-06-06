@@ -14,6 +14,6 @@ struct BitBuffer {
 
 struct BitBuffer* bitbuf_new(uint32_t initial_size);
 void bitbuf_del(struct BitBuffer* bitbuf);
-void bitbuf_write_bit(struct BitBuffer* buf, int32_t bit);
+void bitbuf_put_bit(struct BitBuffer* buf, int32_t bit);
 uint8_t bitbuf_read_bit(struct BitBuffer* buf, uint64_t offset);
 #endif

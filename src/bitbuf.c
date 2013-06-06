@@ -49,7 +49,7 @@ void bitbuf_write_byte(struct BitBuffer* buf, uint8_t byte)
 	buf->pos++;
 }
 
-void bitbuf_write_bit(struct BitBuffer* buf, int32_t bit)
+void bitbuf_put_bit(struct BitBuffer* buf, int32_t bit)
 {
 	assert(bit == 0 || bit == 1);
 
