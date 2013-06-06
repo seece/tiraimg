@@ -39,7 +39,7 @@ void bitbuf_del(struct BitBuffer* bitbuf)
  */
 void bitbuf_write_byte(struct BitBuffer* buf, uint8_t byte)
 {
-	if (buf->pos-1 >= buf->size) {
+	if (buf->pos >= buf->size-1) {
 		buf->size *= 2;
 		buf->data = realloc(buf->data, buf->size);
 		assert(buf->data);
