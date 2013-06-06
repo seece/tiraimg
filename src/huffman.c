@@ -10,6 +10,16 @@
 static struct Node* code_trees[HUFFMAN_MAX_CODES];
 static int32_t node_amount = 0;
 
+/**
+ * @brief Calculates the distribution, and creates the nodes from a byte 
+ * array.
+ *
+ * @param data source data 
+ * @param data_len source data length
+ * @param codes[] node pointer array for output
+ *
+ * @return number of distinct codes found
+ */
 int32_t huffman_populate_forest(const uint8_t* data, uint64_t data_len, struct Node* codes[])
 {
 	assert(data);
@@ -55,6 +65,14 @@ static int32_t pick_smallest(struct Node* trees[], int32_t amount)
 	return smallest_id;
 }
 
+/**
+ * @brief Creates a huffman tree from the given code weights.
+ *
+ * @param codes[] the nodes with calculated weights
+ * @param amount amount fo nodes in codes[] array
+ *
+ * @return the generated tree
+ */
 struct Node* huffman_create_tree(struct Node* codes[], int32_t amount)
 {
 	struct Node* trees[amount];
@@ -100,6 +118,16 @@ struct Node* huffman_create_tree(struct Node* codes[], int32_t amount)
 
 }
 
+/**
+ * @brief Encodes a given byte array with huffman coding. Currently just
+ * a placeholder.
+ *
+ * @param input the source data
+ * @param length source data length in bytes 
+ * @param length_result output for the length of the resulting compressed buffer
+ *
+ * @return compressed data
+ */
 uint8_t* huffman_encode(uint8_t* input, uint64_t length, uint64_t* length_result) 
 {
 	assert(input);
@@ -127,6 +155,15 @@ uint8_t* huffman_encode(uint8_t* input, uint64_t length, uint64_t* length_result
 	return newbuffer;
 }
 
+/**
+ * @brief Decompresses a huffman coded byte array.
+ *
+ * @param input source data 
+ * @param length source data length
+ * @param length_result output for the decompressed length
+ *
+ * @return decompressed data 
+ */
 uint8_t* huffman_decode(uint8_t* input, uint64_t length, uint64_t* length_result) 
 {
 	assert(input);

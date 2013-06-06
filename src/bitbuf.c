@@ -5,6 +5,13 @@
 #include <assert.h>
 #include "bitbuf.h"
 
+/**
+ * @brief Creates a new BitBuffer.
+ *
+ * @param initial_size the initial array size in bytes
+ *
+ * @return new allocated BitBuffer
+ */
 struct BitBuffer* bitbuf_new(uint32_t initial_size)
 {
 	assert(initial_size > 0);	
@@ -20,6 +27,11 @@ struct BitBuffer* bitbuf_new(uint32_t initial_size)
 	return newbuf;
 }
 
+/**
+ * @brief Deletes an allocated bitbuffer and it's data array.
+ *
+ * @param bitbuf the buffer to delete
+ */
 void bitbuf_del(struct BitBuffer* bitbuf)
 {
 	assert(bitbuf);
@@ -49,6 +61,13 @@ void bitbuf_write_byte(struct BitBuffer* buf, uint8_t byte)
 	buf->pos++;
 }
 
+/**
+ * @brief Writes a single bit to the buffer advancing the position
+ * counter, and expands the buffer size if necessary.
+ *
+ * @param buf target buffer 
+ * @param bit the bit to write
+ */
 void bitbuf_put_bit(struct BitBuffer* buf, int32_t bit)
 {
 	assert(bit == 0 || bit == 1);
@@ -86,6 +105,15 @@ void bitbuf_write_bits(struct BitBuffer* buf, int32_t amount, uint8_t data)
 }
 */
 
+
+/**
+ * @brief Reads a single bit from a buffer.
+ *
+ * @param buf the target buffer
+ * @param offset the bit offset in bits
+ *
+ * @return the value of the bit
+ */
 uint8_t bitbuf_read_bit(struct BitBuffer* buf, uint64_t offset)
 {
 	assert(buf);
