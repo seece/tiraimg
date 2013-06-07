@@ -92,7 +92,6 @@ struct Node* huffman_create_tree(struct Node* codes[], int32_t amount)
 	}
 
 	assert(count == amount);
-	printf("distinct code count: %d\n", count);
 
 	// build the whole tree
 	int32_t a, b;
@@ -106,7 +105,7 @@ struct Node* huffman_create_tree(struct Node* codes[], int32_t amount)
 		b = pick_smallest(trees, amount);
 
 		//printf("ind: %d, p: %p\n", b, trees[b]);
-		printf("joining %d & %d, count: %d\n", a, b, count);
+		//printf("joining %d & %d, count: %d\n", a, b, count);
 
 		trees[a] = node_join(ap, trees[b]);
 		trees[b] = NULL;

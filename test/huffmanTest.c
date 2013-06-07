@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include "CuTest.h"
+#include "eks_math.h"
 #include "image/image.h"
 #include "test_data.h"
 #include "testHelpers.h"
@@ -120,12 +121,35 @@ void TestSimpleDistribution(CuTest* tc)
 	}
 }
 
+static int32_t tree_depth(struct Node* root, int32_t depth)
+{
+	if (!root)
+		return depth;
+
+	return MAX(tree_depth(root->left, depth+1), tree_depth(root->right, depth+1));
+}
+
 static void print_tree(struct Node* root, int32_t level)
 {
+	//printf("depth: %d\n", depth);
+
 	if (root == NULL)
 		return;
 
-	printf("%d: %p:\t%9p\t%9p weight: %d val:%d\n", level, root, root->left, root->right, root->weight, root->value);
+	int32_t depth = tree_depth(root, 0);
+	printf("%*s", level*4, " ");
+	printf("  ");
+
+	if (root->value == NODE_VALUE_NONE) {
+		printf("(x) %d", root->weight);
+	} else {
+		printf("(%d) %d", root->value, root->weight);
+	}
+
+	//printf("(%3d)", root->value);
+	printf("\n");
+
+	//printf("%d: %p:\t%9p\t%9p weight: %d val:%d\n", level, root, root->left, root->right, root->weight, root->value);
 
 	print_tree(root->left, level+1);
 	print_tree(root->right, level+1);
@@ -141,6 +165,20 @@ void TestSimpleTree(CuTest* tc)
 	struct Node* tree = huffman_create_tree(codes, node_amount);
 	printf("the returned tree, root: %p:\n", tree);
 	print_tree(tree, 0);
+
+	struct SymbolCode sym;
+	sym = node_get_code(tree, 5);
+	printf("symbol %d: len: %d, code: ", 5, sym.length);
+	printBits(4, &sym.code);
+	printf("\n");
+	sym = node_get_code(tree, 1);
+	printf("symbol %d: len: %d, code: ", 1, sym.length);
+	printBits(4, &sym.code);
+	printf("\n");
+	sym = node_get_code(tree, 52);
+	printf("symbol %d: len: %d, code: ", 52, sym.length);
+	printBits(4, &sym.code);
+	printf("\n");
 }
 
 CuSuite* CuGetHuffmanSuite(void) 

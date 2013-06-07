@@ -14,8 +14,14 @@ struct Node {
 	int32_t value;
 };
 
+struct SymbolCode {
+	uint32_t code;
+	int32_t length;
+};
+
 struct Node* node_new(void);
 void node_del(struct Node* node);
 struct Node* node_join(struct Node* left, struct Node* right);
 bool node_is_leaf(struct Node* node);
+struct SymbolCode node_get_code(struct Node* root, int32_t value);
 #endif

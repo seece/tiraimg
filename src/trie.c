@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <assert.h>
 #include "trie.h"
 
@@ -69,4 +70,53 @@ bool node_is_leaf(struct Node* node)
 		return true;
 
 	return false;
+}
+
+static int32_t find_value_path(struct Node* node, int32_t needle, int32_t level,
+		uint32_t* code_out, int32_t* length_out)
+{
+	//printf("level: %d\n", level);
+
+	assert(level < 32);
+	if (!node)
+		return NODE_VALUE_NONE;
+
+	if (node->value == needle) {
+		printf("%d: HIT: %d\n", level, node->value);
+		*length_out = level;
+		return node->value;
+	}
+
+	printf("%d: value: %d\n", level, node->value);
+
+	uint32_t code = *code_out;
+	uint32_t leftcode  = (code << 1) | 0;
+	uint32_t rightcode = (code << 1) | 1;
+
+	int32_t leftval = find_value_path(node->left, needle, level+1, 
+			&leftcode, length_out);
+
+	if (leftval == needle) {
+		*code_out= leftcode;
+		return leftval;
+	}
+
+	int32_t rightval = find_value_path(node->right, needle, level+1, 
+			&rightcode, length_out);
+
+	if (rightval == needle) {
+		*code_out= rightcode;
+		return rightval;
+	}
+
+	return node->value;
+
+}
+
+struct SymbolCode node_get_code(struct Node* root, int32_t value)
+{
+	struct SymbolCode symbol = {.code = 0, .length = 0};
+	find_value_path(root, value, 0, &symbol.code, &symbol.length);
+
+	return symbol;
 }
