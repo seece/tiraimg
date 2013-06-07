@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdbool.h>
 #include <assert.h>
 #include "trie.h"
 
@@ -12,7 +13,8 @@ struct Node* node_new(void)
 	struct Node* node = malloc(sizeof(struct Node));
 	node->left = NULL;
 	node->right = NULL;
-	node->value = 0;
+	node->weight = 0;
+	node->value = NODE_VALUE_NONE;
 
 	return node;
 }
@@ -38,8 +40,8 @@ void node_del(struct Node* node)
 
 /**
  * @brief Joins to nodes to create a new node with left and right
- * members pointing to the given parameters. New value is calculated
- * by summing the values of the two nodes.
+ * members pointing to the given parameters. New weight is calculated
+ * by summing the weights of the two nodes.
  *
  * @param left first node
  * @param right second node
@@ -54,7 +56,17 @@ struct Node* node_join(struct Node* left, struct Node* right)
 	struct Node* root = node_new();
 	root->left = left;
 	root->right = right;
-	root->value = left->value + right->value;
+	root->weight= left->weight+ right->weight;
 
 	return root;
+}
+
+bool node_is_leaf(struct Node* node)
+{
+	assert(node);
+
+	if (!node->left && !node->right)
+		return true;
+
+	return false;
 }

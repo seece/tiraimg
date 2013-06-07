@@ -103,10 +103,10 @@ void TestSimpleDistribution(CuTest* tc)
 	node_amount = huffman_populate_forest(data, sizeof(data), code_trees);
 
 	CuAssertIntEquals(tc, 4, node_amount);
-	CuAssertIntEquals(tc, 1, code_trees[0]->value);
-	CuAssertIntEquals(tc, 3, code_trees[1]->value);
-	CuAssertIntEquals(tc, 1, code_trees[5]->value);
-	CuAssertIntEquals(tc, 2, code_trees[52]->value);
+	CuAssertIntEquals(tc, 1, code_trees[0]->weight);
+	CuAssertIntEquals(tc, 3, code_trees[1]->weight);
+	CuAssertIntEquals(tc, 1, code_trees[5]->weight);
+	CuAssertIntEquals(tc, 2, code_trees[52]->weight);
 
 	//printf("node_amount: %d\n", node_amount);
 
@@ -116,7 +116,7 @@ void TestSimpleDistribution(CuTest* tc)
 
 		node_del(code_trees[i]);
 
-		//printf(" %d: %d\n", i, code_trees[i]->value);
+		//printf(" %d: %d\n", i, code_trees[i]->weight);
 	}
 }
 
@@ -125,7 +125,7 @@ static void print_tree(struct Node* root, int32_t level)
 	if (root == NULL)
 		return;
 
-	printf("%d: %p:\t%p\t%p\t%d\n", level, root, root->left, root->right, root->value);
+	printf("%d: %p:\t%9p\t%9p weight: %d val:%d\n", level, root, root->left, root->right, root->weight, root->value);
 
 	print_tree(root->left, level+1);
 	print_tree(root->right, level+1);

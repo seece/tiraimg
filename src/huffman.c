@@ -37,11 +37,12 @@ int32_t huffman_populate_forest(const uint8_t* data, uint64_t data_len, struct N
 
 		if (codes[byte] == NULL) {
 			codes[byte] = node_new();
-			codes[byte]->value = 0;
+			codes[byte]->weight = 0;
+			codes[byte]->value = byte;
 			amount++;
 		}
 
-		codes[byte]->value++;
+		codes[byte]->weight++;
 	}
 
 	return amount;
@@ -50,15 +51,15 @@ int32_t huffman_populate_forest(const uint8_t* data, uint64_t data_len, struct N
 static int32_t pick_smallest(struct Node* trees[], int32_t amount)
 {
 	int32_t smallest_id = -1;
-	int32_t smallest_value = 0;
+	int32_t smallest_weight = 0;
 
 	for (int32_t i=0;i<amount;i++) {
-		if (!trees[i])
+		if (!trees[i]) 
 			continue;
 
-		if (smallest_id == -1 || (trees[i]->value < smallest_value)) {
+		if (smallest_id == -1 || (trees[i]->weight < smallest_weight)) {
 			smallest_id = i;
-			smallest_value = trees[i]->value;
+			smallest_weight = trees[i]->weight;
 		}
 	}
 
@@ -76,8 +77,8 @@ static int32_t pick_smallest(struct Node* trees[], int32_t amount)
 struct Node* huffman_create_tree(struct Node* codes[], int32_t amount)
 {
 	struct Node* trees[amount];
-	struct Node* smallest[2] = {NULL, NULL};
-	int32_t smallest_ind[2] = {-1, -1};
+	//struct Node* smallest[2] = {NULL, NULL};
+	//int32_t smallest_ind[2] = {-1, -1};
 	int32_t count = 0;
 
 	// copy all the created nodes to the tree array
@@ -91,23 +92,25 @@ struct Node* huffman_create_tree(struct Node* codes[], int32_t amount)
 	}
 
 	assert(count == amount);
+	printf("distinct code count: %d\n", count);
 
 	// build the whole tree
 	int32_t a, b;
 
 	while (count > 1) {
 		a = pick_smallest(trees, amount);
-		count--;
 
-		if (count == 1)
-			break;
-
-		trees[a] = NULL;
+		struct Node* ap = trees[a];
+		trees[a] = NULL; // we don't want to pick the same pointer twice
 
 		b = pick_smallest(trees, amount);
+
+		//printf("ind: %d, p: %p\n", b, trees[b]);
+		printf("joining %d & %d, count: %d\n", a, b, count);
+
+		trees[a] = node_join(ap, trees[b]);
 		trees[b] = NULL;
 
-		trees[a] = node_join(&trees[a], &trees[b]);
 		count--;
 	}
 
