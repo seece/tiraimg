@@ -10,6 +10,8 @@
 #include "trie.h"
 #include "huffman.h"
 
+static uint8_t tree_data[] = {1, 1, 1, 5, 0, 52, 52};
+
 // from http://stackoverflow.com/a/3974138
 void printBits(size_t const size, void const * const ptr)
 {
@@ -158,9 +160,8 @@ static void print_tree(struct Node* root, int32_t level)
 void TestSimpleTree(CuTest* tc)
 {
 	int32_t node_amount;
-	uint8_t data[] = {1, 1, 1, 5, 0, 52, 52};
 	struct Node* codes[256];
-	node_amount = huffman_populate_forest(data, sizeof(data), codes);
+	node_amount = huffman_populate_forest(tree_data, sizeof(tree_data), codes);
 
 	struct Node* tree = huffman_create_tree(codes, node_amount);
 	//printf("the returned tree, root: %p:\n", tree);
@@ -184,13 +185,13 @@ void TestSimpleTree(CuTest* tc)
 	*/
 }
 
-void TestSymbolDistribution(CuTest* tc)
+void TestLeafCount(CuTest* tc)
 {
 	int32_t node_amount;
-	uint8_t data[] = {1, 1, 1, 5, 0, 52, 52};
-	struct Node* codes[256];
-	node_amount = huffman_populate_forest(data, sizeof(data), codes);
-	struct Node* tree = huffman_create_tree(codes, node_amount);
+
+	struct Node* nodes[256];
+	node_amount = huffman_populate_forest(tree_data, sizeof(tree_data), nodes);
+	struct Node* tree = huffman_create_tree(nodes, node_amount);
 
 	printf("das tree\n");
 	print_tree(tree, 0);
@@ -198,12 +199,41 @@ void TestSymbolDistribution(CuTest* tc)
 	int32_t leaf_amount = 0;
 	struct Node** leaves = get_leaf_nodes(tree, NULL, &leaf_amount);
 
-	printf("leaf amount: %d\n", leaf_amount);
+	CuAssertIntEquals(tc, 4, leaf_amount);
 
+	//printf("leaf amount: %d\n", leaf_amount);
+
+	/*
 	for (int32_t i=0;i<leaf_amount;i++) {
 		printf("node: (%d), weight: %d %p\n", leaves[i]->value, leaves[i]->weight, leaves[i]);
 	}
+	*/
 
+	node_del(tree);
+}
+
+void TestSymbolDistribution(CuTest* tc)
+{
+	int32_t code_amount = -1;
+
+	struct Node* nodes[256];
+	int32_t node_amount = huffman_populate_forest(tree_data, sizeof(tree_data), nodes);
+	struct Node* tree = huffman_create_tree(nodes, node_amount);
+	struct SymbolCode* codes = huffman_get_symbol_codes(tree, &code_amount);
+
+	CuAssertIntEquals(tc, 0, codes[0].code);
+	CuAssertIntEquals(tc, 1, codes[0].length);
+
+	CuAssertIntEquals(tc, 4, codes[1].code);
+	CuAssertIntEquals(tc, 3, codes[1].length);
+
+	CuAssertIntEquals(tc, 5, codes[2].code);
+	CuAssertIntEquals(tc, 3, codes[2].length);
+
+	CuAssertIntEquals(tc, 3, codes[3].code);
+	CuAssertIntEquals(tc, 2, codes[3].length);
+
+	free(codes);
 	node_del(tree);
 }
 
@@ -215,6 +245,7 @@ CuSuite* CuGetHuffmanSuite(void)
 	SUITE_ADD_TEST(suite, TestBitBufferRead);
 	SUITE_ADD_TEST(suite, TestSimpleDistribution);
 	SUITE_ADD_TEST(suite, TestSimpleTree);
+	SUITE_ADD_TEST(suite, TestLeafCount);
 	SUITE_ADD_TEST(suite, TestSymbolDistribution);
 
 	return suite;

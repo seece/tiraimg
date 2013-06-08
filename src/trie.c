@@ -83,12 +83,9 @@ static int32_t find_value_path(struct Node* node, int32_t needle, int32_t level,
 		return NODE_VALUE_NONE;
 
 	if (node->value == needle) {
-		printf("%d: HIT: %d\n", level, node->value);
 		*length_out = level;
 		return node->value;
 	}
-
-	printf("%d: value: %d\n", level, node->value);
 
 	uint32_t code = *code_out;
 	uint32_t leftcode  = (code << 1) | 0;
@@ -116,7 +113,7 @@ static int32_t find_value_path(struct Node* node, int32_t needle, int32_t level,
 
 struct SymbolCode node_get_code(struct Node* root, int32_t value)
 {
-	struct SymbolCode symbol = {.code = 0, .length = 0};
+	struct SymbolCode symbol = {.code = 0, .length = 0, .value = value};
 	find_value_path(root, value, 0, &symbol.code, &symbol.length);
 
 	return symbol;

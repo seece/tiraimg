@@ -17,6 +17,7 @@ struct Node {
 struct SymbolCode {
 	uint32_t code;
 	int32_t length;
+	int32_t value;
 };
 
 struct Node* node_new(void);

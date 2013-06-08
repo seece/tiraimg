@@ -157,14 +157,30 @@ struct Node** get_leaf_nodes(struct Node* node, struct Node** leaves_in,
 	return leaves;
 }
 
-struct SymbolCode* calculate_symbol_codes(struct Node* tree)
-{
-	//int32_t amount = count_leaf_nodes(tree);
-	int32_t amount = -1;
-	//struct SymbolCode* = calloc(amount, sizeof(struct SymbolCode));
-//	struct SymbolCode* leaves = get_leaf_nodes(tree, &amount);
 
+/**
+ * @brief Creates a SymbolCode list from the given Huffman-tree.
+ *
+ * @param tree the tree to use as a source
+ * @param amount_out how many leaves (codes) were added to the list
+ *
+ * @return the allocated code list
+ */
+struct SymbolCode* huffman_get_symbol_codes(struct Node* tree, int32_t* amount_out)
+{
+	int32_t amount = 0;
+	struct Node** leaves = get_leaf_nodes(tree, NULL, &amount);
 	assert(amount > 0);
+	struct SymbolCode* codes = calloc(amount, sizeof(struct SymbolCode));
+
+	for (int32_t i=0;i<amount;i++)
+	{
+		codes[i] = node_get_code(tree, leaves[i]->value);
+	}
+
+	*amount_out = amount;
+
+	return codes;
 }
 
 /**

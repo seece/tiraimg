@@ -10,4 +10,5 @@ int32_t huffman_populate_forest(const uint8_t* data, uint64_t data_len, struct N
 struct Node* huffman_create_tree(struct Node* codes[], int32_t amount);
 struct Node** get_leaf_nodes(struct Node* node, struct Node** leaves_in, 
 		int32_t* amount_out);
+struct SymbolCode* huffman_get_symbol_codes(struct Node* tree, int32_t* amount_out);
 #endif
