@@ -21,7 +21,6 @@ struct Node* node_new(void)
 	return node;
 }
 
-
 /**
  * @brief Recursively deletes an allocated node and its children.
  *
@@ -63,6 +62,14 @@ struct Node* node_join(struct Node* left, struct Node* right)
 	return root;
 }
 
+/**
+ * @brief Checks if the given node is a leaf node. A node is leaf if it doesn't
+ * have any children.
+ *
+ * @param node target node
+ *
+ * @return true if leaf, false if not
+ */
 bool node_is_leaf(struct Node* node)
 {
 	assert(node);
@@ -73,11 +80,24 @@ bool node_is_leaf(struct Node* node)
 	return false;
 }
 
+
+/**
+ * @brief Generates a path from tree root to the given leaf node value. The
+ * resulting path is saved as an unsigned integer to the code_out variable.
+ * Each zero bit represents a turn to the left, and one bit a turn to the
+ * right respectively.
+ *
+ * @param node tree root node
+ * @param needle route end point leaf value
+ * @param level iteration level, should be 0 on initial call
+ * @param code_out output of the route code
+ * @param length_out output of route length 
+ *
+ * @return same value as needle if successful, otherwise something else
+ */
 static int32_t find_value_path(struct Node* node, int32_t needle, int32_t level,
 		uint32_t* code_out, int32_t* length_out)
 {
-	//printf("level: %d\n", level);
-
 	assert(level < 32);
 	if (!node)
 		return NODE_VALUE_NONE;
@@ -108,7 +128,6 @@ static int32_t find_value_path(struct Node* node, int32_t needle, int32_t level,
 	}
 
 	return node->value;
-
 }
 
 struct SymbolCode node_get_code(struct Node* root, int32_t value)

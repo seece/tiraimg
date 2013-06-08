@@ -206,17 +206,21 @@ uint8_t* huffman_encode(uint8_t* input, uint64_t length, uint64_t* length_result
 	// first calculate the byte distribution
 	// and then join the generated trees to get the
 	// final huffman tree
-	node_amount = huffman_populate_forest(input, length, code_trees);
-	struct Node* tree = huffman_create_tree(code_trees, node_amount);
+	int32_t code_amount = -1;
+
+	struct Node* nodes[256];
+	int32_t node_amount = huffman_populate_forest(input, length, nodes);
+	struct Node* tree = huffman_create_tree(nodes, node_amount);
+	struct SymbolCode* codes = huffman_get_symbol_codes(tree, &code_amount);
 	
 	uint8_t* newbuffer = malloc(length);
 	memcpy(newbuffer, input, length);
 
 	*length_result = length;
 
+	free(codes);
 	bitbuf_del(tempbuf);
 	node_del(tree);
-
 	return newbuffer;
 }
 

@@ -1,3 +1,8 @@
+/**
+ * @file trie.h
+ * @brief Huffman-binary tree handling functions and datatypes.
+ */
+
 #ifndef TRIE_H_
 #define TRIE_H_
 
@@ -7,6 +12,10 @@
 // Used in Node.value field to mark a non-leaf node
 #define NODE_VALUE_NONE -1
 
+
+/**
+ * @brief A binary tree node.
+ */
 struct Node {
 	struct Node* left;
 	struct Node* right;
@@ -14,9 +23,17 @@ struct Node {
 	int32_t value;
 };
 
+
+/**
+ * @brief A Huffman code symbol.
+ */
 struct SymbolCode {
+
+	/** Code binary representation */
 	uint32_t code;
+	/** Length of the binary representation in bits */
 	int32_t length;
+	/** The actual symbol this code represents */
 	int32_t value;
 };
 
