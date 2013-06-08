@@ -120,3 +120,22 @@ struct SymbolCode node_get_code(struct Node* root, int32_t value)
 
 	return symbol;
 }
+
+/**
+ * @brief Counts the amount of leaf nodes in the given tree.
+ *
+ * @param node tree root node
+ *
+ * @return the number of leaf nodes
+ */
+int32_t node_count_leaf_nodes(struct Node* node)
+{
+	if (!node)
+		return 0;
+
+	if (node_is_leaf(node))
+		return 1;
+	else
+		return node_count_leaf_nodes(node->left) + node_count_leaf_nodes(node->right);
+}
+

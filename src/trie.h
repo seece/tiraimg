@@ -24,4 +24,5 @@ void node_del(struct Node* node);
 struct Node* node_join(struct Node* left, struct Node* right);
 bool node_is_leaf(struct Node* node);
 struct SymbolCode node_get_code(struct Node* root, int32_t value);
+int32_t node_count_leaf_nodes(struct Node* node);
 #endif

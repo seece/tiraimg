@@ -163,22 +163,48 @@ void TestSimpleTree(CuTest* tc)
 	node_amount = huffman_populate_forest(data, sizeof(data), codes);
 
 	struct Node* tree = huffman_create_tree(codes, node_amount);
-	printf("the returned tree, root: %p:\n", tree);
-	print_tree(tree, 0);
+	//printf("the returned tree, root: %p:\n", tree);
+	//print_tree(tree, 0);
 
 	struct SymbolCode sym;
 	sym = node_get_code(tree, 5);
+	CuAssertIntEquals(tc, 5, sym.code);
+	CuAssertIntEquals(tc, 3, sym.length);
+	sym = node_get_code(tree, 1);
+	CuAssertIntEquals(tc, 0, sym.code);
+	CuAssertIntEquals(tc, 1, sym.length);
+	sym = node_get_code(tree, 52);
+	CuAssertIntEquals(tc, 3, sym.code);
+	CuAssertIntEquals(tc, 2, sym.length);
+
+	/*
 	printf("symbol %d: len: %d, code: ", 5, sym.length);
 	printBits(4, &sym.code);
 	printf("\n");
-	sym = node_get_code(tree, 1);
-	printf("symbol %d: len: %d, code: ", 1, sym.length);
-	printBits(4, &sym.code);
-	printf("\n");
-	sym = node_get_code(tree, 52);
-	printf("symbol %d: len: %d, code: ", 52, sym.length);
-	printBits(4, &sym.code);
-	printf("\n");
+	*/
+}
+
+void TestSymbolDistribution(CuTest* tc)
+{
+	int32_t node_amount;
+	uint8_t data[] = {1, 1, 1, 5, 0, 52, 52};
+	struct Node* codes[256];
+	node_amount = huffman_populate_forest(data, sizeof(data), codes);
+	struct Node* tree = huffman_create_tree(codes, node_amount);
+
+	printf("das tree\n");
+	print_tree(tree, 0);
+
+	int32_t leaf_amount = 0;
+	struct Node** leaves = get_leaf_nodes(tree, NULL, &leaf_amount);
+
+	printf("leaf amount: %d\n", leaf_amount);
+
+	for (int32_t i=0;i<leaf_amount;i++) {
+		printf("node: (%d), weight: %d %p\n", leaves[i]->value, leaves[i]->weight, leaves[i]);
+	}
+
+	node_del(tree);
 }
 
 CuSuite* CuGetHuffmanSuite(void) 
@@ -189,6 +215,7 @@ CuSuite* CuGetHuffmanSuite(void)
 	SUITE_ADD_TEST(suite, TestBitBufferRead);
 	SUITE_ADD_TEST(suite, TestSimpleDistribution);
 	SUITE_ADD_TEST(suite, TestSimpleTree);
+	SUITE_ADD_TEST(suite, TestSymbolDistribution);
 
 	return suite;
 }

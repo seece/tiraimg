@@ -3,6 +3,8 @@
 #include <string.h>
 #include <assert.h>
 #include <stdint.h>
+#include <math.h>
+#include "eks_math.h"
 #include "bitbuf.h"
 #include "trie.h"
 
@@ -117,7 +119,68 @@ struct Node* huffman_create_tree(struct Node* codes[], int32_t amount)
 
 	int32_t final_ind = pick_smallest(trees, amount);
 	return trees[final_ind];
+}
 
+/**
+ * @brief Calculates a depth of a tree.
+ *
+ * @param root tree root node
+ * @param depth the level where to start counting, should be 0 on initial call
+ *
+ * @return the number of levels in the tree
+ */
+static int32_t tree_depth(struct Node* root, int32_t depth)
+{
+	if (!root)
+		return depth;
+
+	return MAX(tree_depth(root->left, depth+1), tree_depth(root->right, depth+1));
+}
+
+/**
+ * @brief A recursive function that finds all leaf nodes from the given tree.
+ * The leaf node array is allocated dynamically if the leaves_in parameter is NULL.
+ *
+ * @param node the root node
+ * @param leaves_in leaf array, on the initial call this should be NULL
+ * @param amount_out number of leaves is saved here
+ *
+ * @return pointer to the allocated node array with amount_out members
+ */
+struct Node** get_leaf_nodes(struct Node* node, struct Node** leaves_in, 
+		int32_t* amount_out)
+{
+	struct Node** leaves = leaves_in;
+
+	if (leaves == NULL) {
+		int32_t leaf_amount = node_count_leaf_nodes(node);
+		leaves = calloc(leaf_amount, sizeof(struct Node*));
+	}
+
+	if (!node)
+		return leaves;
+
+	if (node_is_leaf(node)) {
+		leaves[*amount_out] = node;
+		(*amount_out)++;
+
+		return leaves;
+	} 
+
+	get_leaf_nodes(node->left, leaves, amount_out);	
+	get_leaf_nodes(node->right, leaves, amount_out);	
+
+	return leaves;
+}
+
+struct SymbolCode* calculate_symbol_codes(struct Node* tree)
+{
+	//int32_t amount = count_leaf_nodes(tree);
+	int32_t amount = -1;
+	//struct SymbolCode* = calloc(amount, sizeof(struct SymbolCode));
+//	struct SymbolCode* leaves = get_leaf_nodes(tree, &amount);
+
+	assert(amount > 0);
 }
 
 /**
