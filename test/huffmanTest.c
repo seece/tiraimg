@@ -138,7 +138,6 @@ static void print_tree(struct Node* root, int32_t level)
 	if (root == NULL)
 		return;
 
-	int32_t depth = tree_depth(root, 0);
 	printf("%*s", level*4, " ");
 	printf("  ");
 
@@ -200,14 +199,7 @@ void TestLeafCount(CuTest* tc)
 	struct Node** leaves = get_leaf_nodes(tree, NULL, &leaf_amount);
 
 	CuAssertIntEquals(tc, 4, leaf_amount);
-
-	//printf("leaf amount: %d\n", leaf_amount);
-
-	/*
-	for (int32_t i=0;i<leaf_amount;i++) {
-		printf("node: (%d), weight: %d %p\n", leaves[i]->value, leaves[i]->weight, leaves[i]);
-	}
-	*/
+	CuAssertPtrNotNull(tc, leaves);
 
 	node_del(tree);
 }

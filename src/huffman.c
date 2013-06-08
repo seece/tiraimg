@@ -201,7 +201,7 @@ uint8_t* huffman_encode(uint8_t* input, uint64_t length, uint64_t* length_result
 
 	struct BitBuffer* tempbuf = bitbuf_new(64);
 
-	uint32_t buffersize = length + 4;
+	// uint32_t buffersize = length + 4;
 
 	// first calculate the byte distribution
 	// and then join the generated trees to get the
