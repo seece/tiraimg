@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <assert.h>
+#include "eks_math.h"
 #include "trie.h"
 
 /**
@@ -119,6 +120,23 @@ struct SymbolCode node_get_code(struct Node* root, int32_t value)
 	find_value_path(root, value, 0, &symbol.code, &symbol.length);
 
 	return symbol;
+}
+
+/**
+ * @brief Calculates a depth of a tree.
+ *
+ * @param root tree root node
+ * @param depth the level where to start counting, should be 0 on initial call
+ *
+ * @return the number of levels in the tree
+ */
+int32_t node_tree_depth(struct Node* root, int32_t depth)
+{
+	if (!root)
+		return depth;
+
+	return MAX(node_tree_depth(root->left, depth+1), 
+		node_tree_depth(root->right, depth+1));
 }
 
 /**

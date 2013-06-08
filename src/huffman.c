@@ -122,22 +122,6 @@ struct Node* huffman_create_tree(struct Node* codes[], int32_t amount)
 }
 
 /**
- * @brief Calculates a depth of a tree.
- *
- * @param root tree root node
- * @param depth the level where to start counting, should be 0 on initial call
- *
- * @return the number of levels in the tree
- */
-static int32_t tree_depth(struct Node* root, int32_t depth)
-{
-	if (!root)
-		return depth;
-
-	return MAX(tree_depth(root->left, depth+1), tree_depth(root->right, depth+1));
-}
-
-/**
  * @brief A recursive function that finds all leaf nodes from the given tree.
  * The leaf node array is allocated dynamically if the leaves_in parameter is NULL.
  *
