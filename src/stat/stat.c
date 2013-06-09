@@ -1,8 +1,8 @@
 #include <stdint.h>
 #include <assert.h>
 #include <math.h>
-#include "image/image.h"
-#include "eks_math.h"
+#include "../image/image.h"
+#include "../eks_math.h"
 
 
 /**

@@ -24,14 +24,13 @@ void TestStackCreation(CuTest* tc)
 void TestStackPush(CuTest* tc) 
 {
 	struct Stack* stack = stack_new(16);
-	int32_t data[4] = {4, 3, 2, 1};
 
 	stack_push(stack, &t_data[0]);
 	stack_push(stack, &t_data[1]);
 	stack_push(stack, &t_data[2]);
 	stack_push(stack, &t_data[3]);
 
-	CuAssertPtrEquals(tc, 4, stack->pos);
+	CuAssertIntEquals(tc, 4, stack->pos);
 	CuAssertPtrEquals(tc, &t_data[0], stack->data[0]);
 	CuAssertPtrEquals(tc, &t_data[1], stack->data[1]);
 	CuAssertPtrEquals(tc, &t_data[2], stack->data[2]);
@@ -43,8 +42,6 @@ void TestStackPush(CuTest* tc)
 void TestStackPop(CuTest* tc) 
 {
 	struct Stack* stack = stack_new(16);
-
-	int32_t data[4] = {4, 3, 2, 1};
 
 	stack_push(stack, &t_data[0]);
 	stack_push(stack, &t_data[1]);

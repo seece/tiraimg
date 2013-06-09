@@ -6,7 +6,7 @@
 #include "image/image.h"
 #include "test_data.h"
 #include "testHelpers.h"
-#include "bitbuf.h"
+#include "util/bitbuf.h"
 #include "trie.h"
 #include "huffman.h"
 

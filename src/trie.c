@@ -5,6 +5,7 @@
 #include <assert.h>
 #include "eks_math.h"
 #include "trie.h"
+#include "util/stack.h"
 
 /**
  * @brief Creates and initializes a new node.

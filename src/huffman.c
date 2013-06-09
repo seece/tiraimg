@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <math.h>
 #include "eks_math.h"
-#include "bitbuf.h"
+#include "util/bitbuf.h"
 #include "trie.h"
 
 #define HUFFMAN_MAX_CODES 256
