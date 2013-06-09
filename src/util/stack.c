@@ -67,5 +67,10 @@ void stack_trim(struct Stack* stack)
 	assert(stack);
 	assert(stack->data);
 
-	stack->data = realloc(stack->data, stack->pos+1);
+	if (stack->pos == 0) {
+		return;
+	}
+
+	stack->size = stack->pos;
+	stack->data = realloc(stack->data, stack->pos);
 }

@@ -5,7 +5,7 @@
 #include <stdbool.h>
 struct Stack {
 	int32_t size;
-	int32_t pos;
+	int32_t pos; /** the index of the next free member of the stack */
 	void** data;
 };
 
