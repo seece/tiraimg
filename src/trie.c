@@ -178,6 +178,13 @@ int32_t node_count_leaf_nodes(struct Node* node)
 		return node_count_leaf_nodes(node->left) + node_count_leaf_nodes(node->right);
 }
 
+/**
+ * @brief Counts the nodes in the given tree.
+ *
+ * @param node a binary tree root node
+ *
+ * @return the number of nodes
+ */
 int32_t node_count_nodes(struct Node* node)
 {
 	if (!node)
@@ -186,6 +193,14 @@ int32_t node_count_nodes(struct Node* node)
 	return 1 + node_count_nodes(node->left) + node_count_nodes(node->right);
 }
 
+/**
+ * @brief Serializes a tree to a byte array.
+ *
+ * @param tree target tree root node
+ * @param length_out output variable for byte array length
+ *
+ * @return the allocated array
+ */
 uint8_t* node_serialize_tree(struct Node* tree, int32_t* length_out)
 {
 	int32_t node_amount = node_count_nodes(tree);
@@ -214,7 +229,6 @@ uint8_t* node_serialize_tree(struct Node* tree, int32_t* length_out)
 			pos++;
 			assert(node->value < 256); // the values should fit in a byte
 			data[pos] = node->value;
-			printf("saving node %d == %d\n", node->value, data[pos]);
 			pos++;
 		} else {
 			data[pos] = NODE_TYPE_NORMAL;
@@ -233,12 +247,20 @@ uint8_t* node_serialize_tree(struct Node* tree, int32_t* length_out)
 	return data;	
 }
 
+/**
+ * @brief Unserializes a serialized tree recursively, used in node_unserialize_tree.
+ *
+ * @param data serialized tree data
+ * @param length length of the data in bytes
+ * @param pos pointer to an external position indicator, should point to the beginning 
+ * of the node data
+ *
+ * @return the built tree
+ */
 static struct Node* unserialize_iter(uint8_t* data, int32_t length, int32_t* pos)
 {
-	if (*pos >= length-1) {
-		//printf("%d > %d\n", *pos, length);
+	if (*pos >= length-1) 
 		return NULL;
-	}
 
 	uint8_t type = data[*pos];
 	uint8_t value;
@@ -248,11 +270,9 @@ static struct Node* unserialize_iter(uint8_t* data, int32_t length, int32_t* pos
 	switch (type) {
 		case NODE_TYPE_NORMAL:
 			node = node_new();
-			struct Node* left_node;
-			struct Node* right_node;
 
-			left_node = unserialize_iter(data, length, pos);
-			right_node= unserialize_iter(data, length, pos);
+			struct Node* left_node = unserialize_iter(data, length, pos);
+			struct Node* right_node= unserialize_iter(data, length, pos);
 
 			node->value = NODE_VALUE_NONE;
 			node->weight = 0; // the weight information is lost during serialization
@@ -282,6 +302,14 @@ static struct Node* unserialize_iter(uint8_t* data, int32_t length, int32_t* pos
 	return node;
 }
 
+/**
+ * @brief Builds a Huffman-tree structure from a serialized tree.
+ *
+ * @param data serialized tree data
+ * @param length data length in bytes
+ *
+ * @return the built tree
+ */
 struct Node* node_unserialize_tree(uint8_t* data, int32_t length)
 {
 	int32_t node_amount = -1;
