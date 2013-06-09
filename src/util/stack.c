@@ -118,3 +118,13 @@ void stack_trim(struct Stack* stack)
 	stack->size = stack->pos;
 	stack->data = realloc(stack->data, stack->pos);
 }
+
+/**
+ * @brief Empties the stack.
+ *
+ * @param stack stack to empty
+ */
+void stack_clear(struct Stack* stack)
+{
+	stack->pos = 0;
+}

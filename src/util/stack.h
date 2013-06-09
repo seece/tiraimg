@@ -19,4 +19,5 @@ void* stack_pop(struct Stack* stack);
 void stack_push(struct Stack* stack, void* pointer);
 bool stack_is_empty(struct Stack* stack);
 void stack_trim(struct Stack* stack);
+void stack_clear(struct Stack* stack);
 #endif

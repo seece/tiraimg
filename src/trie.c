@@ -7,6 +7,9 @@
 #include "trie.h"
 #include "util/stack.h"
 
+#define NODE_TYPE_NORMAL 0
+#define NODE_TYPE_LEAF 1
+
 /**
  * @brief Creates and initializes a new node.
  *
@@ -195,11 +198,88 @@ uint8_t* node_serialize_tree(struct Node* tree, int32_t* length_out)
 	memcpy(data, &node_amount, 4);
 	pos+=4;
 
-	// TODO iterate the tree in preorder
+	struct Stack* stack = stack_new(16);
+	struct Node* node = tree;
+
+	// Iterate the tree in pre-order and save the nodes.
+	while (!stack_is_empty(stack) || node != NULL)
+	{
+		if (!node) {
+			node = stack_pop(stack);
+			continue;
+		}
+
+		if (node_is_leaf(node)) {
+			data[pos] = NODE_TYPE_LEAF;
+			pos++;
+			assert(node->value < 256); // the values should fit in a byte
+			data[pos] = node->value;
+			printf("saving node %d == %d\n", node->value, data[pos]);
+			pos++;
+		} else {
+			data[pos] = NODE_TYPE_NORMAL;
+			pos++;
+		}
+
+		stack_push(stack, node->right);
+		node = node->left;
+	}
+
+	stack_del(stack);
 
 	assert(pos == data_len);
 
+	*length_out = data_len;
 	return data;	
+}
+
+static struct Node* unserialize_iter(uint8_t* data, int32_t length, int32_t* pos)
+{
+	if (*pos >= length-1) {
+		//printf("%d > %d\n", *pos, length);
+		return NULL;
+	}
+
+	uint8_t type = data[*pos];
+	uint8_t value;
+	struct Node* node = NULL;
+	(*pos)++;
+
+	switch (type) {
+		case NODE_TYPE_NORMAL:
+			node = node_new();
+			struct Node* left_node;
+			struct Node* right_node;
+
+			left_node = unserialize_iter(data, length, pos);
+			right_node= unserialize_iter(data, length, pos);
+
+			node->value = NODE_VALUE_NONE;
+			node->weight = 0; // the weight information is lost during serialization
+			node->left = left_node;
+			node->right = right_node;
+
+			break;
+
+		case NODE_TYPE_LEAF:
+			value = data[*pos];
+			(*pos)++;
+
+			node = node_new();
+			node->value = value;
+			node->weight = 0;
+			node->left = NULL;
+			node->right = NULL;
+
+			break;
+
+		default:
+			fprintf(stderr, "ERROR: Invalid tree node type 0x%x!\n", type);
+			node = NULL;
+			break;
+	}
+
+	return node;
 }
 
 struct Node* node_unserialize_tree(uint8_t* data, int32_t length)
@@ -207,8 +287,10 @@ struct Node* node_unserialize_tree(uint8_t* data, int32_t length)
 	int32_t node_amount = -1;
 	int32_t pos = 0;
 
-	memcpy(&pos, data, 4);
+	memcpy(&node_amount, data, 4);
 	pos+=4;
+
+	struct Node* tree = unserialize_iter(data, length, &pos);
 	
-	return NULL;
+	return tree;
 }

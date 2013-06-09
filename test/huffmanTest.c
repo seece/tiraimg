@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#include <ctype.h>
 #include "CuTest.h"
 #include "eks_math.h"
 #include "image/image.h"
@@ -182,6 +183,8 @@ void TestSimpleTree(CuTest* tc)
 	printBits(4, &sym.code);
 	printf("\n");
 	*/
+
+	node_del(tree);
 }
 
 void TestLeafCount(CuTest* tc)
@@ -229,6 +232,51 @@ void TestSymbolDistribution(CuTest* tc)
 	node_del(tree);
 }
 
+// source: http://stackoverflow.com/a/29865
+void hexdump(void *ptr, int buflen) {
+	unsigned char *buf = (unsigned char*)ptr;
+	int i, j;
+	for (i=0; i<buflen; i+=16) {
+		printf("%06x: ", i);
+		for (j=0; j<16; j++) 
+			if (i+j < buflen)
+				printf("%02x ", buf[i+j]);
+			else
+				printf("   ");
+		printf(" ");
+		for (j=0; j<16; j++) 
+			if (i+j < buflen)
+				printf("%c", isprint(buf[i+j]) ? buf[i+j] : '.');
+		printf("\n");
+	}
+}
+
+void TestTreeSerialization(CuTest* tc)
+{
+	int32_t code_amount = -1;
+
+	struct Node* nodes[256];
+	int32_t node_amount = huffman_populate_forest(tree_data, sizeof(tree_data), nodes);
+	struct Node* tree = huffman_create_tree(nodes, node_amount);
+	
+	int32_t data_len = -1;
+	// uint8_t* node_serialize_tree(struct Node* tree, int32_t* length_out)
+	uint8_t* treedata = node_serialize_tree(tree, &data_len);
+
+	printf("data len: %d\n", data_len);
+	hexdump(treedata, 4);
+	printf("\n");
+	hexdump(treedata+4, data_len-4);
+	printf("\n");
+
+	struct Node* result = node_unserialize_tree(treedata, data_len);
+	printf("unserialized:\n");
+	print_tree(result, 0);
+
+	free(treedata);
+	node_del(tree);
+}
+
 CuSuite* CuGetHuffmanSuite(void) 
 {
 	CuSuite* suite = CuSuiteNew();
@@ -239,6 +287,7 @@ CuSuite* CuGetHuffmanSuite(void)
 	SUITE_ADD_TEST(suite, TestSimpleTree);
 	SUITE_ADD_TEST(suite, TestLeafCount);
 	SUITE_ADD_TEST(suite, TestSymbolDistribution);
+	SUITE_ADD_TEST(suite, TestTreeSerialization);
 
 	return suite;
 }
