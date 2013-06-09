@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 #include <assert.h>
 #include "eks_math.h"
 #include "trie.h"
@@ -173,3 +174,40 @@ int32_t node_count_leaf_nodes(struct Node* node)
 		return node_count_leaf_nodes(node->left) + node_count_leaf_nodes(node->right);
 }
 
+int32_t node_count_nodes(struct Node* node)
+{
+	if (!node)
+		return 0;
+
+	return 1 + node_count_nodes(node->left) + node_count_nodes(node->right);
+}
+
+uint8_t* node_serialize_tree(struct Node* tree, int32_t* length_out)
+{
+	int32_t node_amount = node_count_nodes(tree);
+	int32_t leaf_amount = node_count_leaf_nodes(tree);
+	
+	int32_t data_len = 4 + leaf_amount*2 + (node_amount-leaf_amount);
+	uint8_t* data = malloc(data_len);
+	int32_t pos = 0;
+
+	memcpy(data, &node_amount, 4);
+	pos+=4;
+
+	// TODO iterate the tree in preorder
+
+	assert(pos == data_len);
+
+	return data;	
+}
+
+struct Node* node_unserialize_tree(uint8_t* data, int32_t length)
+{
+	int32_t node_amount = -1;
+	int32_t pos = 0;
+
+	memcpy(&pos, data, 4);
+	pos+=4;
+	
+	return NULL;
+}
