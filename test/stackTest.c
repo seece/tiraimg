@@ -74,6 +74,19 @@ void TestStackTrim(CuTest* tc)
 	stack_del(stack);
 }
 
+void TestStackExpansion(CuTest* tc) 
+{
+	struct Stack* stack = stack_new(2);
+
+	stack_push(stack, &t_data[0]);
+	stack_push(stack, &t_data[1]);
+	CuAssertIntEquals(tc, 2, stack->size);
+	stack_push(stack, &t_data[1]);
+	CuAssertIntEquals(tc, 4, stack->size);
+
+	stack_del(stack);
+}
+
 CuSuite* CuGetStackSuite(void) 
 {
 	CuSuite* suite = CuSuiteNew();
@@ -81,6 +94,7 @@ CuSuite* CuGetStackSuite(void)
 	SUITE_ADD_TEST(suite, TestStackPush);
 	SUITE_ADD_TEST(suite, TestStackPop);
 	SUITE_ADD_TEST(suite, TestStackTrim);
+	SUITE_ADD_TEST(suite, TestStackExpansion);
 
 	return suite;
 }

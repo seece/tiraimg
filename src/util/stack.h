@@ -3,8 +3,12 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+
+/**
+ * @brief A simple pointer stack container.
+ */
 struct Stack {
-	int32_t size;
+	int32_t size; /** stack size in elements */
 	int32_t pos; /** the index of the next free member of the stack */
 	void** data;
 };
