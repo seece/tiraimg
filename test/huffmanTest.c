@@ -155,6 +155,44 @@ void TestSymbolDistribution(CuTest* tc)
 	node_del(tree);
 }
 
+void TestHuffmanCoding(CuTest* tc)
+{
+	uint8_t data[] = {0x04, 0x04, 0x04, 0x04, 0x04, 0x00, 0x00, 0x0A, 0x0B};
+	int32_t data_len = sizeof(data);
+	int32_t code_amount = -1;
+
+	struct Node* nodes[256];
+	int32_t node_amount = huffman_populate_forest(tree_data, sizeof(tree_data), nodes);
+	struct Node* tree = huffman_create_tree(nodes, node_amount);
+	struct SymbolCode* codes = huffman_get_symbol_codes(tree, &code_amount);
+
+	struct SymbolCode* code_table[256] = {NULL};
+
+	// propagate the code table
+	for (int32_t i=0;i<code_amount;i++) {
+		printf("%d: %d\n", i, codes[i].value);
+		assert(codes[i].value < 256);
+		assert(codes[i].value >= 0);
+		code_table[codes[i].value] = &codes[i];
+	}
+
+	for (int32_t i=0;i<data_len;i++)  {
+		uint8_t value = data[i];
+		struct SymbolCode* code = code_table[value];
+
+		if (!code) {
+			printf("%d: code is NULL!\n", code);
+			continue;
+		}
+
+		printf("%d: %d, len: %d ", i, value, code->length);
+		//printBits(1, &code->code);
+		printf("\n");
+	}
+
+	free(codes);
+	node_del(tree);
+}
 
 CuSuite* CuGetHuffmanSuite(void) 
 {
@@ -164,6 +202,7 @@ CuSuite* CuGetHuffmanSuite(void)
 	SUITE_ADD_TEST(suite, TestBitBufferRead);
 	SUITE_ADD_TEST(suite, TestSimpleDistribution);
 	SUITE_ADD_TEST(suite, TestSymbolDistribution);
+	SUITE_ADD_TEST(suite, TestHuffmanCoding);
 
 	return suite;
 }

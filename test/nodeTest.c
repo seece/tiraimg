@@ -105,6 +105,8 @@ void TestLeafCount(CuTest* tc)
 
 	int32_t leaf_amount = 0;
 	struct Node** leaves = get_leaf_nodes(tree, NULL, &leaf_amount);
+	int32_t count_node_amount = node_count_nodes(tree);
+	//printf("NODES: %d\n", count_node_amount);
 
 	CuAssertIntEquals(tc, 4, leaf_amount);
 	CuAssertPtrNotNull(tc, leaves);
