@@ -217,7 +217,7 @@ uint8_t* node_serialize_tree(struct Node* tree, int32_t* length_out)
 	struct Node* node = tree;
 
 	// Iterate the tree in pre-order and save the nodes.
-	while (!stack_is_empty(stack) || node != NULL)
+	while (!stack_is_empty(stack) || (node != NULL))
 	{
 		if (!node) {
 			node = stack_pop(stack);
@@ -230,8 +230,11 @@ uint8_t* node_serialize_tree(struct Node* tree, int32_t* length_out)
 			assert(node->value < 256); // the values should fit in a byte
 			data[pos] = node->value;
 			pos++;
+			assert(!node->left);
+			assert(!node->right);
 		} else {
 			data[pos] = NODE_TYPE_NORMAL;
+
 			pos++;
 		}
 

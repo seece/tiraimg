@@ -44,6 +44,7 @@ bool node_is_leaf(struct Node* node);
 struct SymbolCode node_get_code(struct Node* root, int32_t value);
 int32_t node_tree_depth(struct Node* root, int32_t depth);
 int32_t node_count_leaf_nodes(struct Node* node);
+int32_t node_count_nodes(struct Node* node);
 
 uint8_t* node_serialize_tree(struct Node* tree, int32_t* length_out);
 struct Node* node_unserialize_tree(uint8_t* data, int32_t length);
