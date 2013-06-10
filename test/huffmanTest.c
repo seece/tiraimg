@@ -46,6 +46,25 @@ void TestBitBufferWrite(CuTest* tc)
 	bitbuf_del(buf);
 }
 
+void TestBitBufferWriteMultiple(CuTest* tc)
+{
+	struct BitBuffer* buf = bitbuf_new(16);
+
+	bitbuf_put_bits(buf, 0x55, 7); // 1010101
+	CuAssertIntEquals(tc, 7, buf->bit_pos);
+	CuAssertIntEquals(tc, 0, buf->pos);
+	CuAssertIntEquals(tc, 0xAA, buf->data[0]); // 0xAA = 10101010
+	CuAssertIntEquals(tc, 0x00, buf->data[1]);
+
+	bitbuf_put_bits(buf, 0x07, 3); // 111
+
+	CuAssertIntEquals(tc, 2, buf->bit_pos);
+	CuAssertIntEquals(tc, 1, buf->pos);
+	CuAssertIntEquals(tc, 0xAB, buf->data[0]); // 0xAB = 10101011
+	CuAssertIntEquals(tc, 0xC0, buf->data[1]); // 0xC0 = 11000000
+
+	bitbuf_del(buf);
+}
 void TestBitBufferWriteRandom(CuTest* tc)
 {
 	int32_t noise_length = 100;
@@ -162,11 +181,12 @@ void TestHuffmanCoding(CuTest* tc)
 	int32_t code_amount = -1;
 
 	struct Node* nodes[256];
-	int32_t node_amount = huffman_populate_forest(tree_data, sizeof(tree_data), nodes);
+	int32_t node_amount = huffman_populate_forest(data, sizeof(data), nodes);
 	struct Node* tree = huffman_create_tree(nodes, node_amount);
 	struct SymbolCode* codes = huffman_get_symbol_codes(tree, &code_amount);
 
 	struct SymbolCode* code_table[256] = {NULL};
+	struct BitBuffer* buf = bitbuf_new(16);
 
 	// propagate the code table
 	for (int32_t i=0;i<code_amount;i++) {
@@ -181,15 +201,16 @@ void TestHuffmanCoding(CuTest* tc)
 		struct SymbolCode* code = code_table[value];
 
 		if (!code) {
-			printf("%d: code is NULL!\n", code);
+			printf("0x%X: code not found from code table!\n", value);
 			continue;
 		}
 
 		printf("%d: %d, len: %d ", i, value, code->length);
-		//printBits(1, &code->code);
+		printBits(1, &code->code);
 		printf("\n");
 	}
 
+	bitbuf_del(buf);
 	free(codes);
 	node_del(tree);
 }
@@ -198,6 +219,7 @@ CuSuite* CuGetHuffmanSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 	SUITE_ADD_TEST(suite, TestBitBufferWrite);
+	SUITE_ADD_TEST(suite, TestBitBufferWriteMultiple);
 	SUITE_ADD_TEST(suite, TestBitBufferWriteRandom);
 	SUITE_ADD_TEST(suite, TestBitBufferRead);
 	SUITE_ADD_TEST(suite, TestSimpleDistribution);

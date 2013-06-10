@@ -83,6 +83,17 @@ void bitbuf_put_bit(struct BitBuffer* buf, int32_t bit)
 	}
 }
 
+void bitbuf_put_bits(struct BitBuffer* buf, uint32_t data, int32_t length)
+{
+	assert(length <= 32);
+	assert(buf);
+
+	for (int32_t i=length-1;i>=0;i--) {
+		int32_t bit = (data & (1 << i)) != 0 ? 1 : 0;
+		bitbuf_put_bit(buf, bit);
+	}
+}
+
 /*
 void bitbuf_write_bits(struct BitBuffer* buf, int32_t amount, uint8_t data)
 {
