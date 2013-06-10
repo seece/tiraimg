@@ -43,7 +43,7 @@ void stack_del(struct Stack* stack)
 static void stack_expand(struct Stack* stack)
 {
 	stack->size*=2;
-	stack->data = realloc(stack->data, stack->size);
+	stack->data = realloc(stack->data, sizeof(void*) * stack->size);
 }
 
 /**
@@ -116,7 +116,7 @@ void stack_trim(struct Stack* stack)
 	}
 
 	stack->size = stack->pos;
-	stack->data = realloc(stack->data, stack->pos);
+	stack->data = realloc(stack->data, stack->pos * sizeof(void*));
 }
 
 /**
