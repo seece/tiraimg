@@ -47,5 +47,6 @@ int32_t node_count_leaf_nodes(struct Node* node);
 int32_t node_count_nodes(struct Node* node);
 
 uint8_t* node_serialize_tree(struct Node* tree, int32_t* length_out);
-struct Node* node_unserialize_tree(uint8_t* data, int32_t length);
+struct Node* node_unserialize_tree(uint8_t* data, int32_t length, int32_t* bytes_read);
+void node_print_tree(struct Node* root, int32_t level);
 #endif

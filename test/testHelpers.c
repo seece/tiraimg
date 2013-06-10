@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <ctype.h>
 #include "testHelpers.h"
 
 
@@ -32,3 +34,31 @@ void check_images_equal(CuTest* tc, struct Image* a, struct Image* b, int32_t de
 	}
 
 }
+
+void check_arrays_equal(CuTest* tc, uint8_t* a, uint8_t* b, uint64_t len)
+{
+	for (uint64_t i=0;i<len;i++) {
+		CuAssertIntEquals(tc, a[i], b[i]);
+	}
+}
+//
+// source: http://stackoverflow.com/a/29865
+void hexdump(void *ptr, int buflen) 
+{
+	unsigned char *buf = (unsigned char*)ptr;
+	int i, j;
+	for (i=0; i<buflen; i+=16) {
+		printf("%06x: ", i);
+		for (j=0; j<16; j++) 
+			if (i+j < buflen)
+				printf("%02x ", buf[i+j]);
+			else
+				printf("   ");
+		printf(" ");
+		for (j=0; j<16; j++) 
+			if (i+j < buflen)
+				printf("%c", isprint(buf[i+j]) ? buf[i+j] : '.');
+		printf("\n");
+	}
+}
+

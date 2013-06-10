@@ -310,10 +310,11 @@ static struct Node* unserialize_iter(uint8_t* data, int32_t length, int32_t* pos
  *
  * @param data serialized tree data
  * @param length data length in bytes
+ * @param bytes_read the amount of bytes actually read
  *
  * @return the built tree
  */
-struct Node* node_unserialize_tree(uint8_t* data, int32_t length)
+struct Node* node_unserialize_tree(uint8_t* data, int32_t length, int32_t* bytes_read)
 {
 	int32_t node_amount = -1;
 	int32_t pos = 0;
@@ -322,6 +323,31 @@ struct Node* node_unserialize_tree(uint8_t* data, int32_t length)
 	pos+=4;
 
 	struct Node* tree = unserialize_iter(data, length, &pos);
+
+	*bytes_read = pos;
 	
 	return tree;
 }
+
+
+void node_print_tree(struct Node* root, int32_t level)
+{
+	if (root == NULL)
+		return;
+
+	printf("%*s", level*4, " ");
+	printf("  ");
+
+	if (root->value == NODE_VALUE_NONE) {
+		printf("(x) %d", root->weight);
+	} else {
+		printf("(%d) %d", root->value, root->weight);
+	}
+
+	printf("\n");
+
+	node_print_tree(root->left, level+1);
+	node_print_tree(root->right, level+1);
+}
+
+

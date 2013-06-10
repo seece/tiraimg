@@ -205,14 +205,41 @@ void TestHuffmanCoding(CuTest* tc)
 			continue;
 		}
 
+		bitbuf_put_bits(buf, code->code, code->length); 
+
 		printf("%d: %d, len: %d ", i, value, code->length);
 		printBits(1, &code->code);
 		printf("\n");
+
+		printBits(1, &buf->data[0]); printf(" ");
+		printBits(1, &buf->data[1]); printf("\n");
 	}
 
 	bitbuf_del(buf);
 	free(codes);
 	node_del(tree);
+}
+
+void TestHuffmanInterface(CuTest* tc)
+{
+	uint8_t data[] = {0x04, 0x04, 0x04, 0x04, 0x04, 0x00, 0x00, 0x0A, 0x0B};
+	int32_t data_len = sizeof(data);
+	uint64_t huff_len= 0;
+//uint8_t* huffman_encode(uint8_t* input, uint64_t length, uint64_t* length_result);
+	printf("encoding huffman values:\n");
+	uint8_t* huff_data = huffman_encode(data, (uint64_t)data_len, &huff_len);
+
+	printf("original: %d, huffman coded data length: %lu\n", data_len, huff_len);
+	//hexdump(huff_data, huff_len);
+
+	uint64_t result_len = 0;
+	uint8_t* result_data = huffman_decode(huff_data, huff_len, &result_len);
+	printf("result_len: %lu\n", result_len);
+	printf("data: %p, result_data: %p\n", data, result_data);
+
+	hexdump(result_data, result_len);
+	CuAssertIntEquals(tc, data_len, result_len);
+	check_arrays_equal(tc, result_data, data, result_len);
 }
 
 CuSuite* CuGetHuffmanSuite(void) 
@@ -225,6 +252,7 @@ CuSuite* CuGetHuffmanSuite(void)
 	SUITE_ADD_TEST(suite, TestSimpleDistribution);
 	SUITE_ADD_TEST(suite, TestSymbolDistribution);
 	SUITE_ADD_TEST(suite, TestHuffmanCoding);
+	SUITE_ADD_TEST(suite, TestHuffmanInterface);
 
 	return suite;
 }

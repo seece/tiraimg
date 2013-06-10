@@ -3,6 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <math.h>
 #include "eks_math.h"
 #include "util/bitbuf.h"
@@ -198,14 +199,10 @@ uint8_t* huffman_encode(uint8_t* input, uint64_t length, uint64_t* length_result
 	assert(input);
 	assert(length > 0);
 	assert(length_result);
-
-	struct BitBuffer* tempbuf = bitbuf_new(64);
+	assert(length < (1 << 31)); // we store the symbol amount as uint32_t
 
 	// uint32_t buffersize = length + 4;
 
-	// first calculate the byte distribution
-	// and then join the generated trees to get the
-	// final huffman tree
 	int32_t code_amount = -1;
 
 	struct Node* nodes[256];
@@ -213,13 +210,49 @@ uint8_t* huffman_encode(uint8_t* input, uint64_t length, uint64_t* length_result
 	struct Node* tree = huffman_create_tree(nodes, node_amount);
 	struct SymbolCode* codes = huffman_get_symbol_codes(tree, &code_amount);
 	
-	uint8_t* newbuffer = malloc(length);
-	memcpy(newbuffer, input, length);
+	struct SymbolCode* code_table[256] = {NULL};
+	struct BitBuffer* buf = bitbuf_new(64);
 
-	*length_result = length;
+	// propagate the code table
+	for (int32_t i=0;i<code_amount;i++) {
+		//printf("%d: %d\n", i, codes[i].value);
+		assert(codes[i].value < 256);
+		assert(codes[i].value >= 0);
+		code_table[codes[i].value] = &codes[i];
+	}
 
+	for (int32_t i=0;i<length;i++)  {
+		uint8_t value = input[i];
+		struct SymbolCode* code = code_table[value];
+
+		if (!code) {
+			printf("0x%X: code not found from code table!\n", value);
+			continue;
+		}
+
+		bitbuf_put_bits(buf, code->code, code->length); 
+	}
+
+	// uint8_t* node_serialize_tree(struct Node* tree, int32_t* length_out);
+	int32_t tree_data_len = -1;
+	uint8_t* tree_data = node_serialize_tree(tree, &tree_data_len);
+	assert(tree_data);
+	assert(tree_data_len > 0);
+	uint32_t symbol_count = (uint32_t)length;
+	
+	int32_t headersize =  tree_data_len + 4;
+	int32_t output_len = headersize + (buf->pos + 1);
+	// huffman tree + amount of symbols (uint32_t) + symbol stream
+	uint8_t* newbuffer = malloc(output_len);
+	memcpy(&newbuffer[0], tree_data, tree_data_len); // huffman tree
+	memcpy(&newbuffer[tree_data_len], &symbol_count, 4); // symbol amount
+	memcpy(&newbuffer[headersize], buf->data, buf->pos + 1); // symbol stream
+
+	*length_result = output_len;
+
+	free(tree_data);
 	free(codes);
-	bitbuf_del(tempbuf);
+	bitbuf_del(buf);
 	node_del(tree);
 	return newbuffer;
 }
@@ -239,10 +272,62 @@ uint8_t* huffman_decode(uint8_t* input, uint64_t length, uint64_t* length_result
 	assert(length > 0);
 	assert(length_result);
 
-	uint8_t* newbuffer = malloc(length);
-	memcpy(newbuffer, input, length);
+	int32_t tree_len = -1;
+	uint32_t symbol_count = 0;
+	uint64_t pos = 0;
+	//struct Node* node_unserialize_tree(uint8_t* data, int32_t length);
+	// TODO fix that ugly uint64_t -> int32_t cast
+	struct Node* tree = node_unserialize_tree(input, (int32_t) length, &tree_len);
+	assert(tree);
+	assert(tree_len > 0);
+	printf("unserialized tree len: %d\n", tree_len);
+	node_print_tree(tree, 0);
 
-	*length_result = length;
+	pos+=tree_len;
 
-	return newbuffer;
+	memcpy(&symbol_count, &input[pos], 4);
+	printf("symbol count!: %u\n", symbol_count);
+
+	pos+=4;
+
+	uint8_t* output_data = malloc(symbol_count);
+	struct Node* node = tree;
+	uint64_t out_pos=0;
+	uint64_t cur_pos=0;
+	int32_t cur_bit=0;
+
+	while (out_pos < symbol_count) {
+		if (node_is_leaf(node)) {
+			printf("\topos: %d: %d\n", (int32_t)out_pos, node->value);
+			output_data[out_pos] = node->value;
+			out_pos++;
+			node = tree;
+			continue;
+		}
+
+		//int32_t bit = 0 < (input[pos + cur_pos] & (1 << (7 - cur_bit)));
+		int32_t bit = (input[pos + cur_pos] & (1 << (7 - cur_bit))) != 0 ? 1 : 0;
+
+		printf("%d %d bit: %d\n", (int32_t)cur_pos, cur_bit, bit);
+
+		cur_bit++;
+
+		if (cur_bit > 7) {
+			cur_pos++;
+			cur_bit = 0;
+		}
+
+		if (bit) {
+			node = node->right;
+		} else {
+			node = node->left;
+		}
+
+	}
+
+	*length_result = symbol_count;
+	node_del(tree);
+
+	return output_data;
 }
+

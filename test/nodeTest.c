@@ -15,53 +15,6 @@
 #include "trie.h"
 #include "huffman.h"
 
-// source: http://stackoverflow.com/a/29865
-void hexdump(void *ptr, int buflen) {
-	unsigned char *buf = (unsigned char*)ptr;
-	int i, j;
-	for (i=0; i<buflen; i+=16) {
-		printf("%06x: ", i);
-		for (j=0; j<16; j++) 
-			if (i+j < buflen)
-				printf("%02x ", buf[i+j]);
-			else
-				printf("   ");
-		printf(" ");
-		for (j=0; j<16; j++) 
-			if (i+j < buflen)
-				printf("%c", isprint(buf[i+j]) ? buf[i+j] : '.');
-		printf("\n");
-	}
-}
-
-
-
-static void print_tree(struct Node* root, int32_t level)
-{
-	//printf("depth: %d\n", depth);
-
-	if (root == NULL)
-		return;
-
-	printf("%*s", level*4, " ");
-	printf("  ");
-
-	if (root->value == NODE_VALUE_NONE) {
-		printf("(x) %d", root->weight);
-	} else {
-		printf("(%d) %d", root->value, root->weight);
-	}
-
-	//printf("(%3d)", root->value);
-	printf("\n");
-
-	//printf("%d: %p:\t%9p\t%9p weight: %d val:%d\n", level, root, root->left, root->right, root->weight, root->value);
-
-	print_tree(root->left, level+1);
-	print_tree(root->right, level+1);
-}
-
-
 void TestSimpleTree(CuTest* tc)
 {
 	int32_t node_amount;
@@ -70,7 +23,7 @@ void TestSimpleTree(CuTest* tc)
 
 	struct Node* tree = huffman_create_tree(codes, node_amount);
 	//printf("the returned tree, root: %p:\n", tree);
-	//print_tree(tree, 0);
+	//node_node_print_tree(tree, 0);
 
 	struct SymbolCode sym;
 	sym = node_get_code(tree, 5);
@@ -101,7 +54,7 @@ void TestLeafCount(CuTest* tc)
 	struct Node* tree = huffman_create_tree(nodes, node_amount);
 
 	printf("das tree\n");
-	print_tree(tree, 0);
+	node_print_tree(tree, 0);
 
 	int32_t leaf_amount = 0;
 	struct Node** leaves = get_leaf_nodes(tree, NULL, &leaf_amount);
@@ -133,9 +86,10 @@ void TestTreeSerialization(CuTest* tc)
 	hexdump(treedata+4, data_len-4);
 	printf("\n");
 
-	struct Node* result = node_unserialize_tree(treedata, data_len);
+	int32_t result_tree_len = -1;
+	struct Node* result = node_unserialize_tree(treedata, data_len, &result_tree_len);
 	printf("unserialized:\n");
-	print_tree(result, 0);
+	node_print_tree(result, 0);
 
 	free(treedata);
 	node_del(tree);
