@@ -80,8 +80,6 @@ static int32_t pick_smallest(struct Node* trees[], int32_t amount)
 struct Node* huffman_create_tree(struct Node* codes[], int32_t amount)
 {
 	struct Node* trees[amount];
-	//struct Node* smallest[2] = {NULL, NULL};
-	//int32_t smallest_ind[2] = {-1, -1};
 	int32_t count = 0;
 
 	// copy all the created nodes to the tree array
@@ -106,9 +104,6 @@ struct Node* huffman_create_tree(struct Node* codes[], int32_t amount)
 		trees[a] = NULL; // we don't want to pick the same pointer twice
 
 		b = pick_smallest(trees, amount);
-
-		//printf("ind: %d, p: %p\n", b, trees[b]);
-		//printf("joining %d & %d, count: %d\n", a, b, count);
 
 		trees[a] = node_join(ap, trees[b]);
 		trees[b] = NULL;
@@ -257,6 +252,7 @@ uint8_t* huffman_encode(uint8_t* input, uint64_t length, uint64_t* length_result
 	return newbuffer;
 }
 
+#define READ_BIT(a, x) (((a) & (1 << (x))) != 0 ? 1 : 0)
 /**
  * @brief Decompresses a huffman coded byte array.
  *
@@ -275,18 +271,15 @@ uint8_t* huffman_decode(uint8_t* input, uint64_t length, uint64_t* length_result
 	int32_t tree_len = -1;
 	uint32_t symbol_count = 0;
 	uint64_t pos = 0;
-	//struct Node* node_unserialize_tree(uint8_t* data, int32_t length);
 	// TODO fix that ugly uint64_t -> int32_t cast
 	struct Node* tree = node_unserialize_tree(input, (int32_t) length, &tree_len);
 	assert(tree);
 	assert(tree_len > 0);
-	printf("unserialized tree len: %d\n", tree_len);
 	node_print_tree(tree, 0);
 
 	pos+=tree_len;
 
 	memcpy(&symbol_count, &input[pos], 4);
-	printf("symbol count!: %u\n", symbol_count);
 
 	pos+=4;
 
@@ -298,17 +291,13 @@ uint8_t* huffman_decode(uint8_t* input, uint64_t length, uint64_t* length_result
 
 	while (out_pos < symbol_count) {
 		if (node_is_leaf(node)) {
-			printf("\topos: %d: %d\n", (int32_t)out_pos, node->value);
 			output_data[out_pos] = node->value;
 			out_pos++;
 			node = tree;
 			continue;
 		}
 
-		//int32_t bit = 0 < (input[pos + cur_pos] & (1 << (7 - cur_bit)));
-		int32_t bit = (input[pos + cur_pos] & (1 << (7 - cur_bit))) != 0 ? 1 : 0;
-
-		printf("%d %d bit: %d\n", (int32_t)cur_pos, cur_bit, bit);
+		int32_t bit = READ_BIT(input[pos + cur_pos], 7-cur_bit);
 
 		cur_bit++;
 
@@ -331,3 +320,4 @@ uint8_t* huffman_decode(uint8_t* input, uint64_t length, uint64_t* length_result
 	return output_data;
 }
 
+#undef READ_BIT
