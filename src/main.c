@@ -15,7 +15,7 @@
 enum {ACTION_COMPRESS, ACTION_DECOMPRESS} action = 
 	ACTION_COMPRESS;
 
-int quality = 80;
+int quality = 60;
 unsigned int flags = 0;
 bool verbose = false;
 char* input_path = NULL;
@@ -51,7 +51,7 @@ void print_help(void)
 		" -d\tdecompress, default mode is compression\n"
 		" -h\tthis help\n"
 		" \nCompression mode options:\n" 
-		" -q\tcompression quality, range: [1, 100]\n"
+		" -q\tcompression quality, range: [1, 100], default: 60\n"
 		" \nDecompression mode (-d) options:\n" 
 		" -y\tdo not convert output to RGB colorspace\n"
 		);
@@ -68,10 +68,11 @@ void handle_arguments(int argc, char** argv)
 {
 	int c;
 
-	while((c=getopt(argc, argv, "cdhyq:")) != -1) {
+	while((c=getopt(argc, argv, "vcdhyq:")) != -1) {
 		switch (c) {
 			case 'v':
 				verbose = true;
+				global_message_level = TIMG_MSG_VERBOSE;
 				break;
 			case 'V':
 				print_version();

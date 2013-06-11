@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <math.h>
+#include "tiraimg.h"
 #include "eks_math.h"
 #include "util/bitbuf.h"
 #include "trie.h"
@@ -222,6 +223,9 @@ uint8_t* huffman_encode(uint8_t* input, uint64_t length, uint64_t* length_result
 		code_table[codes[i].value] = &codes[i];
 	}
 
+	if (global_message_level >= TIMG_MSG_VERBOSE)
+		printf("Huffman code count: %d\n", code_amount);
+
 	for (int32_t i=0;i<length;i++)  {
 		uint8_t value = input[i];
 		struct SymbolCode* code = code_table[value];
@@ -239,7 +243,7 @@ uint8_t* huffman_encode(uint8_t* input, uint64_t length, uint64_t* length_result
 	assert(tree_data);
 	assert(tree_data_len > 0);
 	uint32_t symbol_count = (uint32_t)length;
-	
+
 	int32_t headersize =  tree_data_len + 4;
 	int32_t output_len = headersize + (buf->pos + 1);
 	// huffman tree + amount of symbols (uint32_t) + symbol stream

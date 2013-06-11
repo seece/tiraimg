@@ -280,6 +280,9 @@ uint8_t* compress_image_full(const struct Image* imagep, int32_t quality,
 	image_to_blockarray(tempimage, &array);
 	compress_blockarray_dct(&array, quality);
 
+	if (global_message_level >= TIMG_MSG_VERBOSE)
+		printf("Image block array size: %dx%d\n", array.columns, array.rows);
+
 	int32_t blocks = array.columns * array.rows;
 	// magic + width & height + quality level (uint8_t) 
 	int32_t header_length = image_header_size;
