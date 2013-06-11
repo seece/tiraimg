@@ -241,7 +241,7 @@ void TestImageYCbCrConversion(CuTest* tc)
 	image_to_ycbcr(imagep);
 	image_to_rgb(imagep);
 
-	bool save_result = image_save("temp/gammaimage.ppm", imagep);
+	image_save("temp/gammaimage.ppm", imagep);
 
 	// We allow some rounding-error to happen.
 	check_images_equal(tc, orig, imagep, 3);

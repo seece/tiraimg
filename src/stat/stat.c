@@ -1,8 +1,8 @@
 #include <stdint.h>
 #include <assert.h>
 #include <math.h>
-#include "image/image.h"
-#include "eks_math.h"
+#include "../image/image.h"
+#include "../eks_math.h"
 
 
 /**
@@ -32,8 +32,6 @@ double stat_image_mean_absolute_error(struct Image* expected, struct Image* resu
 		sum += abs(res->g - exp->g);
 		sum += abs(res->b - exp->b);
 	}
-
-	//sum *= 1.0/256.0;
 
 	// We multiply the count by three since we consider each color channel
 	// to be a single sample.

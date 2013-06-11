@@ -1,3 +1,8 @@
+/**
+ * @file dct.h
+ * @brief Discrete Cosine Transform calculation functions.
+ */
+
 #ifndef DCT_H_
 #define DCT_H_
 

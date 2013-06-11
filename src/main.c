@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdbool.h>
 #include <unistd.h>
 #include <assert.h>
@@ -174,7 +175,7 @@ int main(int argc, char** argv)
 		printf("Picture dimensions: %dx%d\n", imagep->width, imagep->height);
 		unsigned long length = 0;
 		unsigned long result = 0;
-		unsigned char* data = compress_image_full(imagep, quality, &length);
+		unsigned char* data = compress_image_full(imagep, quality, (uint64_t*) &length);
 
 		printf("Saving %lu bytes to %s...", length, output_path);
 

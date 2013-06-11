@@ -196,3 +196,5 @@ const struct ByteBlock zigzag_order = { .data = {
 	{23, 31, 38, 45, 52, 59, 60, 53},
 	{46, 39, 47, 54, 61, 62, 55, 63}
 }};
+
+uint8_t tree_data[7] = {1, 1, 1, 5, 0, 52, 52};

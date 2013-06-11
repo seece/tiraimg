@@ -42,7 +42,7 @@ void dct_quantize_floatblock(
 }
 
 /**
- * @brief Truncates the given ByteBlock values, see <dct_quantize_floatblock>"()"
+ * @brief Truncates the given ByteBlock values, see dct_quantize_floatblock
  *
  * @param input Original float values.
  * @param quality The quality factor between 1-100.
@@ -151,8 +151,6 @@ static int32_t single_idct(
 {
 	int32_t size = TIMG_BLOCK_SIZE;
 	double phasemult = M_PI/(double)size;
-	//double scaleu = normalize_scale_factor(u);
-	//double scalev = normalize_scale_factor(v);
 	float sum = 0.0f;
 
 	for (int32_t v=0;v<size;v++) {
@@ -200,6 +198,13 @@ typedef void (*blockarray_map_func_t)(
 		int32_t x, 
 		int32_t y);
 
+/**
+ * @brief Truncates the given FloatBlock values.
+ *
+ * @param input Original float values.
+ * @param quality The quality factor between 1-100.
+ * @param output A block to hold the resulting values.
+ */
 void dct_quantize_floatblock_float(
 		const struct FloatBlock* input,
 		int32_t quality,
