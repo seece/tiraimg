@@ -94,29 +94,6 @@ void bitbuf_put_bits(struct BitBuffer* buf, uint32_t data, int32_t length)
 	}
 }
 
-/*
-void bitbuf_write_bits(struct BitBuffer* buf, int32_t amount, uint8_t data)
-{
-	if (buf->bit_pos + amount > 7) {
-		int32_t left_amount = 7 - buf->bit_pos;
-
-		if (left_amount > 0) {
-			// TODO finish this
-			//uint8_t left_data = data 
-		}
-
-		bitbuf_write_byte(buf, 0);
-		// pos has increased by one
-		
-
-	}
-
-	int32_t shift = 8 - amount - buf->bit_pos;
-	buf->data[buf->pos] |= data<<shift;
-}
-*/
-
-
 /**
  * @brief Reads a single bit from a buffer.
  *

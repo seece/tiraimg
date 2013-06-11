@@ -26,6 +26,17 @@ struct ImageHeader {
 	uint8_t quality;
 };
 
+inline int32_t get_quality_level(int32_t quality, int32_t channel_id)
+{
+	// luma
+	if (channel_id == 0) {
+		return quality;	
+	}
+
+	// color components 
+	return round(quality*TIMG_COLOR_QUALITY_MULT);
+}
+
 /**
  * @brief Calculates an in-place DCT for the given BlockArray, and saves
  * the quantized results.
@@ -37,17 +48,20 @@ void compress_blockarray_dct(struct BlockArray* arrayp, int32_t quality)
 {
 	int32_t rows = arrayp->rows;
 	int32_t cols = arrayp->columns;
+	int32_t chn_quality; // color channels have lower quality level
 	struct FloatBlock temp;
 	struct FloatBlock quantized_coeffs;
 
-	for (int y=0;y<rows;y++) {
-		for (int x=0;x<cols;x++) {
+	for (int32_t y=0;y<rows;y++) {
+		for (int32_t x=0;x<cols;x++) {
 			int32_t ofs = y*arrayp->columns + x;
 			struct ColorBlock* cblock = &arrayp->data[ofs];
 
-			for (int i=0;i<3;i++) {
+			for (int32_t i=0;i<3;i++) {
 				dct_calculate(&cblock->chan[i], &temp);
-				dct_quantize_floatblock_float(&temp, quality, &quantized_coeffs);
+				dct_quantize_floatblock_float(&temp, 
+						get_quality_level(quality, i), 
+						&quantized_coeffs);
 				floatblock_add(&quantized_coeffs, 128.0, &quantized_coeffs);
 				floatblock_to_byte(&quantized_coeffs, &cblock->chan[i]);
 
@@ -69,13 +83,17 @@ void compress_blockarray_dct_inverse(struct BlockArray* arrayp, int32_t quality)
 	int32_t cols = arrayp->columns;
 	struct FloatBlock temp;
 	struct ByteBlock quant_matrix;
+	struct ByteBlock quant_matrix_color;
 	struct FloatBlock float_quant_matrix;
+	struct FloatBlock float_quant_matrix_color;
 
 	// We introduce some rounding error by not storing
 	// the quantization matrix as an array of floats in 
 	// the first place. 
 	get_scaled_quant_matrix(quality, &quant_matrix);
+	get_scaled_quant_matrix(get_quality_level(quality, 1), &quant_matrix_color);
 	byteblock_to_float(&quant_matrix, &float_quant_matrix);
+	byteblock_to_float(&quant_matrix_color, &float_quant_matrix_color);
 
 	for (int y=0;y<rows;y++) {
 		for (int x=0;x<cols;x++) {
@@ -86,7 +104,11 @@ void compress_blockarray_dct_inverse(struct BlockArray* arrayp, int32_t quality)
 			for (int i=0;i<3;i++) {
 				byteblock_to_float(&cblock->chan[i], &temp);
 				floatblock_add(&temp, -128.0, &temp);
-				floatblock_multiply(&float_quant_matrix, &temp);
+
+				if (i==0) 
+					floatblock_multiply(&float_quant_matrix, &temp);
+				else
+					floatblock_multiply(&float_quant_matrix_color, &temp);
 
 				dct_calculate_inverse(&temp, &cblock->chan[i]);
 			}
