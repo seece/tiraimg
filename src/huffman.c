@@ -10,8 +10,6 @@
 #include "trie.h"
 
 #define HUFFMAN_MAX_CODES 256
-static struct Node* code_trees[HUFFMAN_MAX_CODES];
-static int32_t node_amount = 0;
 
 /**
  * @brief Calculates the distribution, and creates the nodes from a byte 
@@ -51,6 +49,15 @@ int32_t huffman_populate_forest(const uint8_t* data, uint64_t data_len, struct N
 	return amount;
 }
 
+/**
+ * @brief Picks the node with the smallest weight from the 
+ * given array. NULL pointers are simply skipped.
+ *
+ * @param trees[] node array, the haystack
+ * @param amount amount of nodes in the array
+ *
+ * @return index of the smallest node
+ */
 static int32_t pick_smallest(struct Node* trees[], int32_t amount)
 {
 	int32_t smallest_id = -1;
@@ -210,7 +217,6 @@ uint8_t* huffman_encode(uint8_t* input, uint64_t length, uint64_t* length_result
 
 	// propagate the code table
 	for (int32_t i=0;i<code_amount;i++) {
-		//printf("%d: %d\n", i, codes[i].value);
 		assert(codes[i].value < 256);
 		assert(codes[i].value >= 0);
 		code_table[codes[i].value] = &codes[i];
@@ -221,14 +227,13 @@ uint8_t* huffman_encode(uint8_t* input, uint64_t length, uint64_t* length_result
 		struct SymbolCode* code = code_table[value];
 
 		if (!code) {
-			printf("0x%X: code not found from code table!\n", value);
+			fprintf(stderr, "0x%X: code not found from code table!\n", value);
 			continue;
 		}
 
 		bitbuf_put_bits(buf, code->code, code->length); 
 	}
 
-	// uint8_t* node_serialize_tree(struct Node* tree, int32_t* length_out);
 	int32_t tree_data_len = -1;
 	uint8_t* tree_data = node_serialize_tree(tree, &tree_data_len);
 	assert(tree_data);
@@ -252,7 +257,17 @@ uint8_t* huffman_encode(uint8_t* input, uint64_t length, uint64_t* length_result
 	return newbuffer;
 }
 
+
+/**
+ * @brief Reads a single bit from the given integer.
+ *
+ * @param a target integer
+ * @param x bit position
+ *
+ * @return 0 or 1, depending on the bit's value
+ */
 #define READ_BIT(a, x) (((a) & (1 << (x))) != 0 ? 1 : 0)
+
 /**
  * @brief Decompresses a huffman coded byte array.
  *

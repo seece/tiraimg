@@ -58,7 +58,6 @@ void TestLeafCount(CuTest* tc)
 
 	int32_t leaf_amount = 0;
 	struct Node** leaves = get_leaf_nodes(tree, NULL, &leaf_amount);
-	int32_t count_node_amount = node_count_nodes(tree);
 	//printf("NODES: %d\n", count_node_amount);
 
 	CuAssertIntEquals(tc, 4, leaf_amount);
@@ -70,8 +69,6 @@ void TestLeafCount(CuTest* tc)
 
 void TestTreeSerialization(CuTest* tc)
 {
-	int32_t code_amount = -1;
-
 	struct Node* nodes[256];
 	int32_t node_amount = huffman_populate_forest(tree_data, sizeof(tree_data), nodes);
 	struct Node* tree = huffman_create_tree(nodes, node_amount);

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #include <assert.h>
 #include "block.h"
 #include "tiraimg.h"
@@ -139,12 +140,13 @@ int32_t compress_block_encode(const struct ByteBlock* block,
 int32_t compress_block_decode(uint8_t* input, struct ByteBlock* block)
 {
 	int32_t pos = 0;
-	int32_t length = 0;
+	uint8_t length = 0;
 
 	memset(block->data, TIMG_ZERO_BYTE, sizeof(block->data));
-	memcpy(&length, input, 1); // we assume a little-endian architecture
+	memcpy(&length, input, 1); 
 
 	assert(length <= 64);
+	assert(length >= 0);
 
 	pos+=1;
 
@@ -207,7 +209,6 @@ static uint64_t read_block_data(uint8_t* data, struct BlockArray* arrayp)
 {
 	int32_t blocks = arrayp->columns * arrayp->rows;
 	arrayp->data = calloc(blocks, sizeof(struct ColorBlock));
-
 	size_t pos = 0;
 
 	for (int32_t i=0;i<blocks;i++) {
@@ -336,8 +337,8 @@ struct Image* decompress_image_full(uint8_t* data, uint64_t length, uint32_t fla
 	struct BlockArray array;
 
 	pos += unserialize_header(data, &header);
-	array.columns= header.width/8;
-	array.rows = header.height/8;
+	array.columns = ceil(header.width/8.0);
+	array.rows = ceil(header.height/8.0);
 	array.width = header.width;
 	array.height = header.height;
 
@@ -345,9 +346,6 @@ struct Image* decompress_image_full(uint8_t* data, uint64_t length, uint32_t fla
 		fprintf(stderr, "Invalid magic value!\n");
 		return NULL;
 	}
-
-	printf("Dimensions: %dx%d, quality: %d\n", header.width, header.height, 
-			header.quality);
 
 	uint64_t data_len = length - pos;
 

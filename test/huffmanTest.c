@@ -141,14 +141,6 @@ void TestSimpleDistribution(CuTest* tc)
 	}
 }
 
-static int32_t tree_depth(struct Node* root, int32_t depth)
-{
-	if (!root)
-		return depth;
-
-	return MAX(tree_depth(root->left, depth+1), tree_depth(root->right, depth+1));
-}
-
 void TestSymbolDistribution(CuTest* tc)
 {
 	int32_t code_amount = -1;

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include <string.h>
 #include <assert.h>
 #include <stdint.h>
@@ -245,14 +246,8 @@ void image_to_blockarray(struct Image* imagep, struct BlockArray* arrayp)
 	arrayp->width = imagep->width;
 	arrayp->height = imagep->height;
 
-	int32_t cols = imagep->width/8;
-	int32_t rows = imagep->height/8;
-
-	if (imagep->width % size != 0)
-		cols++;
-
-	if (imagep->height % size != 0)
-		rows++;
+	int32_t cols = ceil(imagep->width/8.0);
+	int32_t rows = ceil(imagep->height/8.0);
 
 	int32_t amount = cols*rows;
 	arrayp->columns = cols;
@@ -448,7 +443,7 @@ void image_to_rgb(struct Image* imagep)
 	image_map(imagep, imagep, ycbcr_to_rgb_mapfunc);
 }
 
-static void image_clone_mapfunc(struct Pixel* source, struct Pixel* dest, 
+static void image_clone_mapfunc(const struct Pixel* source, struct Pixel* dest, 
 		int32_t x, int32_t y) 
 {
 	dest->r = source->r;
@@ -464,7 +459,7 @@ static void image_clone_mapfunc(struct Pixel* source, struct Pixel* dest,
  *
  * @return pointer to the new allocated image
  */
-struct Image* image_clone(struct Image* imagep) 
+struct Image* image_clone(const struct Image* imagep) 
 {
 	assert(imagep);
 	struct Image* newimage = image_new(imagep->width, imagep->height);

@@ -135,6 +135,15 @@ static int32_t find_value_path(struct Node* node, int32_t needle, int32_t level,
 	return node->value;
 }
 
+/**
+ * @brief Returns a matching SymbolCode of a leaf node of the
+ * given tree.
+ *
+ * @param root the tree
+ * @param value the value of the target leaf node
+ *
+ * @return a SymbolCode struct 
+ */
 struct SymbolCode node_get_code(struct Node* root, int32_t value)
 {
 	struct SymbolCode symbol = {.code = 0, .length = 0, .value = value};
@@ -330,6 +339,12 @@ struct Node* node_unserialize_tree(uint8_t* data, int32_t length, int32_t* bytes
 }
 
 
+/**
+ * @brief Prints the tree recursively.
+ *
+ * @param root tree root node
+ * @param level indentation level, should be 0 on initial invocation
+ */
 void node_print_tree(struct Node* root, int32_t level)
 {
 	if (root == NULL)

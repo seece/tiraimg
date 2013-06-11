@@ -1,3 +1,8 @@
+/**
+ * @file huffman.h
+ * @brief Byte stream Huffman coding functions.
+ */
+
 #ifndef HUFFMAN_H_
 #define HUFFMAN_H_
 #include <stdint.h>
