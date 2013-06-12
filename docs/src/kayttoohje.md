@@ -41,6 +41,8 @@ Ohjelma tukee myös seuraavia lisäparametreja:
 :	Ohjelma tulostaa enemmän statusviestejä. 
 -y
 :	Älä muuta kuvaa takaisin RGB-muotoon purkamisvaiheessa. Hyödyllinen lähinnä testauskäytössä.
+-i
+:	Älä suorita kuvalle käänteismuunnosta. Kuvaan jäävät näkyviin DCT-kertoimet.
 -t
 :	Tulosta purkamiseen käytetty Huffman-puu.
 
