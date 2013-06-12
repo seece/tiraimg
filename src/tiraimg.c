@@ -9,7 +9,7 @@ enum msg_level global_message_level = TIMG_MSG_NONE;
 const double TIMG_COLOR_QUALITY_MULT = 1.0;
 
 /** Version string used in text output */
-const char tiraimg_version_string[] = "0.1";
+const char tiraimg_version_string[] = "0.2";
 
 /** tiraimg file format magic string */
 const char tiraimg_magic[] = "CATS";

@@ -2,7 +2,7 @@
 #define TIRAIMG_H_
 #include <stdint.h>
 
-enum msg_level {TIMG_MSG_NONE, TIMG_MSG_VERBOSE};
+enum msg_level {TIMG_MSG_NONE, TIMG_MSG_VERBOSE, TIMG_MSG_HUFFMAN};
 extern enum msg_level global_message_level;
 
 extern const double TIMG_COLOR_QUALITY_MULT;

@@ -374,11 +374,23 @@ struct Image* decompress_image_full(uint8_t* data, uint64_t length, uint32_t fla
 
 	uint64_t data_len = length - pos;
 
+	if (global_message_level >= TIMG_MSG_VERBOSE) {
+		printf("Picture info: \n\tsize: %dx%d px\n\tquality: %u\n", array.width, array.height, 
+				header.quality);
+		printf("Decoding %lu bytes of compressed data...\n", data_len);
+	}
+
 	uint8_t* imagedata = huffman_decode(data + pos, data_len, &datasize);
 	uint64_t real_datasize = read_block_data(imagedata, &array);
 
 	assert(datasize == real_datasize);
-	compress_blockarray_dct_inverse(&array, header.quality);
+
+	if (!(flags & COMPRESS_NO_IDCT)) {
+		if (global_message_level >= TIMG_MSG_VERBOSE)
+			printf("Performing inverse DCT...\n");
+
+		compress_blockarray_dct_inverse(&array, header.quality);
+	}
 
 	struct Image* imagep = blockarray_to_image(&array);
 

@@ -294,7 +294,9 @@ uint8_t* huffman_decode(uint8_t* input, uint64_t length, uint64_t* length_result
 	struct Node* tree = node_unserialize_tree(input, (int32_t) length, &tree_len);
 	assert(tree);
 	assert(tree_len > 0);
-	node_print_tree(tree, 0);
+
+	if (global_message_level >= TIMG_MSG_HUFFMAN)
+		node_print_tree(tree, 0);
 
 	pos+=tree_len;
 

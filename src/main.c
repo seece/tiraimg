@@ -34,7 +34,7 @@ void print_version(void)
  */
 void print_usage(void) 
 {
-	printf("Usage: tiraimg [-Vvdy] [-q QUALITY] input output\n");
+	printf("Usage: tiraimg [-Vivdy] [-q QUALITY] input output\n");
 }
 
 
@@ -54,6 +54,8 @@ void print_help(void)
 		" -q\tcompression quality, range: [1, 100], default: 60\n"
 		" \nDecompression mode (-d) options:\n" 
 		" -y\tdo not convert output to RGB colorspace\n"
+		" -i\tdo not perform inverse DCT\n"
+		" -t\tprint the huffman tree\n"
 		);
 }
 
@@ -68,11 +70,15 @@ void handle_arguments(int argc, char** argv)
 {
 	int c;
 
-	while((c=getopt(argc, argv, "vcdhyq:")) != -1) {
+	while((c=getopt(argc, argv, "Vvtcdhyiq:")) != -1) {
 		switch (c) {
 			case 'v':
 				verbose = true;
 				global_message_level = TIMG_MSG_VERBOSE;
+				break;
+			case 't':
+				verbose = true;
+				global_message_level = TIMG_MSG_HUFFMAN;
 				break;
 			case 'V':
 				print_version();
@@ -87,6 +93,9 @@ void handle_arguments(int argc, char** argv)
 				break;
 			case 'y':
 				flags |= COMPRESS_KEEP_YCBCR;
+				break;
+			case 'i':
+				flags |= COMPRESS_NO_IDCT;
 				break;
 			case 'q':
 				quality = atoi(optarg);
@@ -196,7 +205,8 @@ int main(int argc, char** argv)
 	}
 
 	if (action == ACTION_DECOMPRESS) {
-		printf("Decompressing...\n");
+		if (verbose)
+			printf("Decompressing...\n");
 
 		unsigned long data_len;
 		unsigned char* data = read_file(input_path, &data_len);
@@ -216,6 +226,9 @@ int main(int argc, char** argv)
 		image_save(output_path, imagep);
 		image_del(imagep);
 		free(data);
+
+		if (verbose)
+			printf("Image saved to %s\n", output_path);
 	}
 
 	exit(EXIT_SUCCESS);

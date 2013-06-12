@@ -11,6 +11,7 @@
 #include "image/image.h"
 
 #define COMPRESS_KEEP_YCBCR (1 << 0)
+#define COMPRESS_NO_IDCT (1 << 1)
 
 void compress_blockarray_dct(struct BlockArray* arrayp, int32_t quality);
 void compress_blockarray_dct_inverse(struct BlockArray* arrayp, int32_t quality);
