@@ -27,7 +27,6 @@ void printBits(size_t const size, void const * const ptr)
 			printf("%u", byte);
 		}
 	}
-	//puts("");
 }
 
 void TestBitBufferWrite(CuTest* tc)
@@ -78,13 +77,6 @@ void TestBitBufferWriteRandom(CuTest* tc)
 
 		bits[i] = bit;
 		bitbuf_put_bit(buf, bit);
-		/*
-		printf("%02x %02x\t", buf->data[0], buf->data[1]);
-		printBits(1, &buf->data[0]);
-		printf(" ");
-		printBits(1, &buf->data[1]);
-		printf(" \n");
-		*/
 	}
 
 	for (int32_t i=0;i<noise_length;i++) {
@@ -182,7 +174,6 @@ void TestHuffmanCoding(CuTest* tc)
 
 	// propagate the code table
 	for (int32_t i=0;i<code_amount;i++) {
-		printf("%d: %d\n", i, codes[i].value);
 		assert(codes[i].value < 256);
 		assert(codes[i].value >= 0);
 		code_table[codes[i].value] = &codes[i];
@@ -198,13 +189,6 @@ void TestHuffmanCoding(CuTest* tc)
 		}
 
 		bitbuf_put_bits(buf, code->code, code->length); 
-
-		printf("%d: %d, len: %d ", i, value, code->length);
-		printBits(1, &code->code);
-		printf("\n");
-
-		printBits(1, &buf->data[0]); printf(" ");
-		printBits(1, &buf->data[1]); printf("\n");
 	}
 
 	bitbuf_del(buf);
@@ -217,18 +201,10 @@ void TestHuffmanInterface(CuTest* tc)
 	uint8_t data[] = {0x04, 0x04, 0x04, 0x04, 0x04, 0x00, 0x00, 0x0A, 0x0B};
 	int32_t data_len = sizeof(data);
 	uint64_t huff_len= 0;
-	//printf("encoding huffman values:\n");
 	uint8_t* huff_data = huffman_encode(data, (uint64_t)data_len, &huff_len);
-
-	//printf("original: %d, huffman coded data length: %lu\n", data_len, huff_len);
-	//hexdump(huff_data, huff_len);
 
 	uint64_t result_len = 0;
 	uint8_t* result_data = huffman_decode(huff_data, huff_len, &result_len);
-	//printf("result_len: %lu\n", result_len);
-	//printf("data: %p, result_data: %p\n", data, result_data);
-
-	//hexdump(result_data, result_len);
 	CuAssertIntEquals(tc, data_len, result_len);
 	check_arrays_equal(tc, result_data, data, result_len);
 }
