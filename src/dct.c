@@ -28,7 +28,7 @@ void dct_quantize_floatblock(
 	assert(quality > 0);
 	assert(quality <= 100);
 
-	get_scaled_quant_matrix(quality, &quant_matrix);
+	jpeg_get_quant_matrix(quality, &quant_matrix);
 
 	for (int32_t y=0;y<size;y++) {
 		for (int32_t x=0;x<size;x++) {
@@ -216,7 +216,7 @@ void dct_quantize_floatblock_float(
 	assert(quality > 0);
 	assert(quality <= 100);
 
-	get_scaled_quant_matrix(quality, &quant_matrix);
+	jpeg_get_quant_matrix(quality, &quant_matrix);
 
 	for (int32_t y=0;y<size;y++) {
 		for (int32_t x=0;x<size;x++) {

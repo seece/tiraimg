@@ -70,7 +70,7 @@ void handle_arguments(int argc, char** argv)
 {
 	int c;
 
-	while((c=getopt(argc, argv, "Vvtcdhyiq:")) != -1) {
+		while((c=getopt(argc, argv, "Vvtcdhyiq:")) != -1) {
 		switch (c) {
 			case 'v':
 				verbose = true;

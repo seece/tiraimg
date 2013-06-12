@@ -90,8 +90,8 @@ void compress_blockarray_dct_inverse(struct BlockArray* arrayp, int32_t quality)
 	// We introduce some rounding error by not storing
 	// the quantization matrix as an array of floats in 
 	// the first place. 
-	get_scaled_quant_matrix(quality, &quant_matrix);
-	get_scaled_quant_matrix(get_quality_level(quality, 1), &quant_matrix_color);
+	jpeg_get_quant_matrix(quality, &quant_matrix);
+	jpeg_get_quant_matrix(get_quality_level(quality, 1), &quant_matrix_color);
 	byteblock_to_float(&quant_matrix, &float_quant_matrix);
 	byteblock_to_float(&quant_matrix_color, &float_quant_matrix_color);
 

@@ -12,7 +12,7 @@
 /**
  * @brief The JPEG quantization matrix. 
  */
-uint8_t const quantization_matrix[8][8] = {
+uint8_t const jpeg_quantization_matrix[8][8] = {
 	{16, 11, 10, 16, 24, 40, 51, 61},
 	{12, 12, 14, 19, 26, 58, 60, 55},
 	{14, 13, 16, 24, 40, 57, 69, 56},
@@ -30,7 +30,7 @@ uint8_t const quantization_matrix[8][8] = {
  * @param quality The quality value to use, range: [1, 100]
  * @param output Pointer to the result ByteBlock.
  */
-void get_scaled_quant_matrix(int32_t quality, struct ByteBlock* output)
+void jpeg_get_quant_matrix(int32_t quality, struct ByteBlock* output)
 {
 	float mult;
 
@@ -45,7 +45,7 @@ void get_scaled_quant_matrix(int32_t quality, struct ByteBlock* output)
 
 	for (int32_t y=0;y<8;y++) {
 		for (int32_t x=0;x<8;x++) {
-			int32_t in = quantization_matrix[y][x];
+			int32_t in = jpeg_quantization_matrix[y][x];
 			int32_t out = round(in*mult);			
 
 			// Limit the values to the range of [1, 255], since we

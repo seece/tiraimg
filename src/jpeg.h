@@ -3,7 +3,7 @@
 #define JPEG_H_
 #include <stdint.h>
 
-extern const uint8_t quantization_matrix[8][8];
-void get_scaled_quant_matrix(int32_t quality, struct ByteBlock* output);
+extern const uint8_t jpeg_quantization_matrix[8][8];
+void jpeg_get_quant_matrix(int32_t quality, struct ByteBlock* output);
 
 #endif
