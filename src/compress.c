@@ -48,7 +48,6 @@ void compress_blockarray_dct(struct BlockArray* arrayp, int32_t quality)
 {
 	int32_t rows = arrayp->rows;
 	int32_t cols = arrayp->columns;
-	int32_t chn_quality; // color channels have lower quality level
 	struct FloatBlock temp;
 	struct FloatBlock quantized_coeffs;
 
@@ -290,7 +289,7 @@ uint64_t unserialize_header(uint8_t* data, struct ImageHeader* header)
  *
  * @return pointer to the compressed image data
  */
-uint8_t* compress_image_full(const struct Image* imagep, int32_t quality,
+uint8_t* compress_image_full(struct Image* imagep, int32_t quality,
 	uint64_t* length)
 {
 	struct Image* tempimage = image_clone(imagep);
@@ -377,7 +376,7 @@ struct Image* decompress_image_full(uint8_t* data, uint64_t length, uint32_t fla
 	if (global_message_level >= TIMG_MSG_VERBOSE) {
 		printf("Picture info: \n\tsize: %dx%d px\n\tquality: %u\n", array.width, array.height, 
 				header.quality);
-		printf("Decoding %lu bytes of compressed data...\n", data_len);
+		printf("Decoding %lu bytes of compressed data...\n", (long unsigned int) data_len);
 	}
 
 	uint8_t* imagedata = huffman_decode(data + pos, data_len, &datasize);

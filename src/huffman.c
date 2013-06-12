@@ -204,8 +204,6 @@ uint8_t* huffman_encode(uint8_t* input, uint64_t length, uint64_t* length_result
 	assert(length_result);
 	assert(length < (1 << 31)); // we store the symbol amount as uint32_t
 
-	// uint32_t buffersize = length + 4;
-
 	int32_t code_amount = -1;
 
 	struct Node* nodes[256];

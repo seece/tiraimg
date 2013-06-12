@@ -236,8 +236,6 @@ static void block_pixel_map(
  */
 void image_to_blockarray(struct Image* imagep, struct BlockArray* arrayp)
 {
-	const int32_t size = TIMG_BLOCK_SIZE;
-
 	assert(imagep && arrayp);
 	assert(imagep->data);
 	assert(imagep->width > 0);
@@ -443,7 +441,7 @@ void image_to_rgb(struct Image* imagep)
 	image_map(imagep, imagep, ycbcr_to_rgb_mapfunc);
 }
 
-static void image_clone_mapfunc(const struct Pixel* source, struct Pixel* dest, 
+static void image_clone_mapfunc(struct Pixel* source, struct Pixel* dest, 
 		int32_t x, int32_t y) 
 {
 	dest->r = source->r;
@@ -459,7 +457,7 @@ static void image_clone_mapfunc(const struct Pixel* source, struct Pixel* dest,
  *
  * @return pointer to the new allocated image
  */
-struct Image* image_clone(const struct Image* imagep) 
+struct Image* image_clone(struct Image* imagep) 
 {
 	assert(imagep);
 	struct Image* newimage = image_new(imagep->width, imagep->height);

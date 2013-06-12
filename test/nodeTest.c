@@ -108,6 +108,7 @@ void TestTreeSerialization(CuTest* tc)
 	int32_t result_tree_len = -1;
 	struct Node* result = node_unserialize_tree(treedata, data_len, &result_tree_len);
 
+	node_del(result);
 	free(treedata);
 	node_del(tree);
 }
