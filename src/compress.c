@@ -396,6 +396,7 @@ struct Image* decompress_image_full(uint8_t* data, uint64_t length, uint32_t fla
 	if (!(flags & COMPRESS_KEEP_YCBCR))
 		image_to_rgb(imagep);
 
+	blockarray_free(&array);
 	free(imagedata);
 
 	return imagep;

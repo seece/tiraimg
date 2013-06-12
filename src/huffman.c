@@ -184,6 +184,7 @@ struct SymbolCode* huffman_get_symbol_codes(struct Node* tree, int32_t* amount_o
 
 	*amount_out = amount;
 
+	free(leaves);
 	return codes;
 }
 
