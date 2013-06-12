@@ -168,7 +168,7 @@ uint8_t* read_file(char* path, uint64_t* length)
 	rewind(fp);
 
 	uint8_t* data = malloc(*length);
-	fread(data, 1, *length, fp);
+	uint64_t bytes_read = fread(data, 1, *length, fp);
 	fclose(fp);
 
 	return data;
@@ -214,7 +214,7 @@ int main(int32_t argc, char** argv)
 		}
 
 		if (verbose) {
-			printf("Read %u bytes\n", data_len);
+			printf("Read %lu bytes\n", (long unsigned int) data_len);
 			printf("Decompressing...\n");
 		}
 
