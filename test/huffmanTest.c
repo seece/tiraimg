@@ -8,7 +8,7 @@
 #include "test_data.h"
 #include "testHelpers.h"
 #include "util/bitbuf.h"
-#include "trie.h"
+#include "util/trie.h"
 #include "huffman.h"
 
 // from http://stackoverflow.com/a/3974138

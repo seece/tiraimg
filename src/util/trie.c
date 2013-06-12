@@ -3,9 +3,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
-#include "eks_math.h"
+#include "../eks_math.h"
 #include "trie.h"
-#include "util/stack.h"
+#include "stack.h"
 
 #define NODE_TYPE_NORMAL 0
 #define NODE_TYPE_LEAF 1

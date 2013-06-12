@@ -8,7 +8,7 @@
 #include "tiraimg.h"
 #include "eks_math.h"
 #include "util/bitbuf.h"
-#include "trie.h"
+#include "util/trie.h"
 
 #define HUFFMAN_MAX_CODES 256
 

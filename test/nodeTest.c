@@ -12,7 +12,7 @@
 #include "testHelpers.h"
 #include "test_data.h"
 #include "util/bitbuf.h"
-#include "trie.h"
+#include "util/trie.h"
 #include "huffman.h"
 
 void TestSimpleTree(CuTest* tc)
