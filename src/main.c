@@ -15,8 +15,8 @@
 enum {ACTION_COMPRESS, ACTION_DECOMPRESS} action = 
 	ACTION_COMPRESS;
 
-int quality = 60;
-unsigned int flags = 0;
+int32_t quality = 60;
+uint32_t flags = 0;
 bool verbose = false;
 char* input_path = NULL;
 char* output_path = NULL;
@@ -66,7 +66,7 @@ void print_help(void)
  * @param argc program argument count
  * @param argv program argument string array
  */
-void handle_arguments(int argc, char** argv) 
+void handle_arguments(int32_t argc, char** argv) 
 {
 	int c;
 
@@ -130,9 +130,9 @@ void handle_arguments(int argc, char** argv)
  *
  * @return how many bytes were actually written to the file
  */
-unsigned long write_file(char* path, unsigned char* data, unsigned long length)
+uint64_t write_file(char* path, uint8_t* data, uint64_t length)
 {
-	unsigned long bytes_written = 0;
+	uint64_t bytes_written = 0;
 	FILE* fp;	
 	fp = fopen(path, "w");
 
@@ -155,7 +155,7 @@ unsigned long write_file(char* path, unsigned char* data, unsigned long length)
  *
  * @return pointer to the allocated data array
  */
-unsigned char* read_file(char* path, unsigned long* length) 
+uint8_t* read_file(char* path, uint64_t* length) 
 {
 	FILE* fp = fopen(path, "rb");
 
@@ -167,14 +167,14 @@ unsigned char* read_file(char* path, unsigned long* length)
 	*length = ftell(fp);
 	rewind(fp);
 
-	unsigned char* data = malloc(*length);
-	assert(fread(data, 1, *length, fp) == *length);
+	uint8_t* data = malloc(*length);
+	fread(data, 1, *length, fp);
 	fclose(fp);
 
 	return data;
 }
 
-int main(int argc, char** argv) 
+int main(int32_t argc, char** argv) 
 {
 	handle_arguments(argc, argv);
 
@@ -183,9 +183,9 @@ int main(int argc, char** argv)
 	if (action == ACTION_COMPRESS) {
 		struct Image* imagep = image_load(input_path);
 		printf("Picture dimensions: %dx%d\n", imagep->width, imagep->height);
-		unsigned long length = 0;
-		unsigned long result = 0;
-		unsigned char* data = compress_image_full(imagep, quality, (uint64_t*) &length);
+		uint64_t length = 0;
+		uint64_t result = 0;
+		uint8_t* data = compress_image_full(imagep, quality, (uint64_t*) &length);
 
 		printf("Saving %lu bytes to %s...", length, output_path);
 
@@ -205,15 +205,17 @@ int main(int argc, char** argv)
 	}
 
 	if (action == ACTION_DECOMPRESS) {
-		if (verbose)
-			printf("Decompressing...\n");
-
-		unsigned long data_len;
-		unsigned char* data = read_file(input_path, &data_len);
+		uint64_t data_len;
+		uint8_t* data = read_file(input_path, &data_len);
 
 		if (!data) {
 			printf("ERROR: Can't load file %s!\n", input_path);
 			exit(EXIT_FAILURE);
+		}
+
+		if (verbose) {
+			printf("Read %u bytes\n", data_len);
+			printf("Decompressing...\n");
 		}
 
 		struct Image* imagep = decompress_image_full(data, data_len, flags);

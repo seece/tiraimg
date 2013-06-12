@@ -360,6 +360,11 @@ struct Image* decompress_image_full(uint8_t* data, uint64_t length, uint32_t fla
 	struct ImageHeader header;
 	struct BlockArray array;
 
+	if (!data || length == 0) {
+		printf("ERROR: No image data loaded!\n");
+		return NULL;
+	}
+
 	pos += unserialize_header(data, &header);
 	array.columns = ceil(header.width/8.0);
 	array.rows = ceil(header.height/8.0);
@@ -367,8 +372,8 @@ struct Image* decompress_image_full(uint8_t* data, uint64_t length, uint32_t fla
 	array.height = header.height;
 
 	if (strncmp(tiraimg_magic, header.magic, 4)) {
-		fprintf(stderr, "Invalid magic value!\n");
-		return NULL;
+			fprintf(stderr, "Invalid magic value!");
+			return NULL;
 	}
 
 	uint64_t data_len = length - pos;

@@ -66,7 +66,7 @@ void dct_quantize_byteblock(
  *
  * @return The normalized scale factor.
  */
-static double normalize_scale_factor(int32_t frequency) 
+inline double normalize_scale_factor(int32_t frequency) 
 {
 	if (frequency == 0) 
 		return sqrt(1.0/(double)TIMG_BLOCK_SIZE);
