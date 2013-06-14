@@ -55,8 +55,6 @@ Pakattu data pidetään muistissa yhtäaikaa syötteen ja puurakenteen kanssa. J
 
 Huffman-koodauksen purkamisoperaatiossa jokaisen syötedatan bitin kohdalla tehdään yksi liike alaspäin puussa. Näin ollen aikavaativuus on $O(NH)$, missä $N$ pakatun datan pituus *symboleina* ja $H$ on Huffman-puun korkeus. Tilavaativuus on sama kuin pakatessa.
 
-### Pakkauksen tehokkuus ja laatu
-
 ### Puutteet ja jatkokehitysmahdollisuudet
 
 Ohjelman sisäiset tietorakenteet ja tallennuksessa käytettävä tiedostoformaatti perustuvat oletukseen, että jokainen DCT-kerroin pystytään tallentamaan kvantisoinnin jälkeen 8-bitin mittaiseen muuttujaan. Matalamilla laatutasoilla kertoimet kvantisoidaan suuremmilla jakajilla, jolloin tallennettavien kertoimien itseisarvo pienenee, eikä tämä rakenteellinen rajoite koidu ongelmaksi. Kuitenkin käyttäessä korkeampaa laatua [^1] artefaktit ovat ilmiselviä: kerroinmatriisin matalin taajuus (DC) on joissakin ruuduissa väärä, joka näkyy kirkkauden tai värisävyn suurena paikallisena vaihteluna.
