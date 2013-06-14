@@ -47,7 +47,7 @@ Jos ruudun lopussa ei ole ollenkaan nollia, joudutaan muistiin tallentamaan ruud
 
 Huffman-koodauksessa on kaksi vaihetta: Huffman-puun luominen ja syötteen pakkaaminen. Puun luomisessa on ensin selvitettävä kaikkien symbolien (tässä tapauksessa tavujen) esiintymistiheydet, joka on aikavaativuudeltaan $O(N)$. Puun rakentamisessa ei ole käytössä prioriteettijonoa tai muuta vastaavaa edistynyttä tietorakennetta, vaan pelkkä symbolitaulukko johon tehdään lineaarihakuja. Tämän vuoksi rakentamisvaiheen kokonainen aikavaativuus on $O(N + |L|^2)$, jossa $N$ on syötteen pituus tavuina, ja $|L|$ on aakkoston symbolien lukumäärä. 
 
-Varsinaisessa pakkauksessa syötedata käydään lävitse, jokaisen symbolin kohdalla tulostetaan oikea koodi esilasketusta taulukosta. Rutiinin aikavaativuus on $O(N)$.
+Varsinaisessa pakkauksessa syötedata käydään läpi, ja jokaisen symbolin kohdalla tulostetaan oikea koodi esilasketusta taulukosta. Rutiinin aikavaativuus on $O(N)$.
 
 Pakattu data pidetään muistissa yhtäaikaa syötteen ja puurakenteen kanssa. Jos jokainen 256 tavusta esiintyisi syötteessä yhtä monta kertaa, olisi puu täydellinen eli siinä olisi $2^{8+1}-1 = 511$ solmua. joten tilavaativuus on $O(511 + N)$ = $O(N)$. 
 
