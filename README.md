@@ -1,7 +1,7 @@
 tiraimg
 =======
 ## Introduction
-*tiraimg* is a JPEG-clone. It will feature a compressor/decompressor for PPM image format.
+*tiraimg* is a JPEG-clone. It features a compressor/decompressor for PPM image format.
 
 ## Building
 Build prerequisites:
@@ -17,4 +17,13 @@ When the project has been built you can run the tests with
 
 	$ make check
 
+## Usage
+To compress use
 
+	$ tiraimg -q 50 source.ppm destination.timg
+
+and for decompression type
+
+	$ tiraimg -d destination.timg source.ppm
+
+See ```tiraimg -h``` for more. 
