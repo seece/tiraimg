@@ -23,7 +23,7 @@ Harjoitustyön aihe on JPEG-pakkauksen kaltainen kuvanpakkausalgoritmi. Tarkemmi
 
 DCT-algoritmi suorittaa lineaarisen muunnoksen diskreetistä syötedatasta taajuusesitysmuotoon, jossa signaali esitetään eri taajuksilla värähtelevien kosinien summana. Algoritmista on olemassa erilaisia muunnoksia, mutta tässä harjoitustyössä käytän DCT-II:sta, joka muuttaa datan taajuusmuotoon. Käytän myös vastaavaa käänteismuunnosta DCT-III:sta, joka muuttaa DCT-II:n laskemat taajuuskertoimet takaisin diskreetiksi signaaliksi.
 
-Huffman-koodauksessa syötedatan symboleista muodostetaan binääripuu, jossa harvoin esiintyvät symbolit päätyvät puun lehtiin. Symbolien binääriesitys muodostetaan niiden sijainnin mukaan, jolloin useimmin esiintyville tapauksille valitaan lyhyempi esitysmuoto.
+Huffman-koodauksessa syötedatan symboleista muodostetaan binääripuu, jossa harvoin esiintyvät symbolit päätyvät pidemmän polun päähän puun juuresta. Symbolien binääriesitys muodostetaan niiden sijainnin mukaan, jolloin useimmin esiintyville tapauksille valitaan lyhyempi esitysmuoto.
 
 ## Tavoitteet
 ### Aikavaativuus
@@ -41,5 +41,6 @@ muistiin myös, ja pahimmillaan se voi viedä muistia yhtä paljon (tai hieman e
 
 1. Hamilton (1992), JPEG File Interchange Format <http://www.w3.org/Graphics/JPEG/jfif3.pdf>, s. 3-4
 2. (1992) JPEG Standard (JPEG ISO/IEC 10918-1 ITU-T Recommendation T.81) <http://www.w3.org/Graphics/JPEG/itu-t81.pdf>, s. 15, 27-28, 87-89
+
 3. Haberdar (2012), Discrete Cosine Transform Tutorial <http://www.haberdar.org/Discrete-Cosine-Transform-Tutorial.htm>
 4. Abelson, G. Sussman, J. Sussman (1990) Structure and Interpretation of Computer Programs <http://mitpress.mit.edu/sicp/full-text/sicp/book/node41.html#fig:huffman> - Example: Huffman Encoding Trees

@@ -42,7 +42,7 @@ Ohjelma tukee myös seuraavia lisäparametreja:
 -y
 :	Älä muuta kuvaa takaisin RGB-muotoon purkamisvaiheessa. Hyödyllinen lähinnä testauskäytössä.
 -i
-:	Älä suorita kuvalle käänteismuunnosta. Kuvaan jäävät näkyviin DCT-kertoimet.
+:	Älä suorita kuvalle käänteismuunnosta. Kuvaan jäävät näkyviin tallennetut DCT-kertoimet.
 -t
 :	Tulosta purkamiseen käytetty Huffman-puu.
 
