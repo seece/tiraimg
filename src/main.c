@@ -174,63 +174,77 @@ uint8_t* read_file(char* path, uint64_t* length)
 	return data;
 }
 
+void action_compress_image(void)
+{
+	struct Image* imagep = image_load(input_path);
+	printf("Picture dimensions: %dx%d\n", imagep->width, 
+			imagep->height);
+	uint64_t length = 0;
+	uint64_t result = 0;
+	uint8_t* data = compress_image_full(imagep, quality, 
+			(uint64_t*) &length);
+
+	printf("Saving %lu bytes to %s...", (long unsigned int) length, output_path);
+
+	result = write_file(output_path, data, length);
+
+	if (result == length) {
+		printf("OK!\n");
+
+	} else {
+		printf("ERROR: Only wrote %lu bytes!\n", result);
+	}
+
+	if (length > 0)
+		free(data);
+
+	image_del(imagep);
+}
+
+void action_decompress_image(void)
+{
+	uint64_t data_len;
+	uint8_t* data = read_file(input_path, &data_len);
+
+	if (!data) {
+		printf("ERROR: Can't load file %s!\n", input_path);
+		exit(EXIT_FAILURE);
+	}
+
+	if (verbose) {
+		printf("Read %u bytes\n", data_len);
+		printf("Decompressing...\n");
+	}
+
+	struct Image* imagep = decompress_image_full(data, data_len, 
+			flags);
+
+	if (!imagep) {
+		printf("ERROR: Image decompression failure.\n");
+		exit(EXIT_FAILURE);
+	}
+
+	image_save(output_path, imagep);
+	image_del(imagep);
+	free(data);
+
+	if (verbose)
+		printf("Image saved to %s\n", output_path);
+}
+
 int main(int32_t argc, char** argv) 
 {
 	handle_arguments(argc, argv);
 
-	printf("input: %s output: %s\n", input_path, output_path);
+	if (verbose)
+		printf("Input: %s\nOutput: %s\n", input_path, output_path);
 
 	if (action == ACTION_COMPRESS) {
-		struct Image* imagep = image_load(input_path);
-		printf("Picture dimensions: %dx%d\n", imagep->width, imagep->height);
-		uint64_t length = 0;
-		uint64_t result = 0;
-		uint8_t* data = compress_image_full(imagep, quality, (uint64_t*) &length);
-
-		printf("Saving %lu bytes to %s...", length, output_path);
-
-		result = write_file(output_path, data, length);
-
-		if (result == length) {
-			printf("OK!\n");
-
-		} else {
-			printf("ERROR: Only wrote %lu bytes!\n", result);
-		}
-
-		if (length > 0)
-			free(data);
-
-		image_del(imagep);
+		action_compress_image();
 	}
 
 	if (action == ACTION_DECOMPRESS) {
-		uint64_t data_len;
-		uint8_t* data = read_file(input_path, &data_len);
-
-		if (!data) {
-			printf("ERROR: Can't load file %s!\n", input_path);
-			exit(EXIT_FAILURE);
-		}
-
-		if (verbose) {
-			printf("Read %u bytes\n", data_len);
-			printf("Decompressing...\n");
-		}
-
-		struct Image* imagep = decompress_image_full(data, data_len, flags);
-
-		if (!imagep) {
-			printf("ERROR: Image decompression failure.\n");
-			exit(EXIT_FAILURE);
-		}
-
-		image_save(output_path, imagep);
-		image_del(imagep);
-		free(data);
-
-		if (verbose)
-			printf("Image saved to %s\n", output_path);
+		action_decompress_image();
 	}
 
 	exit(EXIT_SUCCESS);
