@@ -21,27 +21,33 @@ Listaukseen on liitetty mukaan vertailun vuoksi myös oikean JPEG-pakkauksen tul
 
 ![Tallinnan Linnamüür, testikuva](muuri.png "")
 
-Kuva                      muuri.ppm       iso_katu.ppm
-----------------------    ------------    ------------
-__Mitat (px)__            512x384         1536x2048 
-__Pakkausaika__           2 s             30.9 s
-__Purkuaika__             2.5 s           40 s
-__Koko (pakkaamaton)__    576.1 KB        9.0 MB
-__TIMG-koko, q: 70__      72.6 KB         719.3 KB
-__TIMG-koko, q: 50__      53.0 KB         578.5 KB
-__TIMG-koko, q: 25__      37.3 KB         480.1 KB
-----------------------    ------------    ------------
+Kuva                      kasvot.ppm      muuri.ppm       iso_katu.ppm
+----------------------    -------------   ------------    ------------
+__Mitat (px)__            32x32           512x384         1536x2048 
+__Pakkausaika__           65 ms           2 s             30.9 s
+__Purkuaika__             51 ms           2.5 s           40 s
+__Koko (pakkaamaton)__    3.1 KB          576.1 KB        9.0 MB
+__TIMG-koko, q: 70__      852 B           72.6 KB         719.3 KB
+__TIMG-koko, q: 50__      651 B           53.0 KB         578.5 KB
+__TIMG-koko, q: 25__      434 B           37.3 KB         480.1 KB
+----------------------    --------------  ------------    ------------
 
-Kuva                      muuri.ppm       iso_katu.ppm
-----------------------    ------------    ------------
-__JPEG-koko, q: 70__      29.6 KB         287.1 KB 
-__JPEG-koko, q: 50__      20.5 KB         191.4 KB 
-__JPEG-koko, q: 25__      12.1 KB         108.6 KB 
-----------------------    ------------    ------------
+Kuva                      kasvot.ppm      muuri.ppm       iso_katu.ppm
+----------------------    --------------  ------------    ------------
+__JPEG-koko, q: 70__      612 B           29.6 KB         287.1 KB 
+__JPEG-koko, q: 50__      518 B           20.5 KB         191.4 KB 
+__JPEG-koko, q: 25__      445 B           12.1 KB         108.6 KB 
+----------------------    --------------  ------------    ------------
 
 ![Eri pakkaustasot vasemmalta lukien: alkuperäinen, 70, 50 ja 25.](muuri_pakkaus.png "")
 
+
 Taulukossa esiintyvä q-arvo on kuvanlaadun määräävä quality-arvo, joka skaalaa kvantisoinnissa käytettävää jakajamatriisia. Skaalaus tapahtuu tiraimgissä samalla tavalla kuin JPEG:ssä, joten arvot ovat vertailukelpoisia.
+
+![Kahden suurimman kuvan kokovertailu](kaavio.png "")
+
+![Pienin testikuva on kooltaan 32x32 pikseliä.](kasvot.png "")
+
 
 ### Johtopäätös
 Pakkaus tuottaa visuaalisesti miellyttäviä tuloksia, ja pienentää tiedostokokoa merkittävästi. Tehokkuus ei ole kuitenkaan samalla tasolla JPEG:n kanssa, sillä tiraimg tallentaa väridatan täydellä tarkkuudella. Pakkauksen häviötön osa ei ole myöskään yhtä edistynyt.
