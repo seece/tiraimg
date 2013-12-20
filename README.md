@@ -1,5 +1,8 @@
 tiraimg
 =======
+
+![Compression demonstration](https://github.com/seece/tiraimg/blob/master/docs/muuri_pakkaus.png "")
+
 ## Introduction
 *tiraimg* is a JPEG-clone. It features a compressor/decompressor for PPM image format.
 
